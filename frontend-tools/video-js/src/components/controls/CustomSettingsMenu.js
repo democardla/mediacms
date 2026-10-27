@@ -3,6 +3,7 @@ import videojs from 'video.js';
 import './CustomSettingsMenu.css';
 // import './SettingsButton.css';
 import UserPreferences from '../../utils/UserPreferences';
+import { playerUiText } from '../../localization';
 
 // Get the Component base class from Video.js
 const Component = videojs.getComponent('Component');
@@ -153,7 +154,7 @@ class CustomSettingsMenu extends Component {
 
         // Create settings button
         this.settingsButton = controlBar.addChild('button', {
-            controlText: 'Settings',
+            controlText: playerUiText('settings'),
             className: 'vjs-settings-button vjs-control vjs-button settings-clicked',
         });
 
@@ -161,11 +162,11 @@ class CustomSettingsMenu extends Component {
         const settingsButtonEl = this.settingsButton.el();
         settingsButtonEl.innerHTML = `
             <span class="vjs-icon-placeholder vjs-icon-cog"></span>
-            <span class="vjs-control-text">Settings</span>
+            <span class="vjs-control-text">${playerUiText('settings')}</span>
         `;
 
         // Add tooltip attributes
-        settingsButtonEl.setAttribute('aria-label', 'Settings');
+        settingsButtonEl.setAttribute('aria-label', playerUiText('settings'));
 
         // Position the settings button at the end of the control bar
         this.positionButton();
@@ -247,30 +248,30 @@ class CustomSettingsMenu extends Component {
         const currentPlaybackRate = this.userPreferences.getPreference('playbackRate');
         const currentQuality = this.userPreferences.getQualityPreference();
         // Find current subtitle selection for label
-        let currentSubtitleLabel = 'Off';
+        let currentSubtitleLabel = playerUiText('off');
         try {
             const tt = this.player().textTracks();
             for (let i = 0; i < tt.length; i++) {
                 const t = tt[i];
                 if (t.kind === 'subtitles' && t.mode === 'showing') {
-                    currentSubtitleLabel = t.label || t.language || 'Captions';
+                    currentSubtitleLabel = t.label || t.language || playerUiText('captions');
                     break;
                 }
             }
         } catch {}
 
         // Format playback rate for display
-        const playbackRateLabel = currentPlaybackRate === 1 ? 'Normal' : `${currentPlaybackRate}`;
+        const playbackRateLabel = currentPlaybackRate === 1 ? playerUiText('normal') : `${currentPlaybackRate}`;
         const qualities = this.getAvailableQualities();
         const activeQuality = qualities.find((q) => q.value === currentQuality) || qualities[0];
         const qualityLabelHTML =
-            activeQuality?.displayLabel || activeQuality?.label || (currentQuality ? String(currentQuality) : 'Auto');
+            activeQuality?.displayLabel || activeQuality?.label || (currentQuality ? String(currentQuality) : playerUiText('auto'));
 
         // Settings menu content - split into separate variables for maintainability
         const settingsHeader = `
     <div class="settings-header">
-        <span>Settings</span>
-        <button class="settings-close-btn" aria-label="Close settings">
+        <span>${playerUiText('settings')}</span>
+        <button class="settings-close-btn" aria-label="${playerUiText('closeSettings')}">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.7096 12L20.8596 20.15L20.1496 20.86L11.9996 12.71L3.84965 20.86L3.13965 20.15L11.2896 12L3.14965 3.85001L3.85965 3.14001L11.9996 11.29L20.1496 3.14001L20.8596 3.85001L12.7096 12Z" fill="currentColor"/>
             </svg>
@@ -283,7 +284,7 @@ class CustomSettingsMenu extends Component {
             <span class="vjs-icon-placeholder settings-item-svg">
                 <svg height="24" viewBox="0 0 24 24" width="24"><path d="M10,8v8l6-4L10,8L10,8z M6.3,5L5.7,4.2C7.2,3,9,2.2,11,2l0.1,1C9.3,3.2,7.7,3.9,6.3,5z            M5,6.3L4.2,5.7C3,7.2,2.2,9,2,11 l1,.1C3.2,9.3,3.9,7.7,5,6.3z            M5,17.7c-1.1-1.4-1.8-3.1-2-4.8L2,13c0.2,2,1,3.8,2.2,5.4L5,17.7z            M11.1,21c-1.8-0.2-3.4-0.9-4.8-2 l-0.6,.8C7.2,21,9,21.8,11,22L11.1,21z            M22,12c0-5.2-3.9-9.4-9-10l-0.1,1c4.6,.5,8.1,4.3,8.1,9s-3.5,8.5-8.1,9l0.1,1 C18.2,21.5,22,17.2,22,12z" fill="white"></path></svg>
             </span>
-        <span>Playback speed</span></span>
+        <span>${playerUiText('playbackSpeed')}</span></span>
         <span class="settings-right">
             <span class="current-speed">${playbackRateLabel}</span>
             <span class="vjs-icon-placeholder vjs-icon-navigate-next"></span>
@@ -296,7 +297,7 @@ class CustomSettingsMenu extends Component {
            <span class="vjs-icon-placeholder settings-item-svg">
               <svg height="24" viewBox="0 0 24 24" width="24"><path d="M15,17h6v1h-6V17z M11,17H3v1h8v2h1v-2v-1v-2h-1V17z M14,8h1V6V5V3h-1v2H3v1h11V8z            M18,5v1h3V5H18z M6,14h1v-2v-1V9H6v2H3v1 h3V14z M10,12h11v-1H10V12z" fill="white"></path></svg>
            </span>
-        <span>Quality</span></span>
+        <span>${playerUiText('quality')}</span></span>
         <span class="settings-right">
             <span class="current-quality">${qualityLabelHTML}</span>
             <span class="vjs-icon-placeholder vjs-icon-navigate-next"></span>
@@ -309,7 +310,7 @@ class CustomSettingsMenu extends Component {
            <span class="vjs-icon-placeholder settings-item-svg">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 4H5C3.9 4 3 4.9 3 6V18C3 19.1 3.9 20 5 20H19C20.1 20 21 19.1 21 18V6C21 4.9 20.1 4 19 4ZM11 17H5V15H11V17ZM19 13H5V11H19V13ZM19 9H5V7H19V9Z" fill="white"/></svg>
            </span>
-        <span>Captions</span></span>
+        <span>${playerUiText('captions')}</span></span>
         <span class="settings-right">
             <span class="current-subtitles">${currentSubtitleLabel}</span>
             <span class="vjs-icon-placeholder vjs-icon-navigate-next"></span>
@@ -393,7 +394,7 @@ class CustomSettingsMenu extends Component {
             { label: '0.25', value: 0.25 },
             { label: '0.5', value: 0.5 },
             { label: '0.75', value: 0.75 },
-            { label: 'Normal', value: 1 },
+            { label: playerUiText('normal'), value: 1 },
             { label: '1.25', value: 1.25 },
             { label: '1.5', value: 1.5 },
             { label: '1.75', value: 1.75 },
@@ -409,7 +410,7 @@ class CustomSettingsMenu extends Component {
         this.speedSubmenu.innerHTML = `
             <div class="submenu-header">
                 <span style="margin-right: 8px;">←</span>
-                <span>Playback speed</span>
+                <span>${playerUiText('playbackSpeed')}</span>
             </div>
             ${speedOptions
                 .map(
@@ -433,7 +434,7 @@ class CustomSettingsMenu extends Component {
         const header = `
             <div class="submenu-header">
                 <span style="margin-right: 8px;">←</span>
-                <span>Quality</span>
+                <span>${playerUiText('quality')}</span>
             </div>
         `;
 
@@ -460,7 +461,7 @@ class CustomSettingsMenu extends Component {
         const header = `
             <div class="submenu-header">
                 <span style="margin-right: 8px;">←</span>
-                <span>Captions</span>
+                <span>${playerUiText('captions')}</span>
             </div>
         `;
 
@@ -490,7 +491,7 @@ class CustomSettingsMenu extends Component {
 
         // Build items: Off + languages
         const items = [];
-        items.push({ label: 'Off', lang: null });
+        items.push({ label: playerUiText('off'), lang: null });
         for (let i = 0; i < tracks.length; i++) {
             const t = tracks[i];
             if (t.kind === 'subtitles') {
@@ -517,7 +518,7 @@ class CustomSettingsMenu extends Component {
         try {
             const player = this.player();
             const tracks = player.textTracks();
-            let currentSubtitleLabel = 'Off';
+            let currentSubtitleLabel = playerUiText('off');
 
             // Find the active subtitle track
             for (let i = 0; i < tracks.length; i++) {
@@ -578,7 +579,7 @@ class CustomSettingsMenu extends Component {
             if (Array.isArray(jsonQualities) && jsonQualities.length) {
                 // Expected format: [{label: '1080p', value: '1080p', src: '...'}]
                 const normalized = jsonQualities.map((q) => ({
-                    label: q.label || q.value || 'Auto',
+                    label: q.label || q.value || playerUiText('auto'),
                     value: (q.value || q.label || 'auto').toString().toLowerCase(),
                     src: q.src || q.url || q.href,
                     type: q.type || 'video/mp4',
@@ -594,7 +595,7 @@ class CustomSettingsMenu extends Component {
         if (Array.isArray(sources) && sources.length > 0) {
             const mapped = sources.map((s, idx) => {
                 const label =
-                    s.label || s.res || this.inferLabelFromSrc(s.src) || (idx === 0 ? 'Auto' : `Source ${idx + 1}`);
+                    s.label || s.res || this.inferLabelFromSrc(s.src) || (idx === 0 ? playerUiText('auto') : `Source ${idx + 1}`);
                 const value = String(label).toLowerCase();
                 return { label, value, src: s.src, type: s.type || 'video/mp4' };
             });
@@ -1126,7 +1127,7 @@ class CustomSettingsMenu extends Component {
 
         // Update main menu display
         const currentSpeedDisplay = this.settingsOverlay.querySelector('.current-speed');
-        const speedLabel = speed === 1 ? 'Normal' : `${speed}`;
+        const speedLabel = speed === 1 ? playerUiText('normal') : `${speed}`;
         currentSpeedDisplay.textContent = speedLabel;
 
         // Close the entire settings menu after speed selection
@@ -1359,7 +1360,7 @@ class CustomSettingsMenu extends Component {
         optionEl.insertAdjacentHTML('beforeend', '<span class="checkmark">✓</span>');
 
         // Update label in main settings
-        const label = lang ? optionEl.querySelector('span')?.textContent || lang : 'Off';
+        const label = lang ? optionEl.querySelector('span')?.textContent || lang : playerUiText('off');
         const currentSubtitlesDisplay = this.settingsOverlay.querySelector('.current-subtitles');
         if (currentSubtitlesDisplay) currentSubtitlesDisplay.textContent = label;
 

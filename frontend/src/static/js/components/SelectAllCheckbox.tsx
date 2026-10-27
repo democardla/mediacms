@@ -1,6 +1,6 @@
 import React from 'react';
+import i18n from '../i18n';
 import './SelectAllCheckbox.scss';
-import { translateString } from '../utils/helpers/';
 
 interface SelectAllCheckboxProps {
   totalCount: number;
@@ -41,9 +41,9 @@ export const SelectAllCheckbox: React.FC<SelectAllCheckboxProps> = ({
           }}
           onChange={handleChange}
           disabled={isDisabled}
-          aria-label={translateString('Select all media')}
+          aria-label={i18n.t('profile.bulk.selectAll')}
         />
-        <span className="checkbox-label-text">{translateString('All')}</span>
+        <span className="checkbox-label-text">{i18n.t('profile.bulk.all')}</span>
       </label>
     </div>
   );

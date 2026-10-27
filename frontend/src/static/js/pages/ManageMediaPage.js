@@ -1,4 +1,5 @@
 import React from 'react';
+import i18n from '../i18n';
 import { apiUrlConfig } from '../utils/contexts/';
 import { PageActions } from '../utils/actions/';
 import { SearchFieldStore } from '../utils/stores/';
@@ -31,7 +32,7 @@ export class ManageMediaPage extends Page {
       resultsCount: null,
       currentPage: 1,
       requestUrl: genReqUrl(apiUrlConfig.manage.media, this.searchArgs, '', 1),
-      pageTitle: props.title,
+      pageTitle: i18n.t('admin.pages.manageMedia', { defaultValue: props.title }),
       hiddenFilters: true,
       filterArgs: this.searchArgs,
       sortingArgs: '',
@@ -117,13 +118,13 @@ export class ManageMediaPage extends Page {
         requestUrl: genReqUrl(apiUrlConfig.manage.media, this.searchArgs, '', 1),
       },
       function () {
-        PageActions.addNotification('The media deleted successfully.', 'mediaRemovalSucceed');
+        PageActions.addNotification(i18n.t('admin.notices.mediaDeleted'), 'mediaRemovalSucceed');
       }
     );
   }
 
   onItemsRemovalFail(multipleItems) {
-    PageActions.addNotification('The media removal failed. Please try again.', 'mediaRemovalFailed');
+    PageActions.addNotification(i18n.t('admin.notices.mediaDeleteFailed'), 'mediaRemovalFailed');
   }
 
   pageContent() {

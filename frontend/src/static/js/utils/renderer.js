@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { LayoutProvider } from './contexts/LayoutContext';
 import { UserProvider } from './contexts/UserContext';
 import { inEmbeddedApp } from './helpers';
+import '../i18n';
 
 const AppProviders = ({ children }) => (
     <LayoutProvider>

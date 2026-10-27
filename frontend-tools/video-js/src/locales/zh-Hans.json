@@ -1,0 +1,24 @@
+{
+  "ui": {
+    "play": "播放", "pause": "暂停", "fullscreen": "全屏", "exitFullscreen": "退出全屏",
+    "pictureInPicture": "画中画", "nextVideo": "下一个视频", "autoplayOn": "自动连播已开启",
+    "autoplayOff": "自动连播已关闭", "settings": "设置", "closeSettings": "关闭设置",
+    "upNext": "接下来播放", "cancel": "取消", "cancelAutoplay": "取消自动连播",
+    "copyVideoUrl": "复制视频链接", "copyVideoUrlAtTime": "复制当前播放位置的视频链接",
+    "copyEmbedCode": "复制嵌入代码", "closeChapters": "关闭章节列表",
+    "playbackSpeed": "播放速度", "quality": "清晰度", "captions": "字幕", "audioTracks": "音轨",
+    "normal": "正常", "off": "关闭", "auto": "自动"
+  },
+  "videoJs": {
+    "Play": "播放", "Play Video": "播放视频", "Pause": "暂停", "Replay": "重新播放", "Current Time": "当前时间",
+    "Duration": "时长", "Remaining Time": "剩余时间", "Stream Type": "流类型", "LIVE": "直播",
+    "Loaded": "已加载", "Progress": "进度", "Progress Bar": "进度条", "Playback Rate": "播放速度",
+    "Playback speed": "播放速度", "Audio Player": "音频播放器", "Video Player": "视频播放器",
+    "Fullscreen": "全屏", "Exit Fullscreen": "退出全屏", "Picture-in-Picture": "画中画",
+    "Exit Picture-in-Picture": "退出画中画", "Mute": "静音", "Unmute": "取消静音",
+    "Volume Control": "音量控制", "Volume Level": "音量", "Captions": "字幕", "Subtitles": "字幕",
+    "Chapters": "章节", "Audio tracks": "音轨", "No compatible source was found for this media.": "找不到可播放此媒体的格式。",
+    "The media could not be loaded, either because the server or network failed or because the format is not supported.": "媒体加载失败，请检查网络连接或媒体格式。",
+    "The media is encrypted and we do not have the keys to decrypt it.": "媒体已加密，无法解密播放。", "The video is loading.": "视频正在加载。"
+  }
+}

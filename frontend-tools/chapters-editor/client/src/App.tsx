@@ -1,5 +1,6 @@
 import { formatDetailedTime } from './lib/timeUtils';
 import logger from './lib/logger';
+import { editorText } from '../../../shared/editorLocalization';
 import VideoPlayer from '@/components/VideoPlayer';
 import TimelineControls from '@/components/TimelineControls';
 import EditingTools from '@/components/EditingTools';
@@ -152,7 +153,7 @@ const App = () => {
 
                 {/* Timeline Header */}
                 <div className="timeline-header-container">
-                    <h2 className="timeline-header-title">Add Chapters</h2>
+                    <h2 className="timeline-header-title">{editorText('page.chapters.heading')}</h2>
                 </div>
 
                 {/* Timeline Controls */}

@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load custom_filters %}
 
-{% block headtitle %}Edit video chapters - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{{ "Edit video chapters"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block topimports %}
-<link href="{% static 'chapters_editor/chapters-editor.css' %}?v={{ VERSION }}" rel="preload" as="style">
-<link href="{% static 'chapters_editor/chapters-editor.css' %}?v={{ VERSION }}" rel="stylesheet">
-<script src="{% static 'chapters_editor/chapters-editor.js' %}?v={{ VERSION }}"></script>
+<link href="{% static 'chapters_editor/chapters-editor.css' %}?v={{ VERSION }}&locale_bundle=1" rel="preload" as="style">
+<link href="{% static 'chapters_editor/chapters-editor.css' %}?v={{ VERSION }}&locale_bundle=1" rel="stylesheet">
+<script src="{% static 'chapters_editor/chapters-editor.js' %}?v={{ VERSION }}&locale_bundle=1"></script>
 
 <script>
     window.MEDIA_DATA = {
@@ -24,7 +25,7 @@
 {% block innercontent %}
 	<div class="user-action-form-wrap">
 		{% include "cms/media_nav.html" with active_tab="chapters" %}
-		<div class="user-action-form-inner" style="max-width: 1280px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);">
+		<div class="user-action-form-inner" style="max-width: 1280px; margin: 0 auto; padding: 20px;">
 			<div id="chapters-editor-root"></div>
 		</div>
 	</div>

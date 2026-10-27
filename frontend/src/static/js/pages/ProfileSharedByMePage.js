@@ -1,4 +1,6 @@
 import React from 'react';
+import i18n from '../i18n';
+import { activeIntlLocale } from '../i18n';
 import { apiUrlConfig, LinksConsumer, memberConfig } from '../utils/contexts';
 import { PageStore, ProfilePageStore } from '../utils/stores';
 import { ProfilePageActions } from '../utils/actions';
@@ -23,8 +25,8 @@ function EmptySharedByMe(props) {
         <LinksConsumer>
             {(links) => (
                 <div className="empty-media empty-channel-media">
-                    <div className="welcome-title">No shared media</div>
-                    <div className="start-uploading">Media that you have shared with others will show up here.</div>
+                    <div className="welcome-title">{i18n.t('profile.emptySharedByMe.title')}</div>
+                    <div className="start-uploading">{i18n.t('profile.emptySharedByMe.description')}</div>
                 </div>
             )}
         </LinksConsumer>
@@ -78,7 +80,15 @@ class ProfileSharedByMePage extends Page {
     }
 
     componentDidMount() {
-        ProfilePageActions.load_author_data();
+        if (ProfilePageStore.get('author-data')) {
+            this.authorDataLoad();
+        } else {
+            ProfilePageActions.load_author_data();
+        }
+    }
+
+    componentWillUnmount() {
+        ProfilePageStore.removeListener('load-author-data', this.authorDataLoad);
     }
 
     authorDataLoad() {
@@ -124,15 +134,9 @@ class ProfileSharedByMePage extends Page {
             },
             () => {
                 if (this.state.query) {
-                    let title = '';
-
-                    if (!count) {
-                        title = 'No results for "' + this.state.query + '"';
-                    } else if (1 === count) {
-                        title = '1 result for "' + this.state.query + '"';
-                    } else {
-                        title = count + ' results for "' + this.state.query + '"';
-                    }
+                    const title = count
+                        ? i18n.t('profile.searchResults', { count, formattedCount: new Intl.NumberFormat(activeIntlLocale()).format(count), query: this.state.query })
+                        : i18n.t('profile.noSearchResults', { query: this.state.query });
 
                     this.setState({
                         title: title,
@@ -478,7 +482,7 @@ class ProfileSharedByMePage extends Page {
                     hideChannelBanner={inEmbeddedApp()}
                 />
             ) : null,
-            this.state.author ? (
+            this.state.author && this.state.requestUrl ? (
                 <ProfilePagesContent key="ProfilePagesContent">
                     <MediaListWrapper
                         title={inEmbeddedApp() ? undefined : this.state.title}
@@ -570,7 +574,7 @@ class ProfileSharedByMePage extends Page {
 }
 
 ProfileSharedByMePage.defaultProps = {
-    title: 'Shared by me',
+    title: i18n.t('profile.nav.sharedByMe'),
 };
 
 // Wrap with HOC and export as named export for compatibility

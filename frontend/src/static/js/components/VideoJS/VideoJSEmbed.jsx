@@ -240,7 +240,7 @@ const VideoJSEmbed = ({
             window.ReactDOMClient = ReactDOMClient;
             window.ReactJSXRuntime = ReactJSXRuntime;
             const script = document.createElement('script');
-            script.src = siteUrl + '/static/video_js/video-js.js?v=' + version;
+            script.src = siteUrl + '/static/video_js/video-js.js?v=' + version + '&locale_bundle=zh-hans-3';
             document.head.appendChild(script);
         }
     };

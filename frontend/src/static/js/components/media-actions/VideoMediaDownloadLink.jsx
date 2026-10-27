@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePopup } from '../../utils/hooks/';
 import { siteConfig } from '../../utils/contexts/';
 import { MediaPageStore } from '../../utils/stores/';
 import { formatInnerLink } from '../../utils/helpers/';
 import { CircleIconButton, MaterialIcon, NavigationContentApp, NavigationMenuList, PopupMain } from '../_shared/';
-import { translateString } from '../../utils/helpers/';
 
-function downloadOptionsList() {
+function downloadOptionsList(t) {
   const media_data = MediaPageStore.get('media-data');
 
   const title = media_data.title;
@@ -44,7 +44,7 @@ function downloadOptionsList() {
   const originalFilename = originalUrl ? originalUrl.substring(originalUrl.lastIndexOf('/') + 1) : media_data.title;
 
   optionsList.original_media_url = {
-    text: 'Original file (' + media_data.size + ')',
+    text: t('more.originalFile', { size: media_data.size }),
     link: formatInnerLink(media_data.original_media_url, siteConfig.url),
     linkAttr: {
       target: '_blank',
@@ -55,12 +55,12 @@ function downloadOptionsList() {
   return Object.values(optionsList);
 }
 
-function downloadOptionsPages() {
+function downloadOptionsPages(t) {
   return {
     main: (
       <div className="main-options">
         <PopupMain>
-          <NavigationMenuList items={downloadOptionsList()} />
+          <NavigationMenuList items={downloadOptionsList(t)} />
         </PopupMain>
       </div>
     ),
@@ -68,18 +68,19 @@ function downloadOptionsPages() {
 }
 
 export function VideoMediaDownloadLink(props) {
+  const { t } = useTranslation('media');
   const [popupContentRef, PopupContent, PopupTrigger] = usePopup();
 
   const [downloadOptionsCurrentPage, setDownloadOptionsCurrentPage] = useState('main');
 
   return (
-    <div className="video-downloads hidden-only-in-small" data-action-tooltip={translateString('Download')}>
+    <div className="video-downloads hidden-only-in-small" data-action-tooltip={t('more.download')}>
       <PopupTrigger contentRef={popupContentRef}>
         <button>
           <CircleIconButton type="span">
             <MaterialIcon type="arrow_downward" />
           </CircleIconButton>
-          <span>{translateString("DOWNLOAD")}</span>
+          <span>{t('more.download')}</span>
         </button>
       </PopupTrigger>
 
@@ -89,7 +90,7 @@ export function VideoMediaDownloadLink(props) {
             pageChangeCallback={null}
             initPage="main"
             focusFirstItemOnPageChange={false}
-            pages={downloadOptionsPages()}
+            pages={downloadOptionsPages(t)}
             pageChangeSelector={'.change-page'}
             pageIdSelectorAttr={'data-page-id'}
           />

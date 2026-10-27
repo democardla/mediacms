@@ -22,8 +22,8 @@
 		<link href="{% static "lib/gfonts/gfonts.css" %}" rel="stylesheet">
 		{% endif %}
 
-		<link href="{% static "css/_commons.css" %}?v={{ VERSION }}" rel="preload" as="style">
-		<link href="{% static "css/_commons.css" %}?v={{ VERSION }}" rel="stylesheet">
+		<link href="{% static "css/_commons.css" %}?v={{ VERSION }}&ui_bundle=9" rel="preload" as="style">
+		<link href="{% static "css/_commons.css" %}?v={{ VERSION }}&ui_bundle=9" rel="stylesheet">
 
 		<link href="{% static "css/_extra.css" %}?v={{ VERSION }}" rel="preload" as="style">
 		<link href="{% static "css/_extra.css" %}?v={{ VERSION }}" rel="stylesheet">
@@ -33,4 +33,4 @@
 		<link href="{{ css_path }}?v={{ VERSION }}" rel="stylesheet">
 		{% endfor %}
 
-		<link href="{% static "js/_commons.js" %}?v={{ VERSION }}" rel="preload" as="script">
+		<link href="{% static "js/_commons.js" %}?v={{ VERSION }}&locale_bundle=zh-hans-8" rel="preload" as="script">

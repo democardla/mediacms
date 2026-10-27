@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LinksContext, SiteConsumer } from '../../utils/contexts/';
 import { PageStore, MediaPageStore } from '../../utils/stores/';
 import { PageActions, MediaPageActions } from '../../utils/actions/';
@@ -27,6 +28,7 @@ function saveEmbedOptions(options) {
 }
 
 export function MediaShareEmbed(props) {
+  const { t } = useTranslation('media');
   const embedVideoDimensions = PageStore.get('config-options').embedded.video.dimensions;
   const savedOptions = loadEmbedOptions();
 
@@ -276,7 +278,7 @@ export function MediaShareEmbed(props) {
         <div ref={onRightRef} className="on-right">
           <div ref={onRightTopRef} className="on-right-top">
             <div className="on-right-top-inner">
-              <span className="ttl">Embed Video</span>
+              <span className="ttl">{t('embed.title')}</span>
               <CircleIconButton type="button" onClick={onClickEmbedShareExit}>
                 <MaterialIcon type="close" />
               </CircleIconButton>
@@ -294,7 +296,7 @@ export function MediaShareEmbed(props) {
             ></textarea>
 
             <div className="iframe-config">
-              <div className="iframe-config-options-title">Embed options</div>
+              <div className="iframe-config-options-title">{t('embed.options')}</div>
 
               <div className="iframe-config-option">
                 {/*<div className="option-title">
@@ -306,42 +308,42 @@ export function MediaShareEmbed(props) {
                     <div className="options-group">
                       <label style={{ minHeight: '36px', whiteSpace: 'nowrap' }}>
                         <input type="checkbox" checked={showTitle} onChange={onShowTitleChange} />
-                        Show title
+                        {t('embed.showTitle')}
                       </label>
                     </div>
 
                     <div className="options-group">
                       <label style={{ minHeight: '36px', whiteSpace: 'nowrap', opacity: showTitle ? 1 : 0.5 }}>
                         <input type="checkbox" checked={linkTitle} onChange={onLinkTitleChange} disabled={!showTitle} />
-                        Link title
+                        {t('embed.linkTitle')}
                       </label>
                     </div>
 
                     <div className="options-group">
                       <label style={{ minHeight: '36px', whiteSpace: 'nowrap' }}>
                         <input type="checkbox" checked={showRelated} onChange={onShowRelatedChange} />
-                        Show related
+                        {t('embed.showRelated')}
                       </label>
                     </div>
 
                     <div className="options-group">
                       <label style={{ minHeight: '36px', whiteSpace: 'nowrap', opacity: showTitle ? 1 : 0.5 }}>
                         <input type="checkbox" checked={showUserAvatar} onChange={onShowUserAvatarChange} disabled={!showTitle} />
-                        Show user avatar
+                        {t('embed.showUserAvatar')}
                       </label>
                     </div>
 
                     <div className="options-group" style={{ display: 'flex', alignItems: 'center' }}>
                       <label style={{ minHeight: '36px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', marginRight: '10px' }}>
                         <input type="checkbox" checked={responsive} onChange={onResponsiveChange} />
-                        Responsive
+                        {t('embed.responsive')}
                       </label>
                     </div>
 
                     <div className="options-group" style={{ display: 'flex', alignItems: 'center' }}>
                       <label style={{ minHeight: '36px', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', marginRight: '10px' }}>
                         <input type="checkbox" checked={startAt} onChange={onStartAtChange} />
-                        Start at
+                        {t('embed.startAt')}
                       </label>
                       {startAt && (
                         <input 
@@ -354,7 +356,7 @@ export function MediaShareEmbed(props) {
                     </div>
 
                     <div className="options-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                      <div style={{ fontSize: '12px', marginBottom: '4px', color: 'rgba(0,0,0,0.6)' }}>Aspect Ratio</div>
+                      <div style={{ fontSize: '12px', marginBottom: '4px', color: 'rgba(0,0,0,0.6)' }}>{t('embed.aspectRatio')}</div>
                       <div style={{ display: 'flex', alignItems: 'center' }}>
                         <select 
                           ref={aspectRatioValueRef} 
@@ -365,7 +367,7 @@ export function MediaShareEmbed(props) {
                           <option value="16:9">16:9</option>
                           <option value="4:3">4:3</option>
                           <option value="3:2">3:2</option>
-                          <option value="custom">Custom</option>
+                          <option value="custom">{t('embed.custom')}</option>
                         </select>
                       </div>
                     </div>
@@ -379,7 +381,7 @@ export function MediaShareEmbed(props) {
                         <NumericInputWithUnit
                           valueCallback={onEmbedWidthValueChange}
                           unitCallback={onEmbedWidthUnitChange}
-                          label={'Width'}
+                          label={t('embed.width')}
                           defaultValue={parseInt(embedWidthValue, 10)}
                           defaultUnit={embedWidthUnit}
                           minValue={1}
@@ -392,7 +394,7 @@ export function MediaShareEmbed(props) {
                         <NumericInputWithUnit
                           valueCallback={onEmbedHeightValueChange}
                           unitCallback={onEmbedHeightUnitChange}
-                          label={'Height'}
+                          label={t('embed.height')}
                           defaultValue={parseInt(embedHeightValue, 10)}
                           defaultUnit={embedHeightUnit}
                           minValue={1}
@@ -408,7 +410,7 @@ export function MediaShareEmbed(props) {
           </div>
 
           <div ref={onRightBottomRef} className="on-right-bottom">
-            <button onClick={onClickCopyMediaLink}>COPY</button>
+            <button onClick={onClickCopyMediaLink}>{t('share.copy')}</button>
           </div>
         </div>
       </div>

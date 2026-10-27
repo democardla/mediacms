@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { formatInnerLink, translateString } from '../../utils/helpers/';
+import { useTranslation } from 'react-i18next';
+import { formatInnerLink } from '../../utils/helpers/';
 import { usePopup, useUser } from '../../utils/hooks/';
 import { siteConfig } from '../../utils/contexts/';
 import { PageActions, MediaPageActions } from '../../utils/actions/';
@@ -8,7 +9,7 @@ import { CircleIconButton, MaterialIcon, NavigationContentApp, NavigationMenuLis
 import { ReportForm } from '../report-form/ReportForm';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
-function downloadOptions(mediaData, allowDownload) {
+function downloadOptions(mediaData, allowDownload, t) {
   const site = siteConfig;
 
   const encodingsInfo = mediaData.encodings_info;
@@ -39,7 +40,7 @@ function downloadOptions(mediaData, allowDownload) {
   }
 
   options.original_media_url = {
-    text: 'Original file (' + mediaData.size + ')',
+    text: t('more.originalFile', { size: mediaData.size }),
     link: formatInnerLink(mediaData.original_media_url, site.url),
     linkAttr: {
       target: '_blank',
@@ -50,7 +51,7 @@ function downloadOptions(mediaData, allowDownload) {
   return Object.values(options);
 }
 
-function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaReported) {
+function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaReported, t) {
 
   const items = [];
 
@@ -64,7 +65,7 @@ function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaRepo
         items.push({
           itemType: 'link',
           link: downloadLink,
-          text: 'Download',
+          text: t('more.download'),
           icon: 'arrow_downward',
           itemAttr: {
             className: 'visible-only-in-small',
@@ -78,7 +79,7 @@ function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaRepo
     } else {
       items.push({
         itemType: 'open-subpage',
-        text: 'Download',
+        text: t('more.download'),
         icon: 'arrow_downward',
         itemAttr: {
           className: 'visible-only-in-small',
@@ -94,7 +95,7 @@ function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaRepo
   if (mediaIsVideo && userCan.editMedia) {
     items.push({
       itemType: 'open-subpage',
-      text: 'Status info',
+      text: t('more.statusInfo'),
       icon: 'info',
       buttonAttr: {
         className: 'change-page',
@@ -107,7 +108,7 @@ function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaRepo
     if (mediaReported) {
       items.push({
         itemType: 'div',
-        text: 'Reported',
+        text: t('more.reported'),
         icon: 'flag',
         divAttr: {
           className: 'reported-label loggedin-media-reported',
@@ -116,7 +117,7 @@ function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaRepo
     } else {
       items.push({
         itemType: 'open-subpage',
-        text: 'Report',
+        text: t('more.report'),
         icon: 'flag',
         buttonAttr: {
           className: 'change-page' + (mediaReportedTimes ? ' loggedin-media-reported' : ''),
@@ -129,7 +130,7 @@ function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaRepo
   if (userCan.deleteMedia) {
     items.push({
       itemType: 'open-subpage',
-      text: 'Delete',
+      text: t('more.delete'),
       icon: 'delete',
       buttonAttr: {
         className: 'change-page',
@@ -141,7 +142,7 @@ function optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaRepo
   return items;
 }
 
-function getPopupPages(userCan, mediaData, allowDownload, downloadLink, mediaReported, submitReportForm, cancelReportForm, proceedMediaRemoval, cancelMediaRemoval) {
+function getPopupPages(userCan, mediaData, allowDownload, downloadLink, mediaReported, submitReportForm, cancelReportForm, proceedMediaRemoval, cancelMediaRemoval, t) {
 
   const mediaUrl = mediaData.url;
   const mediaType = mediaData.media_type;
@@ -152,7 +153,7 @@ function getPopupPages(userCan, mediaData, allowDownload, downloadLink, mediaRep
 
   const mediaIsVideo = 'video' === mediaType;
 
-  const navItems = optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaReported);
+  const navItems = optionsItems(userCan, mediaData, allowDownload, downloadLink, mediaReported, t);
 
   const pages = {};
 
@@ -185,22 +186,22 @@ function getPopupPages(userCan, mediaData, allowDownload, downloadLink, mediaRep
         <PopupMain>
           <ul className="media-status-info">
             <li>
-              Media type: <span>{mediaType}</span>
+              {t('more.mediaType')}: <span>{mediaType === 'video' ? t('more.video') : mediaType === 'audio' ? t('more.audio') : mediaType}</span>
             </li>
             <li>
-              State: <span>{mediaState}</span>
+              {t('more.state')}: <span>{mediaState === 'public' ? t('more.public') : mediaState === 'private' ? t('more.private') : mediaState === 'unlisted' ? t('more.unlisted') : mediaState}</span>
             </li>
             <li>
-              Review state: <span>{mediaIsReviewed ? 'Is reviewed' : 'Pending review'}</span>
+              {t('more.reviewState')}: <span>{mediaIsReviewed ? t('more.reviewed') : t('more.pendingReview')}</span>
             </li>
             {mediaIsVideo ? (
               <li>
-                Encoding Status: <span>{mediaEncodingStatus}</span>
+                {t('more.encodingStatus')}: <span>{mediaEncodingStatus}</span>
               </li>
             ) : null}
             {mediaReportedTimes ? (
               <li className="reports">
-                Reports: <span>{mediaReportedTimes}</span>
+                {t('more.reports')}: <span>{mediaReportedTimes}</span>
               </li>
             ) : null}
           </ul>
@@ -214,16 +215,16 @@ function getPopupPages(userCan, mediaData, allowDownload, downloadLink, mediaRep
       <div className="media-delete-confirm">
         <PopupMain>
           <div className="popup-message">
-            <span className="popup-message-title">Media removal</span>
-            <span className="popup-message-main">You're willing to remove media permanently?</span>
+            <span className="popup-message-title">{t('more.removeTitle')}</span>
+            <span className="popup-message-main">{t('more.removeConfirm')}</span>
           </div>
           <hr />
           <span className="popup-message-bottom">
             <button className="button-link cancel-comment-removal" onClick={cancelMediaRemoval}>
-              CANCEL
+              {t('more.cancel')}
             </button>
             <button className="button-link proceed-comment-removal" onClick={proceedMediaRemoval}>
-              PROCEED
+              {t('more.proceed')}
             </button>
           </span>
         </PopupMain>
@@ -235,7 +236,7 @@ function getPopupPages(userCan, mediaData, allowDownload, downloadLink, mediaRep
     pages.videoDownloadOptions = (
       <div className="video-download-options">
         <PopupMain>
-          <NavigationMenuList items={downloadOptions(mediaData, allowDownload)} />
+          <NavigationMenuList items={downloadOptions(mediaData, allowDownload, t)} />
         </PopupMain>
       </div>
     );
@@ -247,6 +248,7 @@ function getPopupPages(userCan, mediaData, allowDownload, downloadLink, mediaRep
 const defaultContainerClassname = 'more-options active-options';
 
 export function MediaMoreOptionsIcon(rawProps) {
+  const { t } = useTranslation('media');
   const props = applyDefaultProps(rawProps, MediaMoreOptionsIcon.defaultPropValues);
   const { userCan } = useUser();
 
@@ -335,7 +337,8 @@ export function MediaMoreOptionsIcon(rawProps) {
         submitReportForm,
         cancelReportFormSubmission,
         proceedMediaRemoval,
-        cancelMediaRemoval
+        cancelMediaRemoval,
+        t
       )
     );
   }, [reported]);
@@ -351,7 +354,8 @@ export function MediaMoreOptionsIcon(rawProps) {
         submitReportForm,
         cancelReportFormSubmission,
         proceedMediaRemoval,
-        cancelMediaRemoval
+        cancelMediaRemoval,
+        t
       )
     );
     return () => {
@@ -362,7 +366,7 @@ export function MediaMoreOptionsIcon(rawProps) {
   }, []);
 
   return !visible ? null : (
-    <div className={containerClassname} data-action-tooltip={translateString('More options')}>
+    <div className={containerClassname} data-action-tooltip={t('actions.moreOptions')}>
       <PopupTrigger contentRef={popupContentRef}>
         <span>
           <CircleIconButton type="button">

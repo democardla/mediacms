@@ -1,4 +1,5 @@
 import React from 'react';
+import i18n from '../../i18n';
 import { useMediaItem } from '../../utils/hooks/';
 import { inSelectMediaEmbedMode } from '../../utils/helpers/';
 import { MediaDurationInfo } from '../../utils/classes/';
@@ -140,7 +141,7 @@ export function MediaItemVideo(rawProps) {
               checked={props.isSelected || false}
               onChange={(e) => { props.onCheckboxChange && props.onCheckboxChange(e); }}
               onClick={(e) => e.stopPropagation()}
-              aria-label="Select media"
+              aria-label={i18n.t('profile.selectMedia')}
             />
           </div>
         )}

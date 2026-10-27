@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { shareOptionsConfig } from '../../utils/contexts/';
 import { PageStore, MediaPageStore } from '../../utils/stores/';
 import { PageActions, MediaPageActions } from '../../utils/actions/';
 import ItemsInlineSlider from '../item-list/includes/itemLists/ItemsInlineSlider';
 import { CircleIconButton } from '../_shared/';
 
-function shareOptionsList() {
+function shareOptionsList(t) {
   const socialMedia = shareOptionsConfig;
   const mediaUrl = MediaPageStore.get('media-url');
   const mediaTitle = MediaPageStore.get('media-data').title;
@@ -23,7 +24,7 @@ function shareOptionsList() {
         break;
       case 'email':
         ret[socialMedia[i]] = {
-          title: 'Email',
+          title: t('share.email'),
           shareUrl: 'mailto:?body=' + mediaUrl,
         };
         break;
@@ -35,8 +36,8 @@ function shareOptionsList() {
   return ret;
 }
 
-function ShareOptions() {
-  const shareOptions = shareOptionsList();
+function ShareOptions(t) {
+  const shareOptions = shareOptionsList(t);
 
   const compList = [];
 
@@ -49,7 +50,7 @@ function ShareOptions() {
               <span>
                 <i className="material-icons">code</i>
               </span>
-              <span>Embed</span>
+              <span>{t('share.embed')}</span>
             </button>
           </div>
         );
@@ -125,6 +126,7 @@ function ToHHMMSS (timeInt) {
 }
 
 export function MediaShareOptions(props) {
+  const { t } = useTranslation('media');
   const containerRef = useRef(null);
   const shareOptionsInnerRef = useRef(null);
   const mediaUrl = MediaPageStore.get('media-url');
@@ -133,7 +135,7 @@ export function MediaShareOptions(props) {
   const [sliderButtonsVisible, setSliderButtonsVisible] = useState({ prev: false, next: false });
 
   const [dimensions, setDimensions] = useState(updateDimensions());
-  const [shareOptions] = useState(ShareOptions());
+  const [shareOptions] = useState(ShareOptions(t));
 
   const [timestamp, setTimestamp] = useState(0);
   const [formattedTimestamp, setFormattedTimestamp] = useState(0);
@@ -224,7 +226,7 @@ export function MediaShareOptions(props) {
         className="scrollable-content"
         style={null !== dimensions.maxFormContentHeight ? { maxHeight: dimensions.maxFormContentHeight + 'px' } : null}
       >
-        <div className="share-popup-title">Share media</div>
+        <div className="share-popup-title">{t('share.title')}</div>
         {shareOptions.length ? (
           <div className="share-options">
             {sliderButtonsVisible.prev ? <PreviousSlideButton onClick={prevSlide} /> : null}
@@ -238,7 +240,7 @@ export function MediaShareOptions(props) {
       <div className="copy-field">
         <div>
           <input type="text" readOnly value={shareMediaLink} />
-          <button onClick={onClickCopyMediaLink}>COPY</button>
+          <button onClick={onClickCopyMediaLink}>{t('share.copy')}</button>
         </div>
       </div>
       <div className="start-at">
@@ -250,7 +252,7 @@ export function MediaShareOptions(props) {
               checked={startAtSelected} 
               onChange={updateStartAtCheckbox}
             />
-            Start at {formattedTimestamp}
+            {t('share.startAt', { time: formattedTimestamp })}
           </label>
         </div>
     </div>

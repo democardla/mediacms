@@ -1,8 +1,8 @@
 import React from 'react';
 import { format } from 'timeago.js';
 import { formatViewsNumber, imageExtension } from '../../../../utils/helpers/';
+import i18n from '../../../../i18n';
 // import { VideoPlayerByPageLink } from '../../../video-player/VideoPlayerByPageLink';
-import { translateString } from '../../../../utils/helpers/';
 
 export function ItemDescription(props) {
     return '' === props.description ? null : (
@@ -79,7 +79,7 @@ export function MediaItemEditLink(props) {
     }
 
   return !link ? null : (
-    <a href={link} title={translateString("Edit media")} className="item-edit-icon">
+    <a href={link} title={i18n.t('media:editMedia')} className="item-edit-icon">
       <i className="material-icons">edit</i>
     </a>
   );
@@ -87,7 +87,7 @@ export function MediaItemEditLink(props) {
 
 export function MediaItemViewLink(props) {
   return !props.link ? null : (
-    <a href={props.link} title={translateString("Publish media")} className="item-view-icon">
+    <a href={props.link} title={i18n.t('media:viewMedia')} className="item-view-icon">
       <i className="material-icons">publish</i>
     </a>
   );
@@ -146,11 +146,13 @@ export function MediaItemAuthorLink(props) {
 }
 
 export function MediaItemMetaViews(props) {
+    const count = Number(props.views);
     return (
         <span className="item-views">
-            {formatViewsNumber(props.views) +
-                ' ' +
-                (1 >= props.views ? translateString('view') : translateString('views'))}
+            {i18n.t('media:views', {
+                count,
+                formattedCount: formatViewsNumber(count),
+            })}
         </span>
     );
 }

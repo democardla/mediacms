@@ -5,6 +5,7 @@ import { Segment } from './ClipSegments';
 import Modal from './Modal';
 import { autoSaveVideo } from '../services/videoApi';
 import logger from '../lib/logger';
+import { editorText } from '../../../../shared/editorLocalization';
 import '../styles/TimelineControls.css';
 import '../styles/TwoRowTooltip.css';
 import playIcon from '../assets/play-icon.svg';
@@ -506,8 +507,8 @@ const TimelineControls = ({
             const chapters = clipSegments
                 .filter((segment) => segment.chapterTitle && segment.chapterTitle.trim())
                 .sort((a, b) => a.startTime - b.startTime) // Sort by start time chronologically
-                .map((segment) => ({
-                    chapterTitle: segment.chapterTitle || `Chapter ${segment.id}`,
+                .map((segment, index) => ({
+                    chapterTitle: segment.chapterTitle || editorText('chapter.number', { number: index + 1 }),
                     from: formatDetailedTime(segment.startTime),
                     to: formatDetailedTime(segment.endTime),
                 }));
@@ -519,9 +520,9 @@ const TimelineControls = ({
                 setShowProcessingModal(false);
                 
                 if (chapters.length === 0) {
-                    setSuccessMessage('All chapters cleared successfully!');
+                    setSuccessMessage(editorText('chapter.allCleared'));
                 } else {
-                    setSuccessMessage('Chapters saved successfully!');
+                    setSuccessMessage(editorText('chapter.saved'));
                 }
 
                 // Set redirect URL to media page
@@ -532,7 +533,7 @@ const TimelineControls = ({
 
                 setShowSuccessModal(true);
             } else {
-                setErrorMessage('Chapter save function not available');
+                setErrorMessage(editorText('chapter.saveUnavailable'));
                 setShowErrorModal(true);
                 setShowProcessingModal(false);
             }
@@ -541,7 +542,7 @@ const TimelineControls = ({
             setShowProcessingModal(false);
 
             // Set error message and show error modal
-            const errorMsg = error instanceof Error ? error.message : 'An error occurred while saving chapters';
+            const errorMsg = error instanceof Error ? editorText(error.message) : editorText('trim.errorDuringProcessing');
             logger.debug('Save chapters error (exception):', errorMsg);
             setErrorMessage(errorMsg);
             setShowErrorModal(true);
@@ -1946,12 +1947,12 @@ const TimelineControls = ({
                     onClick={handleSegmentClick(segment.id)}
                 >
                     <div className="clip-segment-info">
-                        <div className="clip-segment-name">Chapter {index + 1}</div>
+                        <div className="clip-segment-name">{editorText('chapter.number', { number: index + 1 })}</div>
                         <div className="clip-segment-time">
                             {formatTime(segment.startTime)} - {formatTime(segment.endTime)}
                         </div>
                         <div className="clip-segment-duration">
-                            Duration: {formatTime(segment.endTime - segment.startTime)}
+                            {editorText('segment.duration', { duration: formatTime(segment.endTime - segment.startTime) })}
                         </div>
                     </div>
 
@@ -1960,7 +1961,7 @@ const TimelineControls = ({
                         <>
                             <div
                                 className="clip-segment-handle left"
-                                title="Resize segment start"
+                                title={editorText('segment.resizeStart')}
                                 onMouseDown={(e) => {
                                     e.stopPropagation();
                                     handleSegmentResize(segment.id, true)(e);
@@ -1972,7 +1973,7 @@ const TimelineControls = ({
                             ></div>
                             <div
                                 className="clip-segment-handle right"
-                                title="Resize segment end"
+                                title={editorText('segment.resizeEnd')}
                                 onMouseDown={(e) => {
                                     e.stopPropagation();
                                     handleSegmentResize(segment.id, false)(e);
@@ -2256,10 +2257,10 @@ const TimelineControls = ({
             {/* Current Timecode with Milliseconds */}
             <div className="timeline-header">
                 <div className="timeline-title">
-                    <span className="timeline-title-text">Timeline</span>
+                    <span className="timeline-title-text">{editorText('timeline.heading')}</span>
                 </div>
                 <div className="duration-time">
-                    Total Chapters:{' '}
+                    {editorText('timeline.totalDuration')}{' '}
                     <span>
                         {formatDetailedTime(
                             clipSegments.reduce((sum, segment) => sum + (segment.endTime - segment.startTime), 0)
@@ -2373,7 +2374,7 @@ const TimelineControls = ({
                                 <div className="tooltip-chapter-editor">
                                     <textarea
                                         className="tooltip-chapter-input"
-                                        placeholder="Add Chapter Text"
+                                        placeholder={editorText('chapter.titlePlaceholder')}
                                         value={editingChapterTitle}
                                         onChange={(e) => handleChapterTitleChange(e.target.value)}
                                         onBlur={performAutoSave}
@@ -2392,7 +2393,7 @@ const TimelineControls = ({
                                 <button
                                     className={`tooltip-time-btn ${isPlayingSegments ? 'disabled' : ''}`}
                                     data-tooltip={
-                                        isPlayingSegments ? 'Disabled during preview' : 'Seek -50ms (click or hold)'
+                                        isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.seekBack')
                                     }
                                     disabled={isPlayingSegments}
                                     {...(!isPlayingSegments ? handleContinuousTimeAdjustment(-0.05) : {})}
@@ -2428,7 +2429,7 @@ const TimelineControls = ({
                                 <button
                                     className={`tooltip-time-btn ${isPlayingSegments ? 'disabled' : ''}`}
                                     data-tooltip={
-                                        isPlayingSegments ? 'Disabled during preview' : 'Seek +50ms (click or hold)'
+                                        isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.seekForward')
                                     }
                                     disabled={isPlayingSegments}
                                     {...(!isPlayingSegments ? handleContinuousTimeAdjustment(0.05) : {})}
@@ -2448,7 +2449,7 @@ const TimelineControls = ({
                             <div className="tooltip-row tooltip-actions">
                                 <button
                                     className={`tooltip-action-btn delete ${isPlayingSegments ? 'disabled' : ''}`}
-                                    data-tooltip={isPlayingSegments ? 'Disabled during preview' : 'Delete segment'}
+                                    data-tooltip={isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.delete')}
                                     disabled={isPlayingSegments}
                                     style={{
                                         userSelect: 'none',
@@ -2489,8 +2490,8 @@ const TimelineControls = ({
                                     className={`tooltip-action-btn scissors ${isPlayingSegments ? 'disabled' : ''}`}
                                     data-tooltip={
                                         isPlayingSegments
-                                            ? 'Disabled during preview'
-                                            : 'Split segment at current position'
+                                            ? editorText('common.disabledDuringPreview')
+                                            : editorText('segment.splitAtPlayhead')
                                     }
                                     style={{
                                         userSelect: 'none',
@@ -2536,7 +2537,7 @@ const TimelineControls = ({
                                         isPlayingSegments ? 'disabled' : ''
                                     }`}
                                     data-tooltip={
-                                        isPlayingSegments ? 'Disabled during preview' : 'Play segment from beginning'
+                                        isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.playFromStart')
                                     }
                                     style={{
                                         userSelect: 'none',
@@ -2599,7 +2600,7 @@ const TimelineControls = ({
                                 >
                                     <img
                                         src={playFromBeginningIcon}
-                                        alt="Play from beginning"
+                                        alt={editorText('video.playFromBeginning')}
                                         style={{
                                             width: '24px',
                                             height: '24px',
@@ -2608,7 +2609,7 @@ const TimelineControls = ({
                                 </button>
                                 {/*         <button
                   className={`tooltip-action-btn ${isPlaying ? 'pause' : 'play'}`}
-                  data-tooltip={isPlaying ? "Pause playback" : "Play from current position"}
+                  data-tooltip={isPlaying ? editorText('common.pause') : editorText('segment.playFromCurrent')}
                   onClick={(e) => {
                     e.stopPropagation();
 
@@ -2647,9 +2648,9 @@ const TimelineControls = ({
                   }}
                 >
                   {isPlaying ? (
-                    <img src={pauseIcon} alt="Pause" style={{width: '24px', height: '24px'}} />
+                    <img src={pauseIcon} alt={editorText('common.pause')} style={{width: '24px', height: '24px'}} />
                   ) : (
-                    <img src={playIcon} alt="Play" style={{width: '24px', height: '24px'}} />
+                    <img src={playIcon} alt={editorText('common.play')} style={{width: '24px', height: '24px'}} />
                   )}
                 </button> */}
 
@@ -2660,10 +2661,10 @@ const TimelineControls = ({
                                     }`}
                                     data-tooltip={
                                         isPlayingSegments
-                                            ? 'Disabled during preview'
+                                            ? editorText('common.disabledDuringPreview')
                                             : isPlaying
-                                              ? 'Pause playback'
-                                              : 'Play from current position'
+                                              ? editorText('common.pause')
+                                              : editorText('segment.playFromCurrent')
                                     }
                                     style={{
                                         userSelect: 'none',
@@ -2692,7 +2693,7 @@ const TimelineControls = ({
                                     {isPlaying ? (
                                         <img
                                             src={pauseIcon}
-                                            alt="Pause"
+                                            alt={editorText('common.pause')}
                                             style={{
                                                 width: '24px',
                                                 height: '24px',
@@ -2701,7 +2702,7 @@ const TimelineControls = ({
                                     ) : (
                                         <img
                                             src={playIcon}
-                                            alt="Play"
+                                            alt={editorText('common.play')}
                                             style={{
                                                 width: '24px',
                                                 height: '24px',
@@ -2722,8 +2723,8 @@ const TimelineControls = ({
                                     }}
                                     data-tooltip={
                                         isPlayingSegments
-                                            ? 'Disabled during preview'
-                                            : 'Set start point at current position'
+                                            ? editorText('common.disabledDuringPreview')
+                                            : editorText('segment.setStart')
                                     }
                                     disabled={isPlayingSegments}
                                     onClick={(e) => {
@@ -2764,7 +2765,7 @@ const TimelineControls = ({
                                 >
                                     <img
                                         src={segmentStartIcon}
-                                        alt="Set start point"
+                                        alt={editorText('video.setStart')}
                                         style={{
                                             width: '24px',
                                             height: '24px',
@@ -2783,8 +2784,8 @@ const TimelineControls = ({
                                     }}
                                     data-tooltip={
                                         isPlayingSegments
-                                            ? 'Disabled during preview'
-                                            : 'Set end point at current position'
+                                            ? editorText('common.disabledDuringPreview')
+                                            : editorText('segment.setEnd')
                                     }
                                     disabled={isPlayingSegments}
                                     onClick={(e) => {
@@ -2825,7 +2826,7 @@ const TimelineControls = ({
                                 >
                                     <img
                                         src={segmentEndIcon}
-                                        alt="Set end point"
+                                        alt={editorText('video.setEnd')}
                                         style={{
                                             width: '24px',
                                             height: '24px',
@@ -2858,7 +2859,7 @@ const TimelineControls = ({
                                 <button
                                     className={`tooltip-time-btn ${isPlayingSegments ? 'disabled' : ''}`}
                                     data-tooltip={
-                                        isPlayingSegments ? 'Disabled during preview' : 'Seek -50ms (click or hold)'
+                                        isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.seekBack')
                                     }
                                     disabled={isPlayingSegments}
                                     {...(!isPlayingSegments ? handleContinuousTimeAdjustment(-0.05) : {})}
@@ -2902,7 +2903,7 @@ const TimelineControls = ({
                                         WebkitTapHighlightColor: 'transparent',
                                     }}
                                     data-tooltip={
-                                        isPlayingSegments ? 'Disabled during preview' : 'Seek +50ms (click or hold)'
+                                        isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.seekForward')
                                     }
                                     disabled={isPlayingSegments}
                                     {...(!isPlayingSegments ? handleContinuousTimeAdjustment(0.05) : {})}
@@ -2928,10 +2929,10 @@ const TimelineControls = ({
                                     }}
                                     data-tooltip={
                                         isPlayingSegments
-                                            ? 'Disabled during preview'
+                                            ? editorText('common.disabledDuringPreview')
                                             : availableSegmentDuration < 0.5
-                                              ? 'Not enough space for new segment'
-                                              : 'Create new segment'
+                                              ? editorText('segment.notEnoughRoom')
+                                              : editorText('segment.create')
                                     }
                                     disabled={availableSegmentDuration < 0.5 || isPlayingSegments}
                                     onClick={async (e) => {
@@ -2997,7 +2998,7 @@ const TimelineControls = ({
                                         <line x1="12" y1="8" x2="12" y2="16"></line>
                                         <line x1="8" y1="12" x2="16" y2="12"></line>
                                     </svg>
-                                    <span className="tooltip-btn-text">New</span>
+                                    <span className="tooltip-btn-text">{editorText('common.new')}</span>
                                 </button>
 
                                 {/* Go to start button - play from beginning of cutaway (until next segment) */}
@@ -3006,7 +3007,7 @@ const TimelineControls = ({
                                         isPlayingSegments ? 'disabled' : ''
                                     }`}
                                     data-tooltip={
-                                        isPlayingSegments ? 'Disabled during preview' : 'Play from beginning of cutaway'
+                                        isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.playCutaway')
                                     }
                                     style={{
                                         userSelect: 'none',
@@ -3115,7 +3116,7 @@ const TimelineControls = ({
                                 >
                                     <img
                                         src={playFromBeginningIcon}
-                                        alt="Play from beginning"
+                                        alt={editorText('video.playFromBeginning')}
                                         style={{
                                             width: '24px',
                                             height: '24px',
@@ -3130,10 +3131,10 @@ const TimelineControls = ({
                                     }`}
                                     data-tooltip={
                                         isPlayingSegments
-                                            ? 'Disabled during preview'
+                                            ? editorText('common.disabledDuringPreview')
                                             : isPlaying
-                                              ? 'Pause playback'
-                                              : 'Play from here until next segment'
+                                              ? editorText('common.pause')
+                                              : editorText('segment.playFromCurrentUntilNext')
                                     }
                                     style={{
                                         userSelect: 'none',
@@ -3162,7 +3163,7 @@ const TimelineControls = ({
                                     {isPlaying ? (
                                         <img
                                             src={pauseIcon}
-                                            alt="Pause"
+                                            alt={editorText('common.pause')}
                                             style={{
                                                 width: '24px',
                                                 height: '24px',
@@ -3171,7 +3172,7 @@ const TimelineControls = ({
                                     ) : (
                                         <img
                                             src={playIcon}
-                                            alt="Play"
+                                            alt={editorText('common.play')}
                                             style={{
                                                 width: '24px',
                                                 height: '24px',
@@ -3192,7 +3193,7 @@ const TimelineControls = ({
                                         WebkitTapHighlightColor: 'transparent',
                                     }}
                                     data-tooltip={
-                                        isPlayingSegments ? 'Disabled during preview' : 'Adjust end of previous segment'
+                                        isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.adjustPreviousEnd')
                                     }
                                     disabled={isPlayingSegments}
                                     onClick={(e) => {
@@ -3384,7 +3385,7 @@ const TimelineControls = ({
                                 >
                                     <img
                                         src={segmentNewEndIcon}
-                                        alt="Set end point"
+                                        alt={editorText('video.setEnd')}
                                         style={{
                                             width: '24px',
                                             height: '24px',
@@ -3398,7 +3399,7 @@ const TimelineControls = ({
                                         isPlayingSegments ? 'disabled' : ''
                                     }`}
                                     data-tooltip={
-                                        isPlayingSegments ? 'Disabled during preview' : 'Adjust start of next segment'
+                                        isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('segment.adjustNextStart')
                                     }
                                     style={{
                                         userSelect: 'none',
@@ -3633,7 +3634,7 @@ const TimelineControls = ({
                                 >
                                     <img
                                         src={segmentNewStartIcon}
-                                        alt="Set start point"
+                                        alt={editorText('video.setStart')}
                                         style={{
                                             width: '24px',
                                             height: '24px',
@@ -3650,12 +3651,12 @@ const TimelineControls = ({
             <div className="timeline-controls">
                 {/* Precise Time Input */}
                 <div className="time-navigation">
-                    <div className="time-nav-label">Go to Time:</div>
+                    <div className="time-nav-label">{editorText('timeline.goToTime')}</div>
                     <input
                         type="text"
                         className="time-input"
                         placeholder="00:00:00.000"
-                        data-tooltip="Enter time in format: hh:mm:ss.ms"
+                        data-tooltip={editorText('timeline.timeInputHelp')}
                         onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                                 const input = e.currentTarget.value;
@@ -3819,7 +3820,7 @@ const TimelineControls = ({
                                             // Show appropriate tooltip
                                             setTimeout(showTooltipAtCurrentTime, 10); // Short delay to ensure time is updated
                                         }}
-                                        data-tooltip="Move back 10ms"
+                                        data-tooltip={editorText('timeline.seekBack10')}
                                     >
                                         -10ms
                                     </button>
@@ -3831,7 +3832,7 @@ const TimelineControls = ({
                                             // Show appropriate tooltip
                                             setTimeout(showTooltipAtCurrentTime, 10);
                                         }}
-                                        data-tooltip="Move back 1ms"
+                                        data-tooltip={editorText('timeline.seekBack1')}
                                     >
                                         -1ms
                                     </button>
@@ -3843,7 +3844,7 @@ const TimelineControls = ({
                                             // Show appropriate tooltip
                                             setTimeout(showTooltipAtCurrentTime, 10);
                                         }}
-                                        data-tooltip="Move forward 1ms"
+                                        data-tooltip={editorText('timeline.seekForward1')}
                                     >
                                         +1ms
                                     </button>
@@ -3855,7 +3856,7 @@ const TimelineControls = ({
                                             // Show appropriate tooltip
                                             setTimeout(showTooltipAtCurrentTime, 10);
                                         }}
-                                        data-tooltip="Move forward 10ms"
+                                        data-tooltip={editorText('timeline.seekForward10')}
                                     >
                                         +10ms
                                     </button>
@@ -3870,10 +3871,10 @@ const TimelineControls = ({
                     <div className="zoom-dropdown-container">
                         <button
                             className="zoom-button"
-                            data-tooltip="Select zoom level"
+                            data-tooltip={editorText('timeline.zoomLevel')}
                             onClick={() => setIsZoomDropdownOpen(!isZoomDropdownOpen)}
                         >
-                            Zoom {zoomLevel}x
+                            {editorText('timeline.zoom', { level: zoomLevel })}
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="16"
@@ -3923,7 +3924,7 @@ const TimelineControls = ({
                                                 <polyline points="20 6 9 17 4 12"></polyline>
                                             </svg>
                                         )}
-                                        Zoom {level}x
+                                        {editorText('timeline.zoom', { level })}
                                     </div>
                                 ))}
                             </div>
@@ -3956,12 +3957,12 @@ const TimelineControls = ({
                                         animation: 'spin 1s linear infinite',
                                     }}
                                 ></span>
-                                Auto saving...
+                                {editorText('common.autoSaving')}
                             </>
                         ) : lastAutoSaveTime ? (
-                            `Auto saved: ${lastAutoSaveTime}`
+                            editorText('common.autoSaved', { time: lastAutoSaveTime })
                         ) : (
-                            'Not saved yet'
+                            editorText('common.notSaved')
                         )}
                     </div>
 
@@ -3970,11 +3971,11 @@ const TimelineControls = ({
                         <button
                             onClick={() => setShowSaveChaptersModal(true)}
                             className="save-chapters-button"
-                            {...(clipSegments.length === 0 && { 'data-tooltip': 'Clear all chapters' })}
+                            {...(clipSegments.length === 0 && { 'data-tooltip': editorText('timeline.clearAllChapters') })}
                         >
                             {clipSegments.length === 0 
-                                ? 'Clear Chapters' 
-                                : 'Save Chapters'}
+                                ? editorText('timeline.clearChapters')
+                                : editorText('timeline.saveChapters')}
                         </button>
                     </div>
 
@@ -3982,39 +3983,39 @@ const TimelineControls = ({
                     <Modal
                         isOpen={showSaveChaptersModal}
                         onClose={() => setShowSaveChaptersModal(false)}
-                        title="Save Chapters"
+                        title={editorText('chapter.confirmSaveTitle')}
                         actions={
                             <>
                                 <button
                                     className="modal-button modal-button-secondary"
                                     onClick={() => setShowSaveChaptersModal(false)}
                                 >
-                                    Cancel
+                                    {editorText('common.cancel')}
                                 </button>
                                 <button
                                     className="modal-button modal-button-primary"
                                     onClick={handleSaveChaptersConfirm}
                                 >
                                     {clipSegments.length === 0 
-                                        ? 'Clear Chapters' 
-                                        : 'Save Chapters'}
+                                        ? editorText('timeline.clearChapters')
+                                        : editorText('timeline.saveChapters')}
                                 </button>
                             </>
                         }
                     >
                         <p className="modal-message">
                             {clipSegments.length === 0 
-                                ? "Are you sure you want to clear all chapters? This will remove all existing chapters from the database."
-                                : `Are you sure you want to save the chapters? This will save ${clipSegments.filter((s) => s.chapterTitle && s.chapterTitle.trim()).length} chapters to the database.`}
+                                ? editorText('chapter.confirmClear')
+                                : editorText('chapter.confirmSave', { count: clipSegments.filter((s) => s.chapterTitle && s.chapterTitle.trim()).length })}
                         </p>
                     </Modal>
 
                     {/* Processing Modal */}
-                    <Modal isOpen={showProcessingModal} onClose={() => {}} title="Processing Video">
+                    <Modal isOpen={showProcessingModal} onClose={() => {}} title={editorText('chapter.processing')}>
                         <div className="modal-spinner">
                             <div className="spinner"></div>
                         </div>
-                        <p className="modal-message text-center">Please wait while your video is being processed...</p>
+                        <p className="modal-message text-center">{editorText('trim.processingWait')}</p>
                     </Modal>
 
                     {/* Success Modal */}
@@ -4023,19 +4024,19 @@ const TimelineControls = ({
                         onClose={() => {
                             setShowSuccessModal(false);
                         }}
-                        title="Video Edited Successfully"
+                        title={editorText('chapter.savedModalTitle')}
                     >
                         <div className="modal-success-content">
                             {/* <p className="modal-message text-center">
-                {successMessage || "Processing completed successfully!"}
+                {successMessage || editorText('chapter.savedModalBody')}
               </p> */}
 
                             <p className="modal-message text-center redirect-message">
-                                <span style={{ fontWeight: 'bold' }}>Your chapters have been saved successfully!</span><br />
+                                <span style={{ fontWeight: 'bold' }}>{editorText('chapter.savedBold')}</span><br />
                                 <a href={redirectUrl} className="media-page-link" style={mediaPageLinkStyles}>
-                                    Click here to navigate to the media page
+                                    {editorText('chapter.navigateMedia')}
                                 </a>
-                                {' '}or close this window to continue editing the chapters.
+                                {' '}{editorText('chapter.continueEditing')}
                             </p>
                         </div>
                     </Modal>
@@ -4044,7 +4045,7 @@ const TimelineControls = ({
                     <Modal
                         isOpen={showErrorModal}
                         onClose={() => setShowErrorModal(false)}
-                        title="Video Processing Error"
+                        title={editorText('chapter.errorTitle')}
                     >
                         <div className="modal-error-content">
                             <div className="modal-error-icon">
@@ -4085,7 +4086,7 @@ const TimelineControls = ({
                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                     <line x1="6" y1="6" x2="18" y2="18"></line>
                                 </svg>
-                                Close
+                                {editorText('common.close')}
                             </button>
                         </div>
                     </Modal>
@@ -4098,7 +4099,7 @@ const TimelineControls = ({
             {isIOSUninitialized && (
                 <div className="mobile-timeline-overlay">
                     <div className="mobile-timeline-message">
-                        <p>Please play the video first to enable timeline controls</p>
+                        <p>{editorText('trim.playFirst')}</p>
                         <div className="mobile-play-icon"></div>
                     </div>
                 </div>

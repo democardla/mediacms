@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import i18n from '../i18n';
 import './BulkActionsDropdown.scss';
-import { translateString } from '../utils/helpers/';
 import { inEmbeddedApp } from '../utils/helpers/embeddedApp';
 
 interface BulkActionsDropdownProps {
@@ -28,40 +28,40 @@ export const BulkActionsDropdown: React.FC<BulkActionsDropdownProps> = ({ select
 
   const BULK_ACTION_GROUPS: BulkActionGroup[] = [
     {
-      label: translateString('Sharing'),
+      label: i18n.t('profile.bulk.sharing'),
       actions: [
-        { value: 'add-remove-coviewers', label: translateString('Share with Co-Viewers'), enabled: true },
-        { value: 'add-remove-coeditors', label: translateString('Share with Co-Editors'), enabled: true },
-        { value: 'add-remove-coowners', label: translateString('Share with Co-Owners'), enabled: true },
-        { value: 'add-remove-category', label: isLmsMode ? translateString('Share with Course Members') : translateString('Add / Remove from Categories'), enabled: true },
+        { value: 'add-remove-coviewers', label: i18n.t('profile.bulk.shareViewers'), enabled: true },
+        { value: 'add-remove-coeditors', label: i18n.t('profile.bulk.shareEditors'), enabled: true },
+        { value: 'add-remove-coowners', label: i18n.t('profile.bulk.shareOwners'), enabled: true },
+        { value: 'add-remove-category', label: i18n.t(isLmsMode ? 'profile.bulk.shareCourse' : 'profile.bulk.categories'), enabled: true },
       ],
     },
     {
-      label: translateString('Organization'),
+      label: i18n.t('profile.bulk.organization'),
       actions: [
-        { value: 'add-remove-playlist', label: translateString('Add to / Remove from Playlist'), enabled: true },
-        { value: 'add-remove-tags', label: translateString('Add / Remove Tags'), enabled: true },
+        { value: 'add-remove-playlist', label: i18n.t('profile.bulk.playlists'), enabled: true },
+        { value: 'add-remove-tags', label: i18n.t('profile.bulk.tags'), enabled: true },
       ],
     },
     {
-      label: translateString('Settings'),
+      label: i18n.t('profile.bulk.settings'),
       actions: [
-        { value: 'enable-comments', label: translateString('Enable Comments'), enabled: true },
-        { value: 'disable-comments', label: translateString('Disable Comments'), enabled: true },
-        { value: 'delete-comments', label: translateString('Delete Comments'), enabled: true },
-        { value: 'enable-download', label: translateString('Enable Download'), enabled: true },
-        { value: 'disable-download', label: translateString('Disable Download'), enabled: true },
+        { value: 'enable-comments', label: i18n.t('profile.bulk.enableComments'), enabled: true },
+        { value: 'disable-comments', label: i18n.t('profile.bulk.disableComments'), enabled: true },
+        { value: 'delete-comments', label: i18n.t('profile.bulk.deleteComments'), enabled: true },
+        { value: 'enable-download', label: i18n.t('profile.bulk.enableDownload'), enabled: true },
+        { value: 'disable-download', label: i18n.t('profile.bulk.disableDownload'), enabled: true },
       ],
     },
     {
-      label: translateString('Management'),
+      label: i18n.t('profile.bulk.management'),
       actions: [
-        { value: 'publish-state', label: translateString('Publish State'), enabled: true },
-        { value: 'change-owner', label: translateString('Change Owner'), enabled: true },
-        { value: 'copy-media', label: translateString('Copy Media'), enabled: true },
-        { value: 'delete-media', label: translateString('Delete Media'), enabled: true },
+        { value: 'publish-state', label: i18n.t('profile.bulk.publishState'), enabled: true },
+        { value: 'change-owner', label: i18n.t('profile.bulk.changeOwner'), enabled: true },
+        { value: 'copy-media', label: i18n.t('profile.bulk.copyMedia'), enabled: true },
+        { value: 'delete-media', label: i18n.t('profile.bulk.deleteMedia'), enabled: true },
         ...(isLmsMode && hasContributorCourses
-          ? [{ value: 'course-cleanup', label: translateString('Course Cleanup'), enabled: true, allowsNoSelection: true }]
+          ? [{ value: 'course-cleanup', label: i18n.t('profile.bulk.courseCleanup'), enabled: true, allowsNoSelection: true }]
           : []),
       ],
     },
@@ -70,8 +70,8 @@ export const BulkActionsDropdown: React.FC<BulkActionsDropdownProps> = ({ select
   const noSelection = selectedCount === 0;
 
   const displayText = noSelection
-    ? translateString('Bulk Actions')
-    : `${translateString('Bulk Actions')} (${selectedCount} ${translateString('selected')})`;
+    ? i18n.t('profile.bulk.actions')
+    : i18n.t('profile.bulk.actionsSelected', { count: selectedCount });
 
   useEffect(() => {
     if (!isOpen) return;

@@ -1,5 +1,6 @@
 import videojs from 'video.js';
 import './AutoplayCountdownOverlay.css';
+import { playerUiText } from '../../localization';
 
 // Get the Component base class from Video.js
 const Component = videojs.getComponent('Component');
@@ -31,17 +32,17 @@ class AutoplayCountdownOverlay extends Component {
         });
 
         // Get next video title or fallback
-        const nextVideoTitle = this.nextVideoData?.title || 'Next Video';
+        const nextVideoTitle = this.nextVideoData?.title || playerUiText('nextVideo');
 
         overlay.innerHTML = `
-            <button class="autoplay-close-button" aria-label="Cancel autoplay" title="Cancel">
+            <button class="autoplay-close-button" aria-label="${playerUiText('cancelAutoplay')}" title="${playerUiText('cancel')}">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
             </button>
             <div class="autoplay-countdown-content">
-                <div class="countdown-label">Up Next</div>
+                <div class="countdown-label">${playerUiText('upNext')}</div>
                 
                 <div class="next-video-title">${nextVideoTitle}</div>
                 ${this.nextVideoData?.author ? `<div class="next-video-author">${this.nextVideoData.author}</div>` : ''}
@@ -59,7 +60,7 @@ class AutoplayCountdownOverlay extends Component {
                 </div>
 
                 <span class="autoplay-cancel-button">
-                    CANCEL
+                    ${playerUiText('cancel').toUpperCase()}
                 </span>
             </div>
         `;
@@ -201,7 +202,7 @@ class AutoplayCountdownOverlay extends Component {
 
         // Re-render the content if the overlay exists
         if (this.el()) {
-            const nextVideoTitle = this.nextVideoData?.title || 'Next Video';
+            const nextVideoTitle = this.nextVideoData?.title || playerUiText('nextVideo');
             const titleElement = this.el().querySelector('.next-video-title');
             const authorElement = this.el().querySelector('.next-video-author');
 

@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import i18n from '../../../i18n';
 import { usePopup } from '../../../utils/hooks/';
 import { PageStore } from '../../../utils/stores/';
 import { PopupMain } from '../../_shared';
@@ -21,7 +22,7 @@ function ManageItemCommentAuthor(props) {
     return props.url;
   }
 
-  return <i className="non-available">N/A</i>;
+  return <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>;
 }
 
 function ManageItemCommentActions(props) {
@@ -99,28 +100,28 @@ function ManageItemCommentActions(props) {
     <div ref={props.containerRef} className="actions">
       {void 0 === props.media_url ? null : (
         <span>
-          <a href={props.media_url}>View media</a>
+          <a href={props.media_url}>{i18n.t('admin.actions.viewMedia')}</a>
         </span>
       )}
       {void 0 === props.media_url || props.hideDeleteAction ? null : <span className="seperator">|</span>}
 
       <PopupTrigger contentRef={popupContentRef}>
-        <button title="Delete comment">Delete</button>
+        <button title={i18n.t('admin.actions.commentRemovalTitle')}>{i18n.t('admin.actions.delete')}</button>
       </PopupTrigger>
 
       <PopupContent contentRef={popupContentRef} showCallback={onPopupShow} hideCallback={onPopupHide}>
         <PopupMain>
           <div className="popup-message">
-            <span className="popup-message-title">Comment removal</span>
-            <span className="popup-message-main">You're willing to remove comment?</span>
+            <span className="popup-message-title">{i18n.t('admin.actions.commentRemovalTitle')}</span>
+            <span className="popup-message-main">{i18n.t('admin.actions.commentRemovalConfirm')}</span>
           </div>
           <hr />
           <span className="popup-message-bottom">
             <button className="button-link cancel-profile-removal" onClick={onCancel}>
-              CANCEL
+              {i18n.t('admin.actions.cancel')}
             </button>
             <button className="button-link proceed-profile-removal" onClick={onProceed}>
-              PROCEED
+              {i18n.t('admin.actions.proceed')}
             </button>
           </span>
         </PopupMain>
@@ -163,7 +164,7 @@ export function ManageCommentsItem(props) {
         <ManageItemCommentAuthor name={props.author_name} url={props.author_url} />
       </div>
       <div className="mi-comment">
-        {void 0 === props.text ? <i className="non-available">N/A</i> : props.text}
+        {void 0 === props.text ? <i className="non-available">{i18n.t('admin.table.notAvailable')}</i> : props.text}
         {void 0 === props.text || (void 0 === props.media_url && props.hideDeleteAction) ? null : (
           <ManageItemCommentActions
             containerRef={actionsContainerRef}

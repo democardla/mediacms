@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { siteConfig } from '../../utils/contexts/';
 import { PageStore, MediaPageStore } from '../../utils/stores/';
 import { PageActions } from '../../utils/actions/';
-import { formatInnerLink, inEmbeddedApp, publishedOnDate } from '../../utils/helpers/';
+import { formatInnerLink, inEmbeddedApp } from '../../utils/helpers/';
 import CommentsList from '../comments/Comments';
-import { replaceString } from '../../utils/helpers/';
-import { translateString } from '../../utils/helpers/';
+import formatLocalizedDate from '../../utils/helpers/formatLocalizedDate';
+import MarkdownDescription from './MarkdownDescription';
 
 function metafield(arr) {
     let i;
@@ -32,6 +33,7 @@ function metafield(arr) {
 }
 
 function MediaAuthorBanner(props) {
+    const { t } = useTranslation('media');
     return (
         <div className="media-author-banner">
             <div>
@@ -49,7 +51,7 @@ function MediaAuthorBanner(props) {
                 </span>
                 {PageStore.get('config-media-item').displayPublishDate && props.published ? (
                     <span className="author-banner-date">
-                        {translateString('Published on')} {replaceString(publishedOnDate(new Date(props.published)))}
+                        {t('publishedOn', { date: formatLocalizedDate(props.published) })}
                     </span>
                 ) : null}
             </div>
@@ -71,6 +73,7 @@ function MediaMetaField(props) {
 }
 
 export default function ViewerInfoContent(props) {
+    const { t } = useTranslation('media');
     const description = props.description.trim();
     const tagsContent =
         !PageStore.get('config-enabled').taxonomies.tags || PageStore.get('config-enabled').taxonomies.tags.enabled
@@ -141,25 +144,6 @@ export default function ViewerInfoContent(props) {
     const authorLink = formatInnerLink(props.author.url, siteConfig.url);
     const authorThumb = formatInnerLink(props.author.thumb, siteConfig.url);
 
-    function setTimestampAnchors(text) {
-        function wrapTimestampWithAnchor(match, string) {
-            let split = match.split(':'),
-                s = 0,
-                m = 1;
-
-            while (split.length > 0) {
-                s += m * parseInt(split.pop(), 10);
-                m *= 60;
-            }
-
-            const wrapped = `<a href="#" data-timestamp="${s}" class="video-timestamp">${match}</a>`;
-            return wrapped;
-        }
-
-        const timeRegex = new RegExp('((\\d)?\\d:)?(\\d)?\\d:\\d\\d', 'g');
-        return text.replace(timeRegex, wrapTimestampWithAnchor);
-    }
-
     return (
         <div className="media-info-content">
             {void 0 === PageStore.get('config-media-item').displayAuthor ||
@@ -177,20 +161,19 @@ export default function ViewerInfoContent(props) {
                 <div className="media-content-banner-inner">
                     {hasSummary ? <div className="media-content-summary">{summary}</div> : null}
                     {(!hasSummary || isContentVisible) && description ? (
-                        <div
-                            className="media-content-description"
-                            dangerouslySetInnerHTML={{ __html: setTimestampAnchors(description) }}
-                        ></div>
+                        <div className="media-content-description">
+                            <MarkdownDescription>{description}</MarkdownDescription>
+                        </div>
                     ) : null}
                     {hasSummary ? (
                         <button className="load-more" onClick={onClickLoadMore}>
-                            {isContentVisible ? 'SHOW LESS' : 'SHOW MORE'}
+                            {isContentVisible ? t('showLess') : t('showMore')}
                         </button>
                     ) : null}
                     {tagsContent.length ? (
                         <MediaMetaField
                             value={tagsContent}
-                            title={1 < tagsContent.length ? translateString('Tags') : translateString('Tag')}
+                            title={1 < tagsContent.length ? t('taxonomy.tags') : t('taxonomy.tag')}
                             id="tags"
                         />
                     ) : null}
@@ -199,12 +182,10 @@ export default function ViewerInfoContent(props) {
                             value={categoriesContent}
                             title={
                                 inEmbeddedApp()
-                                    ? (1 < categoriesContent.length
-                                        ? translateString('Courses')
-                                        : translateString('Course'))
+                                    ? (1 < categoriesContent.length ? t('taxonomy.courses') : t('taxonomy.course'))
                                     : (1 < categoriesContent.length
-                                        ? translateString('Categories')
-                                        : translateString('Category'))
+                                        ? t('taxonomy.categories')
+                                        : t('taxonomy.category'))
                             }
                             id="categories"
                         />

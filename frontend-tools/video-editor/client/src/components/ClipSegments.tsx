@@ -1,5 +1,6 @@
 import { formatTime, formatLongTime } from '@/lib/timeUtils';
 import '../styles/ClipSegments.css';
+import { editorText } from '../../../../shared/editorLocalization';
 
 export interface Segment {
     id: number;
@@ -35,7 +36,7 @@ const ClipSegments = ({ segments }: ClipSegmentsProps) => {
 
     return (
         <div className="clip-segments-container">
-            <h3 className="clip-segments-title">Clip Segments</h3>
+            <h3 className="clip-segments-title">{editorText('segment.heading')}</h3>
 
             {sortedSegments.map((segment, index) => (
                 <div key={segment.id} className={`segment-item ${getSegmentColorClass(index)}`}>
@@ -45,20 +46,20 @@ const ClipSegments = ({ segments }: ClipSegmentsProps) => {
                             style={{ backgroundImage: `url(${segment.thumbnail})` }}
                         ></div>
                         <div className="segment-info">
-                            <div className="segment-title">Segment {index + 1}</div>
+                            <div className="segment-title">{editorText('segment.number', { number: index + 1 })}</div>
                             <div className="segment-time">
                                 {formatTime(segment.startTime)} - {formatTime(segment.endTime)}
                             </div>
                             <div className="segment-duration">
-                                Duration: {formatLongTime(segment.endTime - segment.startTime)}
+                                {editorText('segment.duration', { duration: formatLongTime(segment.endTime - segment.startTime) })}
                             </div>
                         </div>
                     </div>
                     <div className="segment-actions">
                         <button
                             className="delete-button"
-                            aria-label="Delete Segment"
-                            data-tooltip="Delete this segment"
+                            aria-label={editorText('segment.deleteLabel')}
+                            data-tooltip={editorText('segment.deleteTooltip')}
                             onClick={() => handleDeleteSegment(segment.id)}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -74,7 +75,7 @@ const ClipSegments = ({ segments }: ClipSegmentsProps) => {
             ))}
 
             {sortedSegments.length === 0 && (
-                <div className="empty-message">No segments created yet. Use the split button to create segments.</div>
+                <div className="empty-message">{editorText('segment.empty')}</div>
             )}
         </div>
     );

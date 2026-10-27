@@ -260,7 +260,7 @@ Sender email: %s\n
                 reply_to=[from_email],
             )
             email.send(fail_silently=True)
-            success_msg = "Message was sent! Thanks for contacting"
+            success_msg = translate_string(request.LANGUAGE_CODE, "Message was sent! Thanks for contacting")
             context["success_msg"] = success_msg
 
     return render(request, "cms/contact.html", context)
@@ -393,8 +393,12 @@ def edit_media(request):
                             tag = Tag.objects.create(title=tag, user=request.user)
                         if tag not in media.tags.all():
                             media.tags.add(tag)
+            if request.GET.get("ajax") == "1":
+                return JsonResponse({"success": True, "media_url": media.get_absolute_url()})
             messages.add_message(request, messages.INFO, translate_string(request.LANGUAGE_CODE, "Media was edited"))
             return HttpResponseRedirect(media.get_absolute_url())
+        if request.GET.get("ajax") == "1":
+            return JsonResponse({"success": False, "errors": form.errors.get_json_data()}, status=400)
     else:
         form = MediaMetadataForm(request.user, instance=media)
     return render(

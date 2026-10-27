@@ -1,5 +1,6 @@
 import videojs from 'video.js';
 import PlayerConfig from '../../config/playerConfig';
+import { playerUiText } from '../../localization';
 import './AutoplayToggleButton.css';
 
 const Button = videojs.getComponent('Button');
@@ -45,7 +46,7 @@ class AutoplayToggleButton extends Button {
         const button = super.createEl('button', {
             className: 'vjs-autoplay-toggle vjs-control vjs-button',
             type: 'button',
-            'aria-label': this.isAutoplayEnabled ? 'Autoplay is on' : 'Autoplay is off',
+            'aria-label': playerUiText(this.isAutoplayEnabled ? 'autoplayOn' : 'autoplayOff'),
         });
 
         // Create icon placeholder using VideoJS icon system
@@ -61,7 +62,7 @@ class AutoplayToggleButton extends Button {
         const controlTextSpan = videojs.dom.createEl('span', {
             className: 'vjs-control-text',
         });
-        controlTextSpan.textContent = this.isAutoplayEnabled ? 'Autoplay is on' : 'Autoplay is off';
+        controlTextSpan.textContent = playerUiText(this.isAutoplayEnabled ? 'autoplayOn' : 'autoplayOff');
 
         // Append both spans to button
         button.appendChild(this.iconSpan);
@@ -121,10 +122,11 @@ class AutoplayToggleButton extends Button {
             this.updateIconClass();
 
             if (this.el()) {
-                this.el().setAttribute('aria-label', this.isAutoplayEnabled ? 'Autoplay is on' : 'Autoplay is off');
+                const autoplayLabel = playerUiText(this.isAutoplayEnabled ? 'autoplayOn' : 'autoplayOff');
+                this.el().setAttribute('aria-label', autoplayLabel);
                 const controlText = this.el().querySelector('.vjs-control-text');
                 if (controlText)
-                    controlText.textContent = this.isAutoplayEnabled ? 'Autoplay is on' : 'Autoplay is off';
+                    controlText.textContent = autoplayLabel;
             }
 
             // Fade back in

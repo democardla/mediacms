@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
+{% load custom_filters %}
 
-{% block headtitle %}Edit subtitle - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{{ "Edit subtitle"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block headermeta %}{% endblock headermeta %}
 
@@ -19,14 +20,14 @@
 	{% if action == 'delete' %}
 
 	<div class="user-action-form-wrap">
-		<h1>Confirm deletion</h1>
+		<h1>{{ "Confirm deletion"|custom_translate:request.LANGUAGE_CODE }}</h1>
 
 		<div class="user-action-form-inner">
-			are you sure you want to delete the subtitle?
+			{{ "Are you sure you want to delete the subtitle?"|custom_translate:request.LANGUAGE_CODE }}
 
 			<form action="{{subtitle.url}}&action=delete&confirm=true" method="post" class="post-form">
 				{% csrf_token %}
-				<button class="secondaryAction" type="submit">DELETE SUBTITLE</button>
+				<button class="secondaryAction" type="submit">{{ "DELETE SUBTITLE"|custom_translate:request.LANGUAGE_CODE }}</button>
 			</form>
 		</div>
 
@@ -39,13 +40,13 @@
 	<div class="user-action-form-wrap">
 		<h1>{{subtitle.language.title}}</h1>
 		<div class="user-action-form-inner">
-			Media: <a href="{{subtitle.media.get_absolute_url}}">{{subtitle.media.title}}</a>
+			{{ "Media:"|custom_translate:request.LANGUAGE_CODE }} <a href="{{subtitle.media.get_absolute_url}}">{{subtitle.media.title}}</a>
 			<form action="" method="post" class="post-form">
 				{% csrf_token %}
 				{{ form|crispy }}
-				<button class="primaryAction" style="margin-right: 10px" type="submit">SAVE</button>
-				<button class="primaryAction" style="margin-right: 10px" type="button" onclick="window.location.href='{{subtitle.url}}&action=download';">DOWNLOAD</button>
-				<button class="primaryAction" type="button" onclick="window.location.href='{{subtitle.url}}&action=delete';">DELETE</button>
+				<button class="primaryAction" style="margin-right: 10px" type="submit">{{ "SAVE"|custom_translate:request.LANGUAGE_CODE }}</button>
+				<button class="primaryAction" style="margin-right: 10px" type="button" onclick="window.location.href='{{subtitle.url}}&action=download';">{{ "DOWNLOAD"|custom_translate:request.LANGUAGE_CODE }}</button>
+				<button class="primaryAction" type="button" onclick="window.location.href='{{subtitle.url}}&action=delete';">{{ "DELETE"|custom_translate:request.LANGUAGE_CODE }}</button>
 
 			</form>
 		</div>

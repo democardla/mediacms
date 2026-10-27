@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { textsConfig } from '../../utils/contexts/';
 import { MediaPageStore } from '../../utils/stores/';
-import { formatViewsNumber, translateString } from '../../utils/helpers/';
+import { formatViewsNumber } from '../../utils/helpers/';
 import { PageActions, MediaPageActions } from '../../utils/actions/';
 import { CircleIconButton, MaterialIcon } from '../_shared/';
 
 export function MediaLikeIcon() {
+  const { t } = useTranslation('media');
   const [likedMedia, setLikedMedia] = useState(MediaPageStore.get('user-liked-media'));
   const [likesCounter, setLikesCounter] = useState(formatViewsNumber(MediaPageStore.get('media-likes'), false));
 
@@ -48,7 +50,7 @@ export function MediaLikeIcon() {
   }, []);
 
   return (
-    <div className="like" data-action-tooltip={translateString('Like')}>
+    <div className="like" data-action-tooltip={t('actions.like')}>
       <button onClick={toggleLike}>
         <CircleIconButton type="span">
           <MaterialIcon type="thumb_up" />

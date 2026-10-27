@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { textsConfig } from '../../utils/contexts/';
 import { MediaPageStore } from '../../utils/stores/';
-import { formatViewsNumber, translateString } from '../../utils/helpers/';
+import { formatViewsNumber } from '../../utils/helpers/';
 import { PageActions, MediaPageActions } from '../../utils/actions/';
 import { CircleIconButton, MaterialIcon } from '../_shared/';
 
 export function MediaDislikeIcon() {
+  const { t } = useTranslation('media');
   const [dislikedMedia, setDislikedMedia] = useState(MediaPageStore.get('user-disliked-media'));
   const [dislikesCounter, setDislikesCounter] = useState(formatViewsNumber(MediaPageStore.get('media-dislikes'), false));
 
@@ -48,7 +50,7 @@ export function MediaDislikeIcon() {
   }, []);
 
   return (
-    <div className="dislike" data-action-tooltip={translateString('Dislike')}>
+    <div className="dislike" data-action-tooltip={t('actions.dislike')}>
       <button onClick={toggleDislike}>
         <CircleIconButton type="span">
           <MaterialIcon type="thumb_down" />

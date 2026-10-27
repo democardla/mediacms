@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageStore } from '../../utils/stores/';
 import { useUser } from '../../utils/hooks/';
 import { FilterOptions } from '../_shared';
@@ -8,18 +9,19 @@ import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 const filters = {
   role: [
-    { id: 'all', title: 'All' },
-    { id: 'editor', title: 'Editor' },
-    { id: 'manager', title: 'Manager' },
+    { id: 'all', titleKey: 'admin.filters.all' },
+    { id: 'editor', titleKey: 'admin.filters.editor' },
+    { id: 'manager', titleKey: 'admin.filters.manager' },
   ],
   approved: [
-    { id: 'all', title: 'All' },
-    { id: 'true', title: 'Yes' },
-    { id: 'false', title: 'No' },
+    { id: 'all', titleKey: 'admin.filters.all' },
+    { id: 'true', titleKey: 'admin.filters.yes' },
+    { id: 'false', titleKey: 'admin.filters.no' },
   ],
 };
 
 export function ManageUsersFilters(rawProps) {
+  const { t } = useTranslation();
   const props = applyDefaultProps(rawProps, ManageUsersFilters.defaultPropValues);
   const { userCan } = useUser();
   const [isHidden, setIsHidden] = useState(props.hidden);
@@ -70,16 +72,16 @@ export function ManageUsersFilters(rawProps) {
     <div ref={containerRef} className={'mi-filters-row' + (isHidden ? ' hidden' : '')}>
       <div ref={innerContainerRef} className="mi-filters-row-inner">
         <div className="mi-filter">
-          <div className="mi-filter-title">ROLE</div>
+          <div className="mi-filter-title">{t('admin.filters.role')}</div>
           <div className="mi-filter-options">
-            <FilterOptions id={'role'} options={filters.role} selected={role} onSelect={onFilterSelect} />
+            <FilterOptions id={'role'} options={filters.role.map(({ id, titleKey }) => ({ id, title: t(titleKey) }))} selected={role} onSelect={onFilterSelect} />
           </div>
         </div>
         {userCan.usersNeedsToBeApproved ? (
           <div className="mi-filter">
-            <div className="mi-filter-title">APPROVED</div>
+            <div className="mi-filter-title">{t('admin.filters.approved')}</div>
             <div className="mi-filter-options">
-              <FilterOptions id={'approved'} options={filters.approved} selected={approved} onSelect={onFilterSelect} />
+              <FilterOptions id={'approved'} options={filters.approved.map(({ id, titleKey }) => ({ id, title: t(titleKey) }))} selected={approved} onSelect={onFilterSelect} />
             </div>
           </div>
         ) : null}

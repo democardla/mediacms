@@ -1,4 +1,5 @@
 import React from 'react';
+import i18n from '../i18n';
 import { ApiUrlConsumer } from '../utils/contexts/';
 import { PageStore } from '../utils/stores/';
 import { inEmbeddedApp } from '../utils/helpers/';
@@ -38,7 +39,7 @@ export class ProfilePlaylistsPage extends ProfileMediaPageBase {
           <ApiUrlConsumer>
             {(apiUrl) => (
               <MediaListWrapper
-                title={-1 < this.state.playlistsCount ? 'Created playlists' : void 0}
+                title={-1 < this.state.playlistsCount ? i18n.t('profile.createdPlaylists') : void 0}
                 className="profile-playlists-content items-list-ver"
               >
                 <LazyLoadItemListAsync

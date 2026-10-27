@@ -1,5 +1,6 @@
 import React from 'react';
-import { formatViewsNumber, inEmbeddedApp } from '../../utils/helpers/';
+import { inEmbeddedApp } from '../../utils/helpers/';
+import i18n, { activeIntlLocale } from '../../i18n';
 import { PageStore, MediaPageStore } from '../../utils/stores/';
 import { memberConfig, PlaylistsContext } from '../../utils/contexts/';
 import {
@@ -13,7 +14,6 @@ import {
     MediaMoreOptionsIcon,
 } from '../media-actions/';
 import ViewerInfoTitleBanner from './ViewerInfoTitleBanner';
-import { translateString } from '../../utils/helpers/';
 
 export default class ViewerInfoVideoTitleBanner extends ViewerInfoTitleBanner {
     render() {
@@ -27,14 +27,14 @@ export default class ViewerInfoVideoTitleBanner extends ViewerInfoTitleBanner {
 
         switch (mediaState) {
             case 'private':
-                stateTooltip = 'The site admins have to make its access public';
+                stateTooltip = i18n.t('media:mediaState.privateTooltip');
                 break;
             case 'unlisted':
-                stateTooltip = 'The site admins have to make it appear on listings';
+                stateTooltip = i18n.t('media:mediaState.unlistedTooltip');
                 break;
         }
 
-        const sharedTooltip = 'This media is shared with specific users or categories';
+        const sharedTooltip = i18n.t('media:sharedTooltip');
 
         return (
             <div className="media-title-banner">
@@ -50,7 +50,7 @@ export default class ViewerInfoVideoTitleBanner extends ViewerInfoTitleBanner {
                             {isShared ? (
                                 <>
                                     <span className="media-label-state">
-                                        <span>shared</span>
+                                        <span>{i18n.t('media:shared')}</span>
                                     </span>
                                     <span className="helper-icon" data-tooltip={sharedTooltip}>
                                         <i className="material-icons">help_outline</i>
@@ -59,7 +59,7 @@ export default class ViewerInfoVideoTitleBanner extends ViewerInfoTitleBanner {
                             ) : 'public' !== mediaState ? (
                                 <>
                                     <span className="media-label-state">
-                                        <span>{mediaState}</span>
+                                        <span>{mediaState === 'private' ? i18n.t('media:mediaStatePrivate') : mediaState === 'unlisted' ? i18n.t('media:mediaStateUnlisted') : mediaState}</span>
                                     </span>
                                     <span className="helper-icon" data-tooltip={stateTooltip}>
                                         <i className="material-icons">help_outline</i>
@@ -85,8 +85,10 @@ export default class ViewerInfoVideoTitleBanner extends ViewerInfoTitleBanner {
 
                     {displayViews ? (
                         <div className="media-views">
-                            {formatViewsNumber(this.props.views, true)}{' '}
-                            {1 >= this.props.views ? translateString('view') : translateString('views')}
+                            {i18n.t('media:views', {
+                                count: this.props.views,
+                                formattedCount: new Intl.NumberFormat(activeIntlLocale()).format(this.props.views),
+                            })}
                         </div>
                     ) : null}
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import i18n from '../../../i18n';
 import { useManagementTableHeader } from '../../../utils/hooks/';
 import { MaterialIcon } from '../../_shared/material-icon/MaterialIcon';
 import { applyDefaultProps } from '../../../utils/helpers/applyDefaultProps';
@@ -17,7 +18,7 @@ export function ManageUsersItemHeader(rawProps) {
         onClick={sortByColumn}
         className={'mi-name mi-col-sort' + ('name' === sort ? ('asc' === order ? ' asc' : ' desc') : '')}
       >
-        Name
+        {i18n.t('admin.table.name')}
         <div className="mi-col-sort-icons">
           <span>
             <MaterialIcon type="arrow_drop_up" />
@@ -27,13 +28,13 @@ export function ManageUsersItemHeader(rawProps) {
           </span>
         </div>
       </div>
-      <div className="mi-username">Username</div>
+      <div className="mi-username">{i18n.t('admin.table.username')}</div>
       <div
         id="add_date"
         onClick={sortByColumn}
         className={'mi-added mi-col-sort' + ('add_date' === sort ? ('asc' === order ? ' asc' : ' desc') : '')}
       >
-        Date added
+        {i18n.t('admin.table.dateAdded')}
         <div className="mi-col-sort-icons">
           <span>
             <MaterialIcon type="arrow_drop_up" />
@@ -43,11 +44,11 @@ export function ManageUsersItemHeader(rawProps) {
           </span>
         </div>
       </div>
-      {props.has_roles ? <div className="mi-role">Role</div> : null}
-      {props.has_verified ? <div className="mi-verified">Verified</div> : null}
-      {props.has_trusted ? <div className="mi-trusted">Trusted</div> : null}
-      {props.has_approved ? <div className="mi-approved">Approved</div> : null}
-      <div className="mi-featured">Featured</div>
+      {props.has_roles ? <div className="mi-role">{i18n.t('admin.table.role')}</div> : null}
+      {props.has_verified ? <div className="mi-verified">{i18n.t('admin.table.verified')}</div> : null}
+      {props.has_trusted ? <div className="mi-trusted">{i18n.t('admin.table.trusted')}</div> : null}
+      {props.has_approved ? <div className="mi-approved">{i18n.t('admin.table.approved')}</div> : null}
+      <div className="mi-featured">{i18n.t('admin.table.featured')}</div>
     </div>
   );
 }

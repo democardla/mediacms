@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageStore } from '../../utils/stores/';
 import { FilterOptions } from '../_shared';
 
@@ -7,43 +8,51 @@ import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 
 // Get categories from window if available
 const categories = window.CATEGORIES
-  ? [{ id: 'all', title: 'All' }].concat(window.CATEGORIES.map((cat) => ({ id: cat.uid, title: cat.title })))
-  : [{ id: 'all', title: 'All' }];
+  ? [{ id: 'all', titleKey: 'admin.filters.all' }].concat(window.CATEGORIES.map((cat) => ({ id: cat.uid, title: cat.title })))
+  : [{ id: 'all', titleKey: 'admin.filters.all' }];
 
 const filters = {
   state: [
-    { id: 'all', title: 'All' },
-    { id: 'public', title: 'Public' },
-    { id: 'private', title: 'Private' },
-    { id: 'unlisted', title: 'Unlisted' },
+    { id: 'all', titleKey: 'admin.filters.all' },
+    { id: 'public', titleKey: 'admin.filters.public' },
+    { id: 'private', titleKey: 'admin.filters.private' },
+    { id: 'unlisted', titleKey: 'admin.filters.unlisted' },
   ],
   media_type: [
-    { id: 'all', title: 'All' },
-    { id: 'video', title: 'Video' },
-    { id: 'audio', title: 'Audio' },
-    { id: 'image', title: 'Image' },
-    { id: 'pdf', title: 'Pdf' },
+    { id: 'all', titleKey: 'admin.filters.all' },
+    { id: 'video', titleKey: 'admin.filters.video' },
+    { id: 'audio', titleKey: 'admin.filters.audio' },
+    { id: 'image', titleKey: 'admin.filters.image' },
+    { id: 'pdf', titleKey: 'admin.filters.pdf' },
   ],
   encoding_status: [
-    { id: 'all', title: 'All' },
-    { id: 'success', title: 'Success' },
-    { id: 'running', title: 'Running' },
-    { id: 'pending', title: 'Pending' },
-    { id: 'fail', title: 'Fail' },
+    { id: 'all', titleKey: 'admin.filters.all' },
+    { id: 'success', titleKey: 'admin.filters.success' },
+    { id: 'running', titleKey: 'admin.filters.running' },
+    { id: 'pending', titleKey: 'admin.filters.pending' },
+    { id: 'fail', titleKey: 'admin.filters.failed' },
   ],
   reviewed: [
-    { id: 'all', title: 'All' },
-    { id: 'true', title: 'Yes' },
-    { id: 'false', title: 'No' },
+    { id: 'all', titleKey: 'admin.filters.all' },
+    { id: 'true', titleKey: 'admin.filters.yes' },
+    { id: 'false', titleKey: 'admin.filters.no' },
   ],
   featured: [
-    { id: 'all', title: 'All' },
-    { id: 'true', title: 'Yes' },
-    { id: 'false', title: 'No' },
+    { id: 'all', titleKey: 'admin.filters.all' },
+    { id: 'true', titleKey: 'admin.filters.yes' },
+    { id: 'false', titleKey: 'admin.filters.no' },
   ],
 };
 
+function localizedOptions(options, t) {
+  return options.map(({ titleKey, ...option }) => ({
+    ...option,
+    title: titleKey ? t(titleKey) : option.title,
+  }));
+}
+
 export function ManageMediaFilters(rawProps) {
+  const { t } = useTranslation();
   const props = applyDefaultProps(rawProps, ManageMediaFilters.defaultPropValues);
   const [isHidden, setIsHidden] = useState(props.hidden);
 
@@ -121,18 +130,18 @@ export function ManageMediaFilters(rawProps) {
     <div ref={containerRef} className={'mi-filters-row' + (isHidden ? ' hidden' : '')}>
       <div ref={innerContainerRef} className="mi-filters-row-inner">
         <div className="mi-filter">
-          <div className="mi-filter-title">STATE</div>
+          <div className="mi-filter-title">{t('admin.filters.state')}</div>
           <div className="mi-filter-options">
-            <FilterOptions id={'state'} options={filters.state} selected={state} onSelect={onFilterSelect} />
+            <FilterOptions id={'state'} options={localizedOptions(filters.state, t)} selected={state} onSelect={onFilterSelect} />
           </div>
         </div>
 
         <div className="mi-filter">
-          <div className="mi-filter-title">MEDIA TYPE</div>
+          <div className="mi-filter-title">{t('admin.filters.mediaType')}</div>
           <div className="mi-filter-options">
             <FilterOptions
               id={'media_type'}
-              options={filters.media_type}
+              options={localizedOptions(filters.media_type, t)}
               selected={mediaType}
               onSelect={onFilterSelect}
             />
@@ -140,11 +149,11 @@ export function ManageMediaFilters(rawProps) {
         </div>
 
         <div className="mi-filter">
-          <div className="mi-filter-title">ENCODING STATUS</div>
+          <div className="mi-filter-title">{t('admin.filters.encodingStatus')}</div>
           <div className="mi-filter-options">
             <FilterOptions
               id={'encoding_status'}
-              options={filters.encoding_status}
+              options={localizedOptions(filters.encoding_status, t)}
               selected={encodingStatus}
               onSelect={onFilterSelect}
             />
@@ -152,23 +161,23 @@ export function ManageMediaFilters(rawProps) {
         </div>
 
         <div className="mi-filter">
-          <div className="mi-filter-title">REVIEWED</div>
+          <div className="mi-filter-title">{t('admin.filters.reviewed')}</div>
           <div className="mi-filter-options">
-            <FilterOptions id={'reviewed'} options={filters.reviewed} selected={isReviewed} onSelect={onFilterSelect} />
+            <FilterOptions id={'reviewed'} options={localizedOptions(filters.reviewed, t)} selected={isReviewed} onSelect={onFilterSelect} />
           </div>
         </div>
 
         <div className="mi-filter">
-          <div className="mi-filter-title">FEATURED</div>
+          <div className="mi-filter-title">{t('admin.filters.featured')}</div>
           <div className="mi-filter-options">
-            <FilterOptions id={'featured'} options={filters.featured} selected={isFeatured} onSelect={onFilterSelect} />
+            <FilterOptions id={'featured'} options={localizedOptions(filters.featured, t)} selected={isFeatured} onSelect={onFilterSelect} />
           </div>
         </div>
 
         <div className="mi-filter">
-          <div className="mi-filter-title">CATEGORY</div>
+          <div className="mi-filter-title">{t('admin.filters.category')}</div>
           <div className="mi-filter-options">
-            <FilterOptions id={'category'} options={categories} selected={category} onSelect={onFilterSelect} />
+            <FilterOptions id={'category'} options={localizedOptions(categories, t)} selected={category} onSelect={onFilterSelect} />
           </div>
         </div>
       </div>

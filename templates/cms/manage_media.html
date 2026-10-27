@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
+{% load custom_filters %}
 
-{% block headtitle %}Manage media - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{{ "Manage media"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block headermeta %}
 
-<meta property="og:title" content="Manage media - {{PORTAL_NAME}}">
+<meta property="og:title" content="{{ "Manage media"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}">
 <meta property="og:type" content="website">
 <meta property="og:description" content="">
 
@@ -19,6 +20,6 @@ window.CATEGORIES = {{ categories|safe }};
 {% endblock %}
 
 {% block bottomimports %}
-    <script src="{% static "js/manage-media.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "js/manage-media.js" %}?v={{ VERSION }}&locale_bundle=zh-hans-3"></script>
 {% endblock bottomimports %}
 

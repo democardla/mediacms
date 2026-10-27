@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import i18n from '../../../i18n';
 import urlParse from 'url-parse';
 import { deleteRequest, csrfToken, takeRememberedMessage, rememberMessage } from '../../../utils/helpers/';
 import { usePopup } from '../../../utils/hooks/';
@@ -7,7 +8,6 @@ import { PendingItemsList } from '../../item-list/PendingItemsList.jsx';
 import { renderManageItems } from './includes/functions';
 import initManageItemsList from './includes/initManageItemsList';
 import { ManageItemsListHandler } from './includes/ManageItemsListHandler';
-import { translateString } from '../../../utils/helpers/';
 
 import './ManageItemList.scss';
 import { applyDefaultProps } from '../../../utils/helpers/applyDefaultProps';
@@ -48,11 +48,11 @@ function AddNewUser({ onUserAdded, setMessage }) {
           return res.json();
         }
         return res.json().then((data) => {
-          throw new Error(data.detail || 'Failed to create user.');
+          throw new Error(data.detail || i18n.t('admin.actions.userCreateFailed'));
         });
       })
       .then(() => {
-        rememberMessage({ type: 'success', text: 'User created successfully.' });
+        rememberMessage({ type: 'success', text: i18n.t('admin.actions.userCreated') });
         window.location.reload();
       })
       .catch((err) => {
@@ -65,24 +65,24 @@ function AddNewUser({ onUserAdded, setMessage }) {
   return (
     <div className="add-new-user-container">
       <PopupTrigger contentRef={popupRef}>
-        <button className="add-new-user-btn">Add New User</button>
+        <button className="add-new-user-btn">{i18n.t('admin.actions.addUser')}</button>
       </PopupTrigger>
       <PopupContent contentRef={popupRef} hideCallback={clearForm}>
         <PopupMain>
           <form onSubmit={handleSubmit}>
             <div className="popup-message">
-              <span className="popup-message-title">Add New User</span>
+              <span className="popup-message-title">{i18n.t('admin.actions.addUser')}</span>
               <div className="popup-message-main">
-                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
-                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
+                <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder={i18n.t('admin.actions.username')} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={i18n.t('admin.actions.password')} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={i18n.t('admin.actions.email')} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder={i18n.t('admin.actions.name')} required style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginBottom: '10px' }} />
               </div>
             </div>
             <hr />
             <span className="popup-message-bottom">
-              <button type="button" className="button-link cancel-profile-removal" onClick={() => popupRef.current.tryToHide()}>CANCEL</button>
-              <button type="submit" className="button-link proceed-profile-removal">SUBMIT</button>
+              <button type="button" className="button-link cancel-profile-removal" onClick={() => popupRef.current.tryToHide()}>{i18n.t('admin.actions.cancel')}</button>
+              <button type="submit" className="button-link proceed-profile-removal">{i18n.t('admin.actions.submit')}</button>
             </span>
           </form>
         </PopupMain>
@@ -182,7 +182,7 @@ function useManageItemListSync(props) {
 
     return 1 > listHandler.totalPages() || listHandler.loadedAllItems() ? null : (
       <button className="load-more" onClick={onClickLoadMore}>
-        {translateString("SHOW MORE")}
+        {i18n.t('admin.actions.showMore')}
       </button>
     );
   }
@@ -269,29 +269,29 @@ function BulkActions(props) {
   return (
     <div className="manage-items-bulk-action">
       <select value={selectedBulkAction} onChange={onBulkActionSelect}>
-        <option value="">Bulk actions</option>
-        <option value="delete">Delete selected</option>
+        <option value="">{i18n.t('admin.actions.bulkActions')}</option>
+        <option value="delete">{i18n.t('admin.actions.deleteSelected')}</option>
       </select>
 
       {!selectedItemsSize || !selectedBulkAction ? null : (
         <PopupTrigger contentRef={popupContentRef}>
-          <button>Apply</button>
+          <button>{i18n.t('admin.actions.apply')}</button>
         </PopupTrigger>
       )}
 
       <PopupContent contentRef={popupContentRef}>
         <PopupMain>
           <div className="popup-message">
-            <span className="popup-message-title">Bulk removal</span>
-            <span className="popup-message-main">You're willing to remove selected items permanently?</span>
+            <span className="popup-message-title">{i18n.t('admin.actions.bulkRemovalTitle')}</span>
+            <span className="popup-message-main">{i18n.t('admin.actions.bulkRemovalConfirm')}</span>
           </div>
           <hr />
           <span className="popup-message-bottom">
             <button className="button-link cancel-profile-removal" onClick={onClickCancel}>
-              CANCEL
+              {i18n.t('admin.actions.cancel')}
             </button>
             <button className="button-link proceed-profile-removal" onClick={onClickProceed}>
-              PROCEED
+              {i18n.t('admin.actions.proceed')}
             </button>
           </span>
         </PopupMain>

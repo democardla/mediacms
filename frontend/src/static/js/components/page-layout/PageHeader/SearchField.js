@@ -5,6 +5,7 @@ import { PageStore, SearchFieldStore } from '../../../utils/stores/';
 import { SearchFieldActions } from '../../../utils/actions/';
 import { MaterialIcon, PopupMain } from '../../_shared';
 import { translateString } from '../../../utils/helpers/';
+import i18n from '../../../i18n';
 
 import './SearchField.scss';
 
@@ -122,9 +123,27 @@ function pageSearchScopes(canSearchAuthors) {
   }
   if (linksConfig.manage.media && path === trimmedPath(linksConfig.manage.media)) {
     return [
-      { id: 'media', title: 'Media', action: linksConfig.manage.media, name: 'q', placeholder: 'Search media' },
-      { id: 'members', title: 'Members', action: linksConfig.manage.users, name: 'q', placeholder: 'Search members' },
-      { id: 'owner', title: 'Owner', action: linksConfig.manage.media, name: 'owner', placeholder: 'Search owners' },
+      {
+        id: 'media',
+        title: i18n.t('admin.search.media'),
+        action: linksConfig.manage.media,
+        name: 'q',
+        placeholder: i18n.t('admin.search.searchMedia'),
+      },
+      {
+        id: 'members',
+        title: i18n.t('admin.search.members'),
+        action: linksConfig.manage.users,
+        name: 'q',
+        placeholder: i18n.t('admin.search.searchMembers'),
+      },
+      {
+        id: 'owner',
+        title: i18n.t('admin.search.owner'),
+        action: linksConfig.manage.media,
+        name: 'owner',
+        placeholder: i18n.t('admin.search.searchOwners'),
+      },
     ];
   }
   return [];
@@ -143,12 +162,12 @@ function defaultScope(scopes) {
 function SearchScopeFilter(props) {
   return (
     <div className={'search-field-filters' + (props.scopes[0] === props.scope ? '' : ' active')}>
-      <button type="button" className="search-field-filters-button" aria-label={translateString('Search filters')} aria-haspopup="true">
+      <button type="button" className="search-field-filters-button" aria-label={i18n.t('admin.search.searchFilters')} aria-haspopup="true">
         <MaterialIcon type="filter_list" />
       </button>
 
       <div className="search-field-filters-popup">
-        <div className="search-field-filters-options" role="radiogroup" aria-label={translateString('Search in')}>
+        <div className="search-field-filters-options" role="radiogroup" aria-label={i18n.t('admin.search.searchIn')}>
           {props.scopes.map((option) => (
             <label key={option.id}>
               <input type="radio" checked={option === props.scope} onChange={() => props.onScopeChange(option)} />
@@ -374,7 +393,7 @@ export function SearchField(props) {
                 ref={searchInputRef}
                 type="text"
                 placeholder={translateString(scope ? scope.placeholder : 'Search')}
-                aria-label="Search"
+                aria-label={i18n.t('admin.search.search')}
                 name={scope ? scope.name : 'q'}
                 value={queryVal}
                 onChange={onQueryChange}
@@ -390,7 +409,7 @@ export function SearchField(props) {
                 </PopupMain>
               </PopupContent>
             </div>
-            <button type="submit" aria-label="Search">
+            <button type="submit" aria-label={i18n.t('admin.search.search')}>
               <MaterialIcon type="search" />
             </button>
           </div>

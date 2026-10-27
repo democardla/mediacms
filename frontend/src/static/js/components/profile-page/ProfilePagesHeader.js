@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import i18n from '../../i18n';
 import { usePopup } from '../../utils/hooks/';
 import { linksConfig, memberConfig, siteConfig } from '../../utils/contexts/';
 import { PageStore, ProfilePageStore } from '../../utils/stores/';
@@ -215,8 +216,8 @@ class ProfileSearchBar extends React.PureComponent {
                         ref={this.searchInput}
                         type="text"
                         name="aq"
-                        placeholder="Search"
-                        aria-label="Search"
+                        placeholder={i18n.t('profile.searchMedia')}
+                        aria-label={i18n.t('profile.searchMedia')}
                         value={this.state.queryVal}
                         onChange={this.onChange}
                         onFocus={this.onInputFocus}
@@ -231,9 +232,15 @@ class ProfileSearchBar extends React.PureComponent {
 ProfileSearchBar.defaultProps = {};
 
 function InlineTab(props) {
+    function onClick(event) {
+        if (!props.onTabChange || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        props.onTabChange(props.id, props.link);
+    }
+
     return (
         <li className={props.isActive ? 'active' : null}>
-            <a href={props.link} title={props.label}>
+            <a href={props.link} title={props.label} onClick={onClick} aria-current={props.isActive ? 'page' : undefined}>
                 {props.label}
             </a>
         </li>
@@ -387,34 +394,38 @@ class NavMenuInlineTabs extends React.PureComponent {
                     {this.state.displayPrev ? this.previousBtn : null}
 
                     <ul className="items-list-wrap" ref={this.itemsListWrap}>
+                        <InlineTab
+                            id="media"
+                            isActive={'media' === this.props.type}
+                            label={i18n.t('profile.nav.home')}
+                            link={mediaLink}
+                            onTabChange={this.props.onTabChange}
+                        />
                         {!isSelectMediaMode && !inEmbeddedApp() ? (
                             <InlineTab
                                 id="about"
                                 isActive={'about' === this.props.type}
-                                label={translateString('About')}
+                                label={i18n.t('profile.nav.about')}
                                 link={linksConfig.profile.about}
+                                onTabChange={this.props.onTabChange}
                             />
                         ) : null}
-                        <InlineTab
-                            id="media"
-                            isActive={'media' === this.props.type}
-                            label={translateString(this.userIsAuthor ? 'Media I own' : 'Media')}
-                            link={mediaLink}
-                        />
                         {this.userIsAuthor ? (
                             <InlineTab
                                 id="shared_by_me"
                                 isActive={'shared_by_me' === this.props.type}
-                                label={translateString('Shared by me')}
+                                label={i18n.t('profile.nav.sharedByMe')}
                                 link={sharedByMeLink}
+                                onTabChange={this.props.onTabChange}
                             />
                         ) : null}
                         {this.userIsAuthor ? (
                             <InlineTab
                                 id="shared_with_me"
                                 isActive={'shared_with_me' === this.props.type}
-                                label={translateString('Shared with me')}
+                                label={i18n.t('profile.nav.sharedWithMe')}
                                 link={sharedWithMeLink}
+                                onTabChange={this.props.onTabChange}
                             />
                         ) : null}
 
@@ -422,8 +433,9 @@ class NavMenuInlineTabs extends React.PureComponent {
                             <InlineTab
                                 id="playlists"
                                 isActive={'playlists' === this.props.type}
-                                label={translateString('Playlists')}
+                                label={i18n.t('profile.nav.playlists')}
                                 link={linksConfig.profile.playlists}
+                                onTabChange={this.props.onTabChange}
                             />
                         ) : null}
                         {PageStore.get('config-options').pages.profile.includeHistory && this.userIsAuthor ? (
@@ -496,7 +508,7 @@ class NavMenuInlineTabs extends React.PureComponent {
                                         position: 'relative',
                                     }}
                                     onClick={this.props.onToggleSharingClick}
-                                    title={translateString('Shared with')}
+                                    title={i18n.t('profile.sharedWithFilter')}
                                 >
                                     <CircleIconButton buttonShadow={false}>
                                         <i className="material-icons">people</i>
@@ -600,8 +612,9 @@ function AddBannerButton(props) {
         link = '/edit-channel.html';
     }
     return (
-        <a href={link} className="edit-channel-icon" title="Add banner">
+        <a href={link} className="edit-channel-icon" title={i18n.t('profile.addBanner')}>
             <i className="material-icons">add_photo_alternate</i>
+            {props.showLabel ? <span>{i18n.t('profile.addBanner')}</span> : null}
         </a>
     );
 }
@@ -613,8 +626,9 @@ function EditBannerButton(props) {
         link = '/edit-channel.html';
     }
     return (
-        <a href={link} className="edit-channel-icon" title="Edit banner">
+        <a href={link} className="edit-channel-icon" title={i18n.t('profile.editBanner')}>
             <i className="material-icons">edit</i>
+            {props.showLabel ? <span>{i18n.t('profile.editBanner')}</span> : null}
         </a>
     );
 }
@@ -627,8 +641,8 @@ function EditProfileButton(props) {
     }
 
     return (
-        <a href={link} className="edit-profile-icon" title="Edit profile">
-            <i className="material-icons">edit</i>
+        <a href={link} className="edit-profile-icon" title={i18n.t('profile.editProfile')}>
+            {props.showLabel ? i18n.t('profile.editProfile') : <i className="material-icons">edit</i>}
         </a>
     );
 }
@@ -663,7 +677,7 @@ export default function ProfilePagesHeader(rawProps) {
     function onProfileDelete(username) {
         // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
         setTimeout(function () {
-            PageActions.addNotification('Profile removed. Redirecting...', 'profileDelete');
+            PageActions.addNotification(i18n.t('profile.removeProfileSuccess'), 'profileDelete');
             setTimeout(function () {
                 window.location.href = siteConfig.url;
             }, 2000);
@@ -677,7 +691,7 @@ export default function ProfilePagesHeader(rawProps) {
     function onProfileDeleteFail(username) {
         // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
         setTimeout(function () {
-            PageActions.addNotification('Profile removal failed', 'profileDeleteFail');
+            PageActions.addNotification(i18n.t('profile.removeProfileFailed'), 'profileDeleteFail');
         }, 100);
 
         if (void 0 !== username) {
@@ -702,7 +716,7 @@ export default function ProfilePagesHeader(rawProps) {
     return (
         <div
             ref={profilePageHeaderRef}
-            className={'profile-page-header'}
+            className={'profile-page-header' + (!props.hideChannelBanner && props.author.banner_thumbnail_url ? ' has-banner' : '')}
             {...(isSelectMediaMode() ? { 'data-action': 'select_media' } : {})}
         >
             {!props.hideChannelBanner && (
@@ -724,7 +738,7 @@ export default function ProfilePagesHeader(rawProps) {
                     {userCanDeleteProfile && !userIsAuthor ? (
                         <span className="delete-profile-wrap">
                             <PopupTrigger contentRef={popupContentRef}>
-                                <button className="delete-profile" title="Remove profile">
+                                <button className="delete-profile" title={i18n.t('profile.removeProfile')}>
                                     <i className="material-icons">delete</i>
                                 </button>
                             </PopupTrigger>
@@ -732,9 +746,9 @@ export default function ProfilePagesHeader(rawProps) {
                             <PopupContent contentRef={popupContentRef}>
                                 <PopupMain>
                                     <div className="popup-message">
-                                        <span className="popup-message-title">Profile removal</span>
+                                        <span className="popup-message-title">{i18n.t('profile.removeProfile')}</span>
                                         <span className="popup-message-main">
-                                            You're willing to remove profile permanently?
+                                            {i18n.t('profile.removeProfileConfirm')}
                                         </span>
                                     </div>
                                     <hr />
@@ -743,13 +757,13 @@ export default function ProfilePagesHeader(rawProps) {
                                             className="button-link cancel-profile-removal"
                                             onClick={cancelProfileRemoval}
                                         >
-                                            CANCEL
+                                            {i18n.t('profile.cancel')}
                                         </button>
                                         <button
                                             className="button-link proceed-profile-removal"
                                             onClick={proceedMediaRemoval}
                                         >
-                                            PROCEED
+                                            {i18n.t('profile.proceed')}
                                         </button>
                                     </span>
                                 </PopupMain>
@@ -759,9 +773,9 @@ export default function ProfilePagesHeader(rawProps) {
 
                     {userCanEditProfile && userIsAuthor ? (
                         props.author.banner_thumbnail_url ? (
-                            <EditBannerButton link={ProfilePageStore.get('author-data').default_channel_edit_url} />
+                            <EditBannerButton link={ProfilePageStore.get('author-data').default_channel_edit_url} showLabel={true} />
                         ) : (
-                            <AddBannerButton link={ProfilePageStore.get('author-data').default_channel_edit_url} />
+                            <AddBannerButton link={ProfilePageStore.get('author-data').default_channel_edit_url} showLabel={true} />
                         )
                     ) : null}
                 </span>
@@ -772,18 +786,25 @@ export default function ProfilePagesHeader(rawProps) {
                     <div className="profile-info">
                         <div className="profile-info-inner">
                             <div>
-                                {props.author.thumbnail_url ? <img src={props.author.thumbnail_url} alt="" /> : null}
+                                {props.author.thumbnail_url ? <img src={props.author.thumbnail_url} alt={props.author.name || props.author.username} /> : null}
                             </div>
                             <div>
                                 {props.author.name ? (
                                     <div className="profile-name-edit-wrapper">
                                         <h1>{props.author.name}</h1>
                                         {userCanEditProfile && !userIsAuthor ? (
-                                            <EditProfileButton link={ProfilePageStore.get('author-data').edit_url} />
+                                            <EditProfileButton link={ProfilePageStore.get('author-data').edit_url} showLabel={true} />
                                         ) : null}
                                     </div>
                                 ) : null}
+                                <span className="profile-handle">@{props.author.username}</span>
+                                {props.author.description ? <span className="profile-signature">{props.author.description}</span> : null}
                             </div>
+                            {userIsAuthor && userCanEditProfile ? (
+                                <div className="profile-header-actions">
+                                    <a href={props.author.edit_url}>{i18n.t('profile.editProfile')}</a>
+                                </div>
+                            ) : null}
                         </div>
                     </div>
                 ) : null}
@@ -791,6 +812,7 @@ export default function ProfilePagesHeader(rawProps) {
                 <NavMenuInlineTabs
                     ref={profileNavRef}
                     type={props.type}
+                    onTabChange={props.onTabChange}
                     onQueryChange={props.onQueryChange}
                     onToggleFiltersClick={props.onToggleFiltersClick}
                     onToggleSharingClick={userIsAuthor ? props.onToggleSharingClick : undefined}

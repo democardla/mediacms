@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import '../styles/Modal.css';
+import { editorText } from '../../../../shared/editorLocalization';
 
 interface ModalProps {
     isOpen: boolean;
@@ -45,7 +46,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, actions
             <div className="modal-container" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
                     <h2 className="modal-title">{title}</h2>
-                    <button className="modal-close-button" onClick={onClose} aria-label="Close modal" style={{ minWidth: '24px', minHeight: '24px' }}>
+                    <button className="modal-close-button" onClick={onClose} aria-label={editorText('common.closeModal')} style={{ minWidth: '24px', minHeight: '24px' }}>
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="24"

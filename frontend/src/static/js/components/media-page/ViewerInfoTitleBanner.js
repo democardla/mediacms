@@ -1,6 +1,7 @@
 import React from 'react';
 import { PageStore, MediaPageStore } from '../../utils/stores/';
-import { formatInnerLink, formatViewsNumber } from '../../utils/helpers/';
+import { formatInnerLink } from '../../utils/helpers/';
+import i18n, { activeIntlLocale } from '../../i18n';
 import { memberConfig, PlaylistsContext, siteConfig } from '../../utils/contexts/';
 import { MediaLikeIcon, MediaDislikeIcon, MediaEditButton, OtherMediaDownloadLink, VideoMediaDownloadLink, MediaSaveButton, MediaShareButton, MediaMoreOptionsIcon } from '../media-actions/';
 
@@ -171,14 +172,14 @@ export default class ViewerInfoTitleBanner extends React.PureComponent {
 
     switch (mediaState) {
       case 'private':
-        stateTooltip = 'The site admins have to make its access public';
+        stateTooltip = i18n.t('media:mediaState.privateTooltip');
         break;
       case 'unlisted':
-        stateTooltip = 'The site admins have to make it appear on listings';
+        stateTooltip = i18n.t('media:mediaState.unlistedTooltip');
         break;
     }
 
-    const sharedTooltip = 'This media is shared with specific users or categories';
+    const sharedTooltip = i18n.t('media:sharedTooltip');
 
     return (
       <div className="media-title-banner">
@@ -194,7 +195,7 @@ export default class ViewerInfoTitleBanner extends React.PureComponent {
               {isShared ? (
                 <>
                   <span className="media-label-state">
-                    <span>shared</span>
+                    <span>{i18n.t('media:shared')}</span>
                   </span>
                   <span className="helper-icon" data-tooltip={sharedTooltip}>
                     <i className="material-icons">help_outline</i>
@@ -203,7 +204,7 @@ export default class ViewerInfoTitleBanner extends React.PureComponent {
               ) : 'public' !== mediaState ? (
                 <>
                   <span className="media-label-state">
-                    <span>{mediaState}</span>
+                    <span>{mediaState === 'private' ? i18n.t('media:mediaStatePrivate') : mediaState === 'unlisted' ? i18n.t('media:mediaStateUnlisted') : mediaState}</span>
                   </span>
                   <span className="helper-icon" data-tooltip={stateTooltip}>
                     <i className="material-icons">help_outline</i>
@@ -229,7 +230,10 @@ export default class ViewerInfoTitleBanner extends React.PureComponent {
 
           {displayViews ? (
             <div className="media-views">
-              {formatViewsNumber(this.props.views, true)} {1 >= this.props.views ? 'view' : 'views'}
+              {i18n.t('media:views', {
+                count: this.props.views,
+                formattedCount: new Intl.NumberFormat(activeIntlLocale()).format(this.props.views),
+              })}
             </div>
           ) : null}
 

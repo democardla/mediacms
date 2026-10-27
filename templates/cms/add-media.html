@@ -3,7 +3,7 @@
 {% load static %}
 {% load custom_filters %}
 
-{% block headtitle %}Add new media - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{{ "Upload media"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block externallinks %}
 {% if LOAD_FROM_CDN %}
@@ -19,10 +19,57 @@
 <link href="{% static "css/add-media.css" %}" rel="preload" as="style">
 <link href="{% static "css/add-media.css" %}" rel="stylesheet">
 <style>
+    .media-upload-flow {
+        width: calc(100% - 32px);
+        max-width: 1120px;
+        margin: 0 auto 48px;
+    }
+    .media-upload-flow h1 { font-size: 22px; font-weight: 500; }
+    .media-upload-flow .media-uploader-top-wrap { padding-bottom: 8px; }
+    .media-source-editor {
+        border-top: 1px solid var(--border-color, #ddd);
+        margin-top: 24px;
+        padding-top: 24px;
+    }
+    .media-source-editor h2 { font-size: 18px; font-weight: 500; margin: 0 0 20px; }
+    .media-source-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 24px;
+    }
+    .media-source-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+    .media-source-field-wide { grid-column: 1 / -1; }
+    .media-source-field label { font-size: 14px; font-weight: 500; }
+    .media-source-field input:not([type="checkbox"]),
+    .media-source-field textarea {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid #c8c8c8;
+        border-radius: 2px;
+        background: var(--sidebar-bg-color, #fff);
+        color: inherit;
+        padding: 9px 11px;
+        font: inherit;
+    }
+    .media-source-field textarea { min-height: 112px; resize: vertical; }
+    .media-source-field small { color: #777; font-size: 12px; }
+    .media-source-checkbox { display: flex; align-items: center; gap: 9px; }
+    .media-source-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+    .media-source-actions button {
+        min-height: 40px; border: 1px solid #0a9fd8; border-radius: 2px; padding: 0 18px;
+        background: #0a9fd8; color: #fff; font: inherit; cursor: pointer;
+    }
+    .media-source-actions button.secondary { background: transparent; color: inherit; border-color: #aaa; }
+    .media-source-actions button:disabled { opacity: .5; cursor: not-allowed; }
+    #upload-flow-status { flex-basis: 100%; margin: 0; color: #555; }
+    @media (max-width: 640px) { .media-source-grid { grid-template-columns: 1fr; } }
+
     /* LMS Embed Mode specific styling */
     body.lms-embed-mode {
         overflow-y: hidden;
     }
+    .is-lms-embed .media-source-editor { display: none; }
     .media-uploader-wrap.is-lms-embed {
         max-width: 680px;
         padding: 10px 15px;
@@ -73,6 +120,7 @@
 
     {% if can_add %}
 
+        <div class="media-upload-flow" id="media-upload-flow">
         <div class="media-uploader-wrap" id="media-uploader-wrap">
             <div class="media-uploader-top-wrap">
                 <div class="media-uploader-top-left-wrap">
@@ -85,7 +133,7 @@
                 <div class="media-uploader-bottom-wrap qq-uploader-selector">
                     <div class="media-uploader-bottom-left-wrap">
                         <div class="media-drag-drop-wrap">
-                            <div class="media-drag-drop-inner" qq-drop-area-text="Drop files here">
+                            <div class="media-drag-drop-inner" qq-drop-area-text="{{ 'Drop files here'|custom_translate:LANGUAGE_CODE }}">
                                 <div class="media-drag-drop-content">
                                     <div class="media-drag-drop-content-inner">
                                         <span><i class="material-icons">cloud_upload</i></span>
@@ -110,7 +158,7 @@
                                     <div class="media-upload-item-thumb">
                                         <img class="qq-thumbnail-selector" qq-max-size="120" qq-server-scale alt="" />
                                         <span class="media-upload-item-spinner qq-upload-spinner-selector"><i class="material-icons">autorenew</i></span>
-                                        <button type="button" class="qq-upload-retry-selector retry-media-upload-item" aria-label="Retry"><i class="material-icons">refresh</i> Retry</button>
+                                            <button type="button" class="qq-upload-retry-selector retry-media-upload-item" aria-label="{{ 'Retry'|custom_translate:LANGUAGE_CODE }}"><i class="material-icons">refresh</i> {{ 'Retry'|custom_translate:LANGUAGE_CODE }}</button>
                                     </div>
                                     <div class="media-upload-item-details">
                                         <div class="media-upload-item-name">
@@ -125,14 +173,14 @@
                                             <span role="status" class="media-upload-item-status-text qq-upload-status-text-selector"></span>
                                         </div>
                                         <div class="media-upload-item-top-actions">
-                                            <span class="filename-edit qq-edit-filename-icon-selector" aria-label="Edit filename">Edit filename <i class="material-icons">create</i></span>
-                                            <button type="button" class="delete-media-upload-item qq-upload-delete-selector" aria-label="Delete">Delete <i class="material-icons">delete</i></button>
-                                            <button type="button" class="cancel-media-upload-item qq-upload-cancel-selector" aria-label="Cancel">Cancel <i class="material-icons">cancel</i></button>
+                                            <span class="filename-edit qq-edit-filename-icon-selector" aria-label="{{ 'Edit filename'|custom_translate:LANGUAGE_CODE }}">{{ 'Edit filename'|custom_translate:LANGUAGE_CODE }} <i class="material-icons">create</i></span>
+                                            <button type="button" class="delete-media-upload-item qq-upload-delete-selector" aria-label="{{ 'Delete'|custom_translate:LANGUAGE_CODE }}">{{ 'Delete'|custom_translate:LANGUAGE_CODE }} <i class="material-icons">delete</i></button>
+                                            <button type="button" class="cancel-media-upload-item qq-upload-cancel-selector" aria-label="{{ 'Cancel'|custom_translate:LANGUAGE_CODE }}">{{ 'Cancel'|custom_translate:LANGUAGE_CODE }} <i class="material-icons">cancel</i></button>
                                             <a href="#" class="view-uploaded-media-link qq-hide">{{ "View media" | custom_translate:LANGUAGE_CODE}}<i class="material-icons">open_in_new</i></a>
                                         </div>
                                         <div class="media-upload-item-bottom-actions">
-                                            <button type="button" class="continue-media-upload-item qq-upload-continue-selector" aria-label="Continue"><i class="material-icons">play_circle_outline</i> Continue</button>
-                                            <button type="button" class="pause-media-upload-item qq-upload-pause-selector" aria-label="Pause"><i class="material-icons">pause_circle_outline</i> Pause</button>
+                                            <button type="button" class="continue-media-upload-item qq-upload-continue-selector" aria-label="{{ 'Continue'|custom_translate:LANGUAGE_CODE }}"><i class="material-icons">play_circle_outline</i> {{ 'Continue'|custom_translate:LANGUAGE_CODE }}</button>
+                                            <button type="button" class="pause-media-upload-item qq-upload-pause-selector" aria-label="{{ 'Pause'|custom_translate:LANGUAGE_CODE }}"><i class="material-icons">pause_circle_outline</i> {{ 'Pause'|custom_translate:LANGUAGE_CODE }}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -141,28 +189,73 @@
                         <dialog class="qq-alert-dialog-selector">
                             <div class="qq-dialog-message-selector"></div>
                             <div class="qq-dialog-buttons">
-                                <button type="button" class="qq-cancel-button-selector">CLOSE</button>
+                                <button type="button" class="qq-cancel-button-selector">{{ 'Close'|custom_translate:LANGUAGE_CODE }}</button>
                             </div>
                         </dialog>
                         <dialog class="qq-confirm-dialog-selector">
                             <div class="qq-dialog-message-selector"></div>
                             <div class="qq-dialog-buttons">
-                                <button type="button" class="qq-cancel-button-selector">NO</button>
-                                <button type="button" class="qq-ok-button-selector">YES</button>
+                                <button type="button" class="qq-cancel-button-selector">{{ 'No'|custom_translate:LANGUAGE_CODE }}</button>
+                                <button type="button" class="qq-ok-button-selector">{{ 'Yes'|custom_translate:LANGUAGE_CODE }}</button>
                             </div>
                         </dialog>
                         <dialog class="qq-prompt-dialog-selector">
                             <div class="qq-dialog-message-selector"></div>
                             <input type="text">
                             <div class="qq-dialog-buttons">
-                                <button type="button" class="qq-cancel-button-selector">CANCEL</button>
-                                <button type="button" class="qq-ok-button-selector">OK</button>
+                                <button type="button" class="qq-cancel-button-selector">{{ 'Cancel'|custom_translate:LANGUAGE_CODE }}</button>
+                                <button type="button" class="qq-ok-button-selector">{{ 'OK'|custom_translate:LANGUAGE_CODE }}</button>
                             </div>
                         </dialog>
                     </div>
                 </div>
             </script>
             <div class="media-uploader"></div>
+        </div>
+
+        <form class="media-source-editor" id="media-source-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2>{{ "Basic information"|custom_translate:request.LANGUAGE_CODE }}</h2>
+            <p>{{ "Choose one video at a time. Its information is saved with the upload; after it finishes, you can continue with another video."|custom_translate:request.LANGUAGE_CODE }}</p>
+            <div class="media-source-grid">
+                <div class="media-source-field media-source-field-wide">
+                    <label for="upload-title">{{ "Title"|custom_translate:request.LANGUAGE_CODE }}</label>
+                    <input id="upload-title" name="title" type="text" maxlength="100" autocomplete="off">
+                </div>
+                <div class="media-source-field media-source-field-wide">
+                    <label for="upload-tags">{{ "Tags (optional)"|custom_translate:request.LANGUAGE_CODE }}</label>
+                    <input id="upload-tags" name="new_tags" type="text" autocomplete="off">
+                    <small>{{ "Separate multiple tags with commas."|custom_translate:request.LANGUAGE_CODE }}</small>
+                </div>
+                <div class="media-source-field">
+                    <label for="upload-date">{{ "Date produced"|custom_translate:request.LANGUAGE_CODE }}</label>
+                    <input id="upload-date" name="add_date" type="datetime-local" step="1">
+                </div>
+                <div class="media-source-field">
+                    <label for="upload-thumbnail-time">{{ "Thumbnail Time (seconds, optional)"|custom_translate:request.LANGUAGE_CODE }}</label>
+                    <input id="upload-thumbnail-time" name="thumbnail_time" type="number" min="0" step="0.1">
+                </div>
+                <div class="media-source-field media-source-field-wide">
+                    <label for="upload-description">{{ "Description"|custom_translate:request.LANGUAGE_CODE }}</label>
+                    <textarea id="upload-description" name="description" rows="4"></textarea>
+                </div>
+                <div class="media-source-field media-source-field-wide">
+                    <label for="upload-poster">{{ "Poster Image"|custom_translate:request.LANGUAGE_CODE }}</label>
+                    <input id="upload-poster" name="uploaded_poster" type="file" accept="image/*">
+                    <small>{{ "Maximum file size: 5MB"|custom_translate:request.LANGUAGE_CODE }}</small>
+                </div>
+                <label class="media-source-checkbox media-source-field-wide" for="upload-enable-comments">
+                    <input id="upload-enable-comments" name="enable_comments" type="checkbox" checked>
+                    <span>{{ "Enable comments"|custom_translate:request.LANGUAGE_CODE }}</span>
+                </label>
+            </div>
+            <div class="media-source-actions">
+                <button type="button" id="start-media-upload" aria-describedby="upload-flow-status" disabled>{{ "Start upload"|custom_translate:request.LANGUAGE_CODE }}</button>
+                <button type="button" id="add-another-video" class="secondary" hidden>{{ "Add another video"|custom_translate:request.LANGUAGE_CODE }}</button>
+                <button type="submit" id="save-media-source" class="secondary" disabled>{{ "Save media information"|custom_translate:request.LANGUAGE_CODE }}</button>
+                <p id="upload-flow-status" role="status" aria-live="polite">{{ "Select a video file to start uploading."|custom_translate:request.LANGUAGE_CODE }}</p>
+            </div>
+        </form>
         </div>
 
     {% else %}
@@ -192,6 +285,10 @@
 
         // Add compact styles if in LMS embed mode
         if (isLmsEmbedMode) {
+            var flow = document.getElementById('media-upload-flow');
+            if (flow) {
+                flow.classList.add('is-lms-embed');
+            }
             var wrap = document.getElementById('media-uploader-wrap');
             if (wrap) {
                 wrap.classList.add('is-lms-embed');
@@ -216,8 +313,19 @@
             return cookieVal;
         }
 
+        var productionDate = document.getElementById('upload-date');
+        function setCurrentProductionDate() {
+            if (productionDate && !productionDate.value) {
+                var localNow = new Date();
+                localNow.setMinutes(localNow.getMinutes() - localNow.getTimezoneOffset());
+                productionDate.value = localNow.toISOString().slice(0, 19);
+            }
+        }
+        setCurrentProductionDate();
+
         var default_concurrent_chunked_uploader = new qq.FineUploader({
             debug: true,
+            autoUpload: isLmsEmbedMode,
             element: document.querySelector('.media-uploader'),
             request: {
                 endpoint: '{% url 'uploader:upload' %}',
@@ -226,12 +334,40 @@
                     'X-CSRFToken': getCSRFToken('csrftoken'),
                 },
             },
+            messages: {
+                typeError: "{{ '{file} has an invalid extension. Valid extension(s): {extensions}.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                sizeError: "{{ '{file} is too large, maximum file size is {sizeLimit}.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                minSizeError: "{{ '{file} is too small, minimum file size is {minSizeLimit}.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                emptyError: "{{ '{file} is empty, please select files again without it.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                noFilesError: "{{ 'No files to upload.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                tooManyItemsError: "{{ 'Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                maxHeightImageError: "{{ 'Image is too tall.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                maxWidthImageError: "{{ 'Image is too wide.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                minHeightImageError: "{{ 'Image is not tall enough.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                minWidthImageError: "{{ 'Image is not wide enough.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                retryFailTooManyItems: "{{ 'Retry failed - you have reached your file limit.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                onLeave: "{{ 'The files are being uploaded, if you leave now the upload will be canceled.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                unsupportedBrowserIos8Safari: "{{ 'Unrecoverable error - this browser does not permit file uploading of any kind due to serious bugs in iOS8 Safari.  Please use iOS8 Chrome until Apple fixes these issues.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                tooManyFilesError: "{{ 'You may only drop one file'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                unsupportedBrowser: "{{ 'Unrecoverable error - this browser does not permit file uploading of any kind.'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+            },
             retry: {
                 enableAuto: true,
                 maxAutoAttempts: 2,
+                autoRetryNote: "{{ 'Retrying {retryNum}/{maxAuto}...'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+            },
+            deleteFile: {
+                forceConfirm: false,
+                confirmMessage: "{{ 'Are you sure you want to delete {filename}?'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                deletingStatusText: "{{ 'Deleting...'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+                deletingFailedText: "{{ 'Delete failed'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
+            },
+            paste: {
+                promptForName: false,
+                namePromptMessage: "{{ 'Please name this image'|custom_translate:request.LANGUAGE_CODE|escapejs }}",
             },
             validation: {
-                itemLimit: isLmsEmbedMode ? 1 : {{UPLOAD_MAX_FILES_NUMBER}},
+                itemLimit: 1,
                 sizeLimit: {{UPLOAD_MAX_SIZE}},
             },
             chunking: {
@@ -244,12 +380,80 @@
                 },
             },
             callbacks: {
+                onSubmitted: function(id, name) {
+                    if (!isLmsEmbedMode) {
+                        document.getElementById('start-media-upload').disabled = false;
+                        document.getElementById('upload-flow-status').textContent = '{{ "Video selected. Fill in the details, then start the upload."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                    }
+                },
+                onUpload: function(id, name) {
+                    var metadataForm = document.getElementById('media-source-form');
+                    if (!isLmsEmbedMode) {
+                        var params = {
+                            has_media_metadata: '1',
+                            title: metadataForm.elements.title.value,
+                            new_tags: metadataForm.elements.new_tags.value,
+                            add_date: metadataForm.elements.add_date.value,
+                            description: metadataForm.elements.description.value,
+                            enable_comments: metadataForm.elements.enable_comments.checked ? '1' : '',
+                            thumbnail_time: metadataForm.elements.thumbnail_time.value
+                        };
+                        default_concurrent_chunked_uploader.setParams(params, id);
+                        document.getElementById('upload-flow-status').textContent = '{{ "Uploading video…"|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                    }
+                    document.getElementById('start-media-upload').disabled = true;
+                },
                 onError: function(id, name, errorReason, xhrOrXdr) {
                     console.warn(qq.format("Error on file number {} - {}.  Reason: {}", id, name, errorReason));
+                    var queuedFiles = default_concurrent_chunked_uploader.getUploads({status: qq.status.SUBMITTED});
+                    var failedItem = typeof id === 'number' && document.querySelector('.qq-file-id-' + id);
+                    document.getElementById('start-media-upload').disabled = queuedFiles.length === 0;
+                    document.getElementById('upload-flow-status').textContent = queuedFiles.length
+                        ? '{{ "Video selected. Fill in the details, then start the upload."|custom_translate:request.LANGUAGE_CODE|escapejs }}'
+                        : failedItem
+                            ? '{{ "Upload failed. Use Retry on the selected file, or cancel it and choose another."|custom_translate:request.LANGUAGE_CODE|escapejs }}'
+                            : errorReason || '{{ "Select a video file to start uploading."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                },
+                onCancel: function(id, name) {
+                    if (!isLmsEmbedMode) {
+                        document.getElementById('start-media-upload').disabled = true;
+                        document.getElementById('upload-flow-status').textContent = '{{ "Upload cancelled. Choose another video file."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                    }
                 },
                 onComplete: function( id, name, response, request ) {
 
                     if ( response.success ) {
+
+                        var metadataForm = document.getElementById('media-source-form');
+                        var saveMetadataButton = document.getElementById('save-media-source');
+                        var statusMessage = document.getElementById('upload-flow-status');
+                        var addAnotherButton = document.getElementById('add-another-video');
+                        if (metadataForm && response.edit_url) {
+                            if (!metadataForm.elements.title.value && response.title) {
+                                metadataForm.elements.title.value = response.title;
+                            }
+                            metadataForm.dataset.editUrl = response.edit_url + '&ajax=1';
+                            saveMetadataButton.disabled = true;
+                            addAnotherButton.hidden = isLmsEmbedMode;
+                            if (!isLmsEmbedMode) {
+                                statusMessage.textContent = '{{ "Upload complete. Saving media information…"|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                                fetch(metadataForm.dataset.editUrl, {
+                                    method: 'POST',
+                                    body: new FormData(metadataForm),
+                                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                                    credentials: 'same-origin'
+                                }).then(function(response) {
+                                    return response.json().then(function(data) { return { ok: response.ok, data: data }; });
+                                }).then(function(result) {
+                                    if (!result.ok || !result.data.success) throw new Error('save');
+                                    statusMessage.textContent = '{{ "Upload complete. The information was saved with this video."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                                }).catch(function() {
+                                    statusMessage.textContent = '{{ "Upload finished, but media information could not be saved. Use Save media information to retry."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                                }).finally(function() {
+                                    saveMetadataButton.disabled = false;
+                                });
+                            }
+                        }
 
                         if ( response.media_url ) {
                             if ( 1 === this._currentItemLimit ) {
@@ -276,13 +480,12 @@
                                     sendPostMsg();
                                     return;
                                 }
-                                setTimeout(function(){ window.location.href = response.media_url; }, 500);
-                                return;
+                                // Keep the user on this page so upload and source details remain one workflow.
                             }
                         }
 
                         var listEl = document.querySelector( '.qq-file-id-' + id );
-                        var viewFileEl = listEl.querySelector( '.view-uploaded-media-link' );
+                        var viewFileEl = listEl && listEl.querySelector( '.view-uploaded-media-link' );
 
                         if ( listEl ) {
                             var fileUrl = response.media_url;
@@ -301,6 +504,51 @@
                     }
                 },
             },
+        });
+
+        var uploader = default_concurrent_chunked_uploader;
+        var startButton = document.getElementById('start-media-upload');
+        var metadataForm = document.getElementById('media-source-form');
+        var statusMessage = document.getElementById('upload-flow-status');
+        var saveMetadataButton = document.getElementById('save-media-source');
+        var addAnotherButton = document.getElementById('add-another-video');
+
+        startButton.addEventListener('click', function() {
+            uploader.uploadStoredFiles();
+        });
+
+        addAnotherButton.addEventListener('click', function() {
+            metadataForm.reset();
+            setCurrentProductionDate();
+            delete metadataForm.dataset.editUrl;
+            uploader.setItemLimit(uploader.getUploads().length + 1);
+            saveMetadataButton.disabled = true;
+            addAnotherButton.hidden = true;
+            startButton.disabled = true;
+            statusMessage.textContent = '{{ "Select a video file to start uploading."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+        });
+
+        metadataForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            var editUrl = metadataForm.dataset.editUrl;
+            if (!editUrl) return;
+            saveMetadataButton.disabled = true;
+            statusMessage.textContent = '{{ "Saving information…"|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+            fetch(editUrl, {
+                method: 'POST',
+                body: new FormData(metadataForm),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            }).then(function(response) {
+                return response.json().then(function(data) { return { ok: response.ok, data: data }; });
+            }).then(function(result) {
+                if (!result.ok || !result.data.success) throw new Error('save');
+                statusMessage.textContent = '{{ "Media information saved."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+            }).catch(function() {
+                statusMessage.textContent = '{{ "Could not save the media information. Please try again."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+            }).finally(function() {
+                saveMetadataButton.disabled = false;
+            });
         });
     });
 </script>

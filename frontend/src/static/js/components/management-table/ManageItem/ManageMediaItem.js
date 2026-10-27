@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import i18n from '../../../i18n';
 import { usePopup } from '../../../utils/hooks/usePopup';
 import { formatManagementTableDate } from '../../../utils/helpers/';
 import { PageStore } from '../../../utils/stores/';
@@ -22,7 +23,7 @@ function ManageItemTitle(props) {
     return props.url;
   }
 
-  return <i className="non-available">N/A</i>;
+  return <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>;
 }
 
 export function ManageItemDate(props) {
@@ -30,7 +31,7 @@ export function ManageItemDate(props) {
     return formatManagementTableDate(new Date(Date.parse(props.date)));
   }
 
-  return <i className="non-available">N/A</i>;
+  return <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>;
 }
 
 function ManageItemMediaAuthor(props) {
@@ -50,7 +51,18 @@ function ManageItemMediaAuthor(props) {
     return props.url;
   }
 
-  return <i className="non-available">N/A</i>;
+  return <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>;
+}
+
+function localizedMediaValue(value) {
+  if (void 0 === value || null === value || '' === value) {
+    return <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>;
+  }
+
+  const normalizedValue = String(value).toLowerCase();
+  const valueKey = normalizedValue === 'fail' ? 'failed' : normalizedValue;
+  const key = `admin.filters.${valueKey}`;
+  return i18n.exists(key) ? i18n.t(key) : value;
 }
 
 function ManageItemMediaActions(props) {
@@ -127,24 +139,28 @@ function ManageItemMediaActions(props) {
   return (
     <div ref={props.containerRef} className="actions">
       <PopupTrigger contentRef={popupContentRef}>
-        <button title={'Delete' + (void 0 !== props.title ? ' "' + props.title + '"' : '')}>Delete</button>
+        <button title={i18n.t('admin.actions.delete') + (void 0 !== props.title ? ' “' + props.title + '”' : '')}>
+          {i18n.t('admin.actions.delete')}
+        </button>
       </PopupTrigger>
 
       <PopupContent contentRef={popupContentRef} showCallback={onPopupShow} hideCallback={onPopupHide}>
         <PopupMain>
           <div className="popup-message">
-            <span className="popup-message-title">Media removal</span>
+            <span className="popup-message-title">{i18n.t('admin.actions.mediaRemovalTitle')}</span>
             <span className="popup-message-main">
-              {"You're willing to remove media" + (void 0 !== props.title ? ' "' + props.title + '"' : '')}?
+              {void 0 !== props.title
+                ? i18n.t('admin.actions.mediaRemovalConfirmNamed', { title: props.title })
+                : i18n.t('admin.actions.mediaRemovalConfirm')}
             </span>
           </div>
           <hr />
           <span className="popup-message-bottom">
             <button className="button-link cancel-profile-removal" onClick={onCancel}>
-              CANCEL
+              {i18n.t('admin.actions.cancel')}
             </button>
             <button className="button-link proceed-profile-removal" onClick={onProceed}>
-              PROCEED
+              {i18n.t('admin.actions.proceed')}
             </button>
           </span>
         </PopupMain>
@@ -196,15 +212,15 @@ export function ManageMediaItem(props) {
         <ManageItemMediaAuthor name={props.author_name} url={props.author_url} />
       </div>
       <div className="mi-type">
-        {void 0 === props.media_type ? <i className="non-available">N/A</i> : props.media_type}
+        {localizedMediaValue(props.media_type)}
       </div>
       <div className="mi-encoding">
-        {void 0 === props.encoding_status ? <i className="non-available">N/A</i> : props.encoding_status}
+        {localizedMediaValue(props.encoding_status)}
       </div>
-      <div className="mi-state">{void 0 === props.state ? <i className="non-available">N/A</i> : props.state}</div>
+      <div className="mi-state">{localizedMediaValue(props.state)}</div>
       <div className="mi-reviewed">
         {void 0 === props.is_reviewed ? (
-          <i className="non-available">N/A</i>
+          <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>
         ) : props.is_reviewed ? (
           <MaterialIcon type="check_circle" />
         ) : (
@@ -213,7 +229,7 @@ export function ManageMediaItem(props) {
       </div>
       <div className="mi-featured">
         {void 0 === props.featured ? (
-          <i className="non-available">N/A</i>
+          <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>
         ) : props.featured ? (
           <MaterialIcon type="check_circle" />
         ) : (
@@ -222,12 +238,12 @@ export function ManageMediaItem(props) {
       </div>
       <div className="mi-reported">
         {void 0 === props.reported_times ? (
-          <i className="non-available">N/A</i>
+          <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>
         ) : 0 === props.reported_times ? (
           <span>-</span>
         ) : (
           <span className="reported-number">
-            {props.reported_times} {'time' + (1 < props.reported_times ? 's' : '')}
+            {props.reported_times} {i18n.t('admin.table.time', { count: props.reported_times })}
           </span>
         )}
       </div>

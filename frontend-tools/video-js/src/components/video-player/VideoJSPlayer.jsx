@@ -25,6 +25,7 @@ import { OrientationHandler } from '../../utils/OrientationHandler';
 import { EndScreenHandler } from '../../utils/EndScreenHandler';
 import KeyboardHandler from '../../utils/KeyboardHandler';
 import PlaybackEventHandler from '../../utils/PlaybackEventHandler';
+import { playerUiText, videoJsLanguage, videoJsLanguages } from '../../localization';
 
 // Import sample media data
 import sampleMediaData from '../../assets/sample-media-file.json';
@@ -48,30 +49,30 @@ const enableStandardButtonTooltips = (player) => {
 
         // Define tooltip mappings for standard VideoJS buttons
         const buttonTooltips = {
-            playToggle: () => (player.paused() ? 'Play' : 'Pause'),
+            playToggle: () => playerUiText(player.paused() ? 'play' : 'pause'),
             // muteToggle: () => (player.muted() ? 'Unmute' : 'Mute'), // Removed - no tooltip for mute/volume
             // volumePanel: 'Volume', // Removed - no tooltip for volume
-            fullscreenToggle: () => (player.isFullscreen() ? 'Exit fullscreen' : 'Fullscreen'),
-            pictureInPictureToggle: 'Picture-in-picture',
+            fullscreenToggle: () => playerUiText(player.isFullscreen() ? 'exitFullscreen' : 'fullscreen'),
+            pictureInPictureToggle: playerUiText('pictureInPicture'),
             subtitlesButton: '',
-            captionsButton: 'Captions',
+            captionsButton: playerUiText('captions'),
             subsCapsButton: '',
             chaptersButton: 'Chapters',
-            audioTrackButton: 'Audio tracks',
-            playbackRateMenuButton: 'Playback speed',
+            audioTrackButton: playerUiText('audioTracks'),
+            playbackRateMenuButton: playerUiText('playbackSpeed'),
             // currentTimeDisplay: 'Current time', // Removed - no tooltip for time
             // durationDisplay: 'Duration', // Removed - no tooltip for duration
         };
 
         // Define tooltip mappings for custom buttons (by CSS class)
         const customButtonTooltips = {
-            'vjs-next-video-button': 'Next Video',
+            'vjs-next-video-button': playerUiText('nextVideo'),
             'vjs-autoplay-toggle': (el) => {
                 // Check if autoplay is enabled by looking at the aria-label
                 const ariaLabel = el.getAttribute('aria-label') || '';
-                return ariaLabel.includes('on') ? 'Autoplay is on' : 'Autoplay is off';
+                return ariaLabel.includes('开启') || ariaLabel.includes('on') ? playerUiText('autoplayOn') : playerUiText('autoplayOff');
             },
-            'vjs-settings-button': 'Settings',
+            'vjs-settings-button': playerUiText('settings'),
         };
 
         // Apply tooltips to each button
@@ -95,16 +96,16 @@ const enableStandardButtonTooltips = (player) => {
                 // For dynamic tooltips (play/pause, fullscreen), update on state change
                 if (buttonName === 'playToggle') {
                     player.on('play', () => {
-                        buttonEl.setAttribute('title', 'Pause');
-                        buttonEl.setAttribute('aria-label', 'Pause');
+                        buttonEl.setAttribute('title', playerUiText('pause'));
+                        buttonEl.setAttribute('aria-label', playerUiText('pause'));
                     });
                     player.on('pause', () => {
-                        buttonEl.setAttribute('title', 'Play');
-                        buttonEl.setAttribute('aria-label', 'Play');
+                        buttonEl.setAttribute('title', playerUiText('play'));
+                        buttonEl.setAttribute('aria-label', playerUiText('play'));
                     });
                 } else if (buttonName === 'fullscreenToggle') {
                     player.on('fullscreenchange', () => {
-                        const tooltip = player.isFullscreen() ? 'Exit fullscreen' : 'Fullscreen';
+                        const tooltip = playerUiText(player.isFullscreen() ? 'exitFullscreen' : 'fullscreen');
                         buttonEl.setAttribute('title', tooltip);
                         buttonEl.setAttribute('aria-label', tooltip);
                     });
@@ -433,7 +434,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
                         {
                             src: mediaData.siteUrl + mediaData.data.hls_info.master_file,
                             type: 'application/x-mpegURL', // HLS MIME type
-                            label: 'Auto',
+                            label: playerUiText('auto'),
                         },
                     ];
                 }
@@ -458,7 +459,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
                         {
                             src: mediaData.siteUrl + mediaData.data.hls_info.master_file,
                             type: 'application/x-mpegURL', // HLS MIME type
-                            label: 'Auto',
+                            label: playerUiText('auto'),
                         },
                     ];
                 }
@@ -594,7 +595,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
 
         const normalize = (arr) => {
             const norm = arr.map((q) => ({
-                label: q.label || q.value || 'Auto',
+                label: q.label || q.value || playerUiText('auto'),
                 value: (q.value || q.label || 'auto').toString().toLowerCase(),
                 src: q.src || q.url || q.href,
                 type: q.type || getMimeType(q.src || q.url || q.href, mediaData.data?.media_type),
@@ -624,7 +625,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
 
             // Add master file as auto quality
             qualities.push({
-                label: 'Auto',
+                label: playerUiText('auto'),
                 value: 'auto',
                 src: mediaData.siteUrl + hlsInfo.master_file,
                 type: 'application/x-mpegURL',
@@ -653,7 +654,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
 
             // Add auto quality first
             qualities.push({
-                label: 'Auto',
+                label: playerUiText('auto'),
                 value: 'auto',
                 src: null, // Will use the highest available quality
                 type: getMimeType(null, mediaData.data?.media_type),
@@ -687,7 +688,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
         if (baseSrc) {
             const buildFromBase = [
                 {
-                    label: 'Auto',
+                    label: playerUiText('auto'),
                     value: 'auto',
                     src: baseSrc,
                     type,
@@ -1069,10 +1070,10 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
                     inactivityTimeout: isEmbedPlayer || isTouchDevice ? 5000 : 2000,
 
                     // Language code for player (e.g., 'en', 'es', 'fr')
-                    language: 'en',
+                    language: videoJsLanguage,
 
                     // Custom language definitions
-                    languages: {},
+                    languages: videoJsLanguages,
 
                     // Enable live UI with progress bar and live edge button
                     liveui: true,
@@ -1943,7 +1944,7 @@ function VideoJSPlayer({ videoId = 'default-video', showTitle = true, showRelate
                                     if (n === 'subtitlesButton') {
                                         // Add tooltip to subtitles button
                                         el.setAttribute('title', 'Captions');
-                                        el.setAttribute('aria-label', 'Captions');
+                                        el.setAttribute('aria-label', playerUiText('captions'));
 
                                         // Subtitles button toggles settings menu directly to subtitles
                                         const toggleSubtitlesSettings = (ev) => {

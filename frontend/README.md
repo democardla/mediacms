@@ -2,7 +2,7 @@
 
 ### **Requirements**
 
-- nodejs: version >= 20.9.0
+- nodejs: version >= 22 (required by the localization CLI)
 
 ---
 
@@ -31,6 +31,10 @@ Each page bundle has an entry file in `src/entries/<name>.js`, built to `static/
 Generates the folder "**_frontend/dist_**".
 
 Copy folders and files from "**_frontend/dist/static_**" into "**_static_**".
+
+### Localization
+
+New React UI copy is managed in JSON catalogs. See [LOCALIZATION.md](LOCALIZATION.md) for the Chinese guide to keys, extraction, review, and gradual migration from the legacy Python dictionaries.
 
 ---
 

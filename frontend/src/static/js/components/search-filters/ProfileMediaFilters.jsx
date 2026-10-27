@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import i18n from '../../i18n';
 import { PageStore } from '../../utils/stores/';
 import { FilterOptions } from '../_shared';
 import { translateString } from '../../utils/helpers/';
@@ -32,7 +33,7 @@ const filters = {
     { id: 'private', title: translateString('Private') },
     { id: 'unlisted', title: translateString('Unlisted') },
     { id: 'public', title: translateString('Published') },
-    { id: 'shared', title: translateString('Shared') },
+    { id: 'shared', title: i18n.t('shared') },
   ],
   sort_by: [
     { id: 'date_added_desc', title: translateString('Upload date (newest)') },
@@ -58,7 +59,7 @@ export function ProfileMediaFilters(rawProps) {
 
   // Build tags filter options from props
   const tagsOptions = [
-    { id: 'all', title: 'All' },
+    { id: 'all', title: translateString('All') },
     ...(props.tags || []).map((tag) => ({ id: tag, title: tag })),
   ];
 

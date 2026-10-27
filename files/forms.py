@@ -5,8 +5,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Field, Layout, Submit
 from django import forms
 from django.conf import settings
+from django.utils.translation import get_language
 
 from .methods import get_next_state, is_mediacms_editor
+from .frontend_translations import translate_string
 from .models import MEDIA_STATES, Category, Media, MediaPermission, Subtitle
 from .widgets import CategoryModalWidget
 
@@ -15,6 +17,19 @@ _PUBLISH_STATE_HTML = (Path(__file__).parent.parent / 'templates/cms/partials/me
 
 class CustomField(Field):
     template = 'cms/crispy_custom_field.html'
+
+
+def localize_form_fields(form, language_code=None):
+    """Translate the human-facing labels/help for the legacy Django forms."""
+    language_code = language_code or get_language() or "en"
+    for field in form.fields.values():
+        if field.label:
+            field.label = translate_string(language_code, str(field.label))
+        if field.help_text:
+            field.help_text = translate_string(language_code, str(field.help_text))
+    if language_code.lower().startswith("zh"):
+        form.label_suffix = "："
+    return form
 
 
 class MultipleSelect(forms.CheckboxSelectMultiple):
@@ -67,6 +82,8 @@ class MediaMetadataForm(forms.ModelForm):
 
         self.fields["new_tags"].initial = ", ".join([tag.title for tag in self.instance.tags.all()])
 
+        localize_form_fields(self)
+
         self.helper = FormHelper()
         self.helper.form_tag = True
         self.helper.form_class = 'post-form'
@@ -91,7 +108,9 @@ class MediaMetadataForm(forms.ModelForm):
         if getattr(settings, 'ALLOW_CUSTOM_MEDIA_URLS', False):
             self.helper.layout.insert(0, CustomField('friendly_token'))
 
-        self.helper.layout.append(FormActions(Submit('submit', 'Update Media', css_class='primaryAction')))
+        self.helper.layout.append(FormActions(Submit(
+            'submit', translate_string(get_language() or "en", 'Update Media'), css_class='primaryAction'
+        )))
 
     def clean_friendly_token(self):
         token = self.cleaned_data.get("friendly_token", "").strip()
@@ -179,6 +198,8 @@ class MediaPublishForm(forms.ModelForm):
             self.fields['category'].help_text = 'Media can be shared with one or more courses'
             self.fields['category'].widget.is_lms_mode = True
 
+        localize_form_fields(self)
+
         self.helper = FormHelper()
         self.helper.form_tag = True
         self.helper.form_class = 'post-form'
@@ -194,7 +215,9 @@ class MediaPublishForm(forms.ModelForm):
             CustomField('allow_download'),
         )
 
-        self.helper.layout.append(FormActions(Submit('submit', 'Publish Media', css_class='primaryAction')))
+        self.helper.layout.append(FormActions(Submit(
+            'submit', translate_string(get_language() or "en", 'Publish Media'), css_class='primaryAction'
+        )))
 
     def _check_embed_mode(self):
         """Check if the current request is in embed mode"""
@@ -268,6 +291,7 @@ class WhisperSubtitlesForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super(WhisperSubtitlesForm, self).__init__(*args, **kwargs)
+        localize_form_fields(self)
 
         if self.instance.allow_whisper_transcribe:
             self.fields['allow_whisper_transcribe'].widget.attrs['readonly'] = True
@@ -290,11 +314,18 @@ class WhisperSubtitlesForm(forms.ModelForm):
         )
 
         if not both_readonly:
-            self.helper.layout.append(FormActions(Submit('submit_whisper', 'Submit', css_class='primaryAction')))
+            self.helper.layout.append(FormActions(Submit(
+                'submit_whisper', translate_string(get_language() or "en", 'Submit'), css_class='primaryAction'
+            )))
         else:
             # Optional: Add a disabled button with explanatory text
             self.helper.layout.append(
-                FormActions(Submit('submit_whisper', 'Submit', css_class='primaryAction', disabled=True), HTML('<small class="text-muted">Cannot submit - both options are already enabled</small>'))
+                FormActions(Submit(
+                    'submit_whisper', translate_string(get_language() or "en", 'Submit'),
+                    css_class='primaryAction', disabled=True
+                ), HTML('<small class="text-muted">%s</small>' % translate_string(
+                    get_language() or "en", 'Cannot submit - both options are already enabled'
+                )))
             )
 
     def clean_allow_whisper_transcribe(self):
@@ -325,6 +356,7 @@ class SubtitleForm(forms.ModelForm):
     def __init__(self, media_item, *args, **kwargs):
         super(SubtitleForm, self).__init__(*args, **kwargs)
         self.instance.media = media_item
+        localize_form_fields(self)
 
         self.helper = FormHelper()
         self.helper.form_tag = True
@@ -337,7 +369,9 @@ class SubtitleForm(forms.ModelForm):
             CustomField('language'),
         )
 
-        self.helper.layout.append(FormActions(Submit('submit', 'Submit', css_class='primaryAction')))
+        self.helper.layout.append(FormActions(Submit(
+            'submit', translate_string(get_language() or "en", 'Submit'), css_class='primaryAction'
+        )))
 
     def save(self, *args, **kwargs):
         self.instance.user = self.instance.media.user
@@ -351,6 +385,7 @@ class EditSubtitleForm(forms.Form):
     def __init__(self, subtitle, *args, **kwargs):
         super(EditSubtitleForm, self).__init__(*args, **kwargs)
         self.fields["subtitle"].initial = subtitle.subtitle_file.read().decode("utf-8")
+        localize_form_fields(self)
 
 
 class CategoryForm(forms.ModelForm):
@@ -384,9 +419,14 @@ class ContactForm(forms.Form):
 
     def __init__(self, user, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
-        self.fields["name"].label = "Your name:"
-        self.fields["from_email"].label = "Your email:"
-        self.fields["message"].label = "Please add your message here and submit:"
+        self.fields["name"].label = "Your name"
+        self.fields["from_email"].label = "Your email"
+        self.fields["message"].label = "Please add your message here and submit"
+        language_code = get_language() or "en"
+        for field in self.fields.values():
+            field.label = translate_string(language_code, field.label)
+        if language_code.lower().startswith("zh"):
+            self.label_suffix = "："
         self.user = user
         if user.is_authenticated:
             self.fields.pop("name")
@@ -403,6 +443,7 @@ class ReplaceMediaForm(forms.Form):
     def __init__(self, media_instance, *args, **kwargs):
         self.media_instance = media_instance
         super(ReplaceMediaForm, self).__init__(*args, **kwargs)
+        localize_form_fields(self)
 
         self.helper = FormHelper()
         self.helper.form_tag = True
@@ -414,7 +455,9 @@ class ReplaceMediaForm(forms.Form):
             CustomField('new_media_file'),
         )
 
-        self.helper.layout.append(FormActions(Submit('submit', 'Replace Media', css_class='primaryAction')))
+        self.helper.layout.append(FormActions(Submit(
+            'submit', translate_string(get_language() or "en", 'Replace Media'), css_class='primaryAction'
+        )))
 
     def clean_new_media_file(self):
         file = self.cleaned_data.get("new_media_file", False)

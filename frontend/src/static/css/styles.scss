@@ -599,3 +599,242 @@ button {
   line-height: 1;
   opacity: 0.65;
 }
+
+.user-profile-edit {
+  --profile-label-width: 220px;
+  margin: 1.5rem 1em 2rem;
+
+  .user-action-form-inner {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  h1 {
+    margin: 0;
+    padding: 0 0 1rem;
+    font-size: 1.75rem;
+    font-weight: 400;
+    border-bottom: 1px solid var(--user-action-form-inner-title-border-bottom-color);
+  }
+
+  .post-form {
+    margin: 0;
+  }
+
+  .post-form > p {
+    min-width: 0;
+    margin: 0;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--user-action-form-inner-title-border-bottom-color);
+    display: grid;
+    grid-template-columns: var(--profile-label-width) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 1rem;
+  }
+
+  .post-form > p:nth-of-type(3) {
+    display: block;
+    padding-left: calc(var(--profile-label-width) + 1rem);
+
+    > label[for='id_logo'] {
+      position: absolute;
+      top: 1.25rem;
+      left: 0;
+    }
+
+    > a {
+      display: inline;
+      word-break: break-word;
+    }
+
+    > input[type='checkbox'] {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin: 0 0.35rem 0 1rem;
+      vertical-align: middle;
+      accent-color: var(--theme-color, var(--default-theme-color));
+    }
+
+    > label[for='logo-clear_id'] {
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      font-weight: 400;
+      vertical-align: middle;
+    }
+  }
+
+  .post-form label {
+    display: block;
+    width: auto;
+    margin: 0;
+    color: var(--body-text-color);
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .post-form input[type='text'],
+  .post-form input[type='email'],
+  .post-form input[type='number'],
+  .post-form input[type='password'],
+  .post-form select,
+  .post-form textarea {
+    min-height: 40px;
+    padding: 0.55rem 0.7rem;
+    color: var(--user-action-form-inner-input-text-color);
+    background: var(--user-action-form-inner-input-bg-color);
+    border: 1px solid var(--user-action-form-inner-input-border-color);
+    border-radius: 1px;
+
+    &:focus {
+      border-color: var(--theme-color, var(--default-theme-color));
+      outline: none;
+    }
+  }
+
+  .post-form textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .post-form p input[type='file'] {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    color: var(--body-text-color);
+    border: 0;
+    border-radius: 0;
+  }
+
+  .post-form > p:not(:nth-of-type(3)):has(> input[type='checkbox']) {
+    align-items: center;
+  }
+
+  .post-form > p:not(:nth-of-type(3)):has(> input[type='checkbox']) label {
+    margin: 0;
+  }
+
+  .post-form > p:not(:nth-of-type(3)):has(> input[type='checkbox']) input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    justify-self: start;
+    accent-color: var(--theme-color, var(--default-theme-color));
+  }
+
+  .post-form .primaryAction {
+    min-width: 120px;
+    padding: 0.75rem 1.5rem;
+    margin: 1.5rem 0 0 calc(var(--profile-label-width) + 1rem);
+    border-radius: 1px;
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .danger-zone {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--user-action-form-inner-title-border-bottom-color);
+  }
+
+  .danger-zone h2 {
+    margin: 0 0 0.5rem;
+    color: #b42318;
+    font-size: 1.15rem;
+    font-weight: 500;
+  }
+
+  .danger-zone-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 0.75rem 0;
+  }
+
+  .danger-zone-info h3 {
+    margin: 0 0 0.4rem;
+    color: #b42318;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .danger-zone-info p {
+    margin: 0;
+    color: var(--body-text-color);
+    line-height: 1.6;
+    opacity: 0.72;
+  }
+
+  .btn-danger {
+    flex: 0 0 auto;
+    padding: 0.7rem 1rem;
+    border: 1px solid #b42318;
+    border-radius: 1px;
+    background: transparent;
+    color: #b42318;
+    font-weight: 400;
+
+    &:hover {
+      background: #b42318;
+      color: #fff;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .user-profile-edit {
+    margin: 1rem 0.75rem 1.5rem;
+
+    .post-form > p {
+      display: block;
+      padding: 1rem 0;
+    }
+
+    .post-form > p > label:first-child {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-form > p:nth-of-type(3) {
+      padding-left: 0;
+    }
+
+    .post-form > p:nth-of-type(3) > label[for='id_logo'] {
+      position: static;
+    }
+
+    .post-form > p:not(:nth-of-type(3)):has(> input[type='checkbox']) input[type='checkbox'] {
+      display: block;
+      margin: 0.5rem 0 0;
+    }
+
+    .post-form .primaryAction {
+      margin-left: 0;
+    }
+
+    .danger-zone-content {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .btn-danger {
+      width: 100%;
+    }
+  }
+}
+
+@media screen and (min-width: 1220px) {
+  .visible-sidebar .user-profile-edit {
+    padding-right: 0;
+  }
+}

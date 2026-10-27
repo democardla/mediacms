@@ -1,7 +1,9 @@
 from django import forms
 from django.conf import settings
+from django.utils.translation import get_language
 
 from files.methods import is_mediacms_manager
+from files.frontend_translations import translate_string
 
 from .models import Channel, User
 
@@ -50,6 +52,22 @@ class UserForm(forms.ModelForm):
         if not settings.USERS_NEEDS_TO_BE_APPROVED or not is_mediacms_manager(user):
             if "is_approved" in self.fields:
                 self.fields.pop("is_approved")
+
+        labels = {
+            "name": "Full name",
+            "description": "About me",
+            "logo": "Logo",
+            "notification_on_comments": "Whether you will receive email notifications for comments added to your content",
+            "advancedUser": "Advanced user",
+            "is_manager": "MediaCMS Manager",
+            "is_editor": "MediaCMS Editor",
+        }
+        language_code = get_language() or "en"
+        if language_code.lower().startswith("zh"):
+            self.label_suffix = "："
+        for field_name, label in labels.items():
+            if field_name in self.fields:
+                self.fields[field_name].label = translate_string(language_code, label)
 
         if user.socialaccount_set.exists():
             # for Social Accounts do not allow to edit the name

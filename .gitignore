@@ -45,3 +45,9 @@ templates/todo-MS4.md
 .coverage
 .coverage.*
 htmlcov/
+
+# Local implementation plans
+/plans/
+
+# Local Docker Compose configuration
+/docker-compose.yaml

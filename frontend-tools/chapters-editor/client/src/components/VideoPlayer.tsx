@@ -3,6 +3,7 @@ import { formatTime, formatDetailedTime } from '@/lib/timeUtils';
 import { AUDIO_POSTER_URL } from '@/assets/audioPosterUrl';
 import logger from '../lib/logger';
 import '../styles/VideoPlayer.css';
+import { editorText } from '../../../../shared/editorLocalization';
 
 interface VideoPlayerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
@@ -379,13 +380,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 {/* Safari fallback for audio files */}
                 <source src={sampleVideoUrl} type="audio/mp4" />
                 <source src={sampleVideoUrl} type="audio/mpeg" />
-                <p>Your browser doesn't support HTML5 video or audio.</p>
+                <p>{editorText('video.unsupported')}</p>
             </video>
 
             {/* iOS First-play indicator - only shown on first visit for iOS devices when not initialized */}
             {isIOS && !hasInitialized && !isPlaying && (
                 <div className="ios-first-play-indicator">
-                    <div className="ios-play-message">Tap Play to initialize video controls</div>
+                    <div className="ios-play-message">{editorText('video.iosInitialize')}</div>
                 </div>
             )}
 
@@ -441,9 +442,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     {onToggleMute && (
                         <button
                             className="mute-button"
-                            aria-label={isMuted ? 'Unmute' : 'Mute'}
+                            aria-label={isMuted ? editorText('video.unmute') : editorText('video.mute')}
                             onClick={onToggleMute}
-                            data-tooltip={isMuted ? 'Unmute' : 'Mute'}
+                            data-tooltip={isMuted ? editorText('video.unmute') : editorText('video.mute')}
                         >
                             {isMuted ? (
                                 <svg
@@ -481,9 +482,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     {/* Fullscreen Button */}
                     <button
                         className="fullscreen-button"
-                        aria-label="Fullscreen"
+                        aria-label={editorText('video.fullscreenLabel')}
                         onClick={handleFullscreen}
-                        data-tooltip="Toggle fullscreen"
+                    data-tooltip={editorText('video.fullscreen')}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path

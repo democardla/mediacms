@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { formatTime } from '@/lib/timeUtils';
 import { AUDIO_POSTER_URL } from '@/assets/audioPosterUrl';
 import '../styles/IOSVideoPlayer.css';
+import { editorText } from '../../../../shared/editorLocalization';
 
 interface IOSVideoPlayerProps {
     videoRef: React.RefObject<HTMLVideoElement>;
@@ -155,7 +156,7 @@ const IOSVideoPlayer = ({ videoRef, currentTime, duration }: IOSVideoPlayerProps
                     poster={posterImage}
                 >
                     <source src={videoUrl} type="video/mp4" />
-                    <p>Your browser doesn't support HTML5 video.</p>
+                    <p>{editorText('video.unsupportedVideo')}</p>
                 </video>
             </div>
 
@@ -202,7 +203,7 @@ const IOSVideoPlayer = ({ videoRef, currentTime, duration }: IOSVideoPlayerProps
             </div>
 
             <div className="ios-note mt-2 text-xs text-gray-500">
-                <p>This player uses native iOS controls for better compatibility with iOS devices.</p>
+                <p>{editorText('video.iosHelp')}</p>
             </div>
         </div>
     );

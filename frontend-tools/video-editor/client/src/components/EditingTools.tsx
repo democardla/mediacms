@@ -1,6 +1,7 @@
 import '../styles/EditingTools.css';
 import { useEffect, useState } from 'react';
 import logger from '@/lib/logger';
+import { editorText } from '../../../../shared/editorLocalization';
 
 interface EditingToolsProps {
     onSplit: () => void;
@@ -60,7 +61,7 @@ const EditingTools = ({
                         className={`button segments-button`}
                         onClick={onPlaySegments}
                         data-tooltip={
-                            isPlayingSegments ? 'Stop segments playback' : 'Play segments in one continuous flow'
+                            isPlayingSegments ? editorText('common.stopSegments') : editorText('common.playSegments')
                         }
                         style={{ fontSize: '0.875rem' }}
                     >
@@ -79,8 +80,8 @@ const EditingTools = ({
                                     <line x1="10" y1="15" x2="10" y2="9" />
                                     <line x1="14" y1="15" x2="14" y2="9" />
                                 </svg>
-                                <span className="full-text">Stop Preview</span>
-                                <span className="short-text">Stop Preview</span>
+                                <span className="full-text">{editorText('common.stopPreview')}</span>
+                                <span className="short-text">{editorText('common.stopPreview')}</span>
                             </>
                         ) : (
                             <>
@@ -96,8 +97,8 @@ const EditingTools = ({
                                     <circle cx="12" cy="12" r="10" />
                                     <polygon points="10 8 16 12 10 16 10 8" />
                                 </svg>
-                                <span className="full-text">Play Preview</span>
-                                <span className="short-text">Play Preview</span>
+                                <span className="full-text">{editorText('common.playPreview')}</span>
+                                <span className="short-text">{editorText('common.playPreview')}</span>
                             </>
                         )}
                     </button>
@@ -136,7 +137,7 @@ const EditingTools = ({
                         <button
                             className={`button play-button ${isPlayingSegments ? 'greyed-out' : ''}`}
                             onClick={handlePlay}
-                            data-tooltip={isPlaying ? 'Pause video' : 'Play full video'}
+                            data-tooltip={isPlaying ? editorText('common.pauseVideo') : editorText('common.playVideo')}
                             style={{ fontSize: '0.875rem' }}
                             disabled={isPlayingSegments}
                         >
@@ -155,8 +156,8 @@ const EditingTools = ({
                                         <line x1="10" y1="15" x2="10" y2="9" />
                                         <line x1="14" y1="15" x2="14" y2="9" />
                                     </svg>
-                                    <span className="full-text">Pause</span>
-                                    <span className="short-text">Pause</span>
+                                    <span className="full-text">{editorText('common.pause')}</span>
+                                    <span className="short-text">{editorText('common.pause')}</span>
                                 </>
                             ) : (
                                 <>
@@ -172,8 +173,8 @@ const EditingTools = ({
                                         <circle cx="12" cy="12" r="10" />
                                         <polygon points="10 8 16 12 10 16 10 8" />
                                     </svg>
-                                    <span className="full-text">Play</span>
-                                    <span className="short-text">Play</span>
+                                    <span className="full-text">{editorText('common.play')}</span>
+                                    <span className="short-text">{editorText('common.play')}</span>
                                 </>
                             )}
                         </button>
@@ -208,8 +209,8 @@ const EditingTools = ({
                 <div className="button-group secondary">
                     <button
                         className="button"
-                        aria-label="Undo"
-                        data-tooltip={isPlayingSegments ? 'Disabled during preview' : 'Undo last action'}
+                        aria-label={editorText('common.undo')}
+                        data-tooltip={isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('common.undoAction')}
                         disabled={!canUndo || isPlayingSegments}
                         onClick={onUndo}
                     >
@@ -225,12 +226,12 @@ const EditingTools = ({
                             <path d="M9 14 4 9l5-5" />
                             <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
                         </svg>
-                        <span className="button-text">Undo</span>
+                        <span className="button-text">{editorText('common.undo')}</span>
                     </button>
                     <button
                         className="button"
-                        aria-label="Redo"
-                        data-tooltip={isPlayingSegments ? 'Disabled during preview' : 'Redo last undone action'}
+                        aria-label={editorText('common.redo')}
+                        data-tooltip={isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('common.redoAction')}
                         disabled={!canRedo || isPlayingSegments}
                         onClick={onRedo}
                     >
@@ -246,13 +247,13 @@ const EditingTools = ({
                             <path d="m15 14 5-5-5-5" />
                             <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13" />
                         </svg>
-                        <span className="button-text">Redo</span>
+                        <span className="button-text">{editorText('common.redo')}</span>
                     </button>
                     <div className="divider"></div>
                     <button
                         className="button"
                         onClick={onReset}
-                        data-tooltip={isPlayingSegments ? 'Disabled during preview' : 'Reset to full video'}
+                        data-tooltip={isPlayingSegments ? editorText('common.disabledDuringPreview') : editorText('common.resetVideo')}
                         disabled={isPlayingSegments}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -262,7 +263,7 @@ const EditingTools = ({
                                 clipRule="evenodd"
                             />
                         </svg>
-                        <span className="reset-text">Reset</span>
+                        <span className="reset-text">{editorText('common.reset')}</span>
                     </button>
                 </div>
             </div>

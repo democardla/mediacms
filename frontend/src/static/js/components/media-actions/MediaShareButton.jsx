@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import i18n from '../../i18n';
 import { usePopup } from '../../utils/hooks/';
 import { CircleIconButton, MaterialIcon, NavigationContentApp, PopupMain } from '../_shared/';
 import { MediaShareEmbed } from './MediaShareEmbed';
 import { MediaShareOptions } from './MediaShareOptions';
-import { translateString } from '../../utils/helpers/';
 
 function mediaSharePopupPages() {
   return {
@@ -49,13 +49,13 @@ export function MediaShareButton(props) {
   }
 
   return (
-    <div className="share" data-action-tooltip={translateString('Share')}>
+    <div className="share" data-action-tooltip={i18n.t('media:actions.share')}>
       <PopupTrigger contentRef={popupContentRef}>
         <button>
           <CircleIconButton type="span">
             <MaterialIcon type="share" />
           </CircleIconButton>
-          <span>{translateString("SHARE")}</span>
+          <span>{i18n.t('media:actions.share')}</span>
         </button>
       </PopupTrigger>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import i18n from '../../i18n';
 import { PageStore } from '../../utils/stores/';
 import { FilterOptions } from '../_shared';
 import { translateString } from '../../utils/helpers/';
@@ -60,7 +61,7 @@ export function ProfileMediaSharing(rawProps) {
       <div ref={innerContainerRef} className="mi-filters-row-inner">
         {hasUsers ? (
           <div className="mi-filter mi-filter-full-width">
-            <div className="mi-filter-title">{translateString(props.mode === 'shared_with_me' ? 'USERS SHARING' : 'SHARED WITH USERS')}</div>
+            <div className="mi-filter-title">{i18n.t(props.mode === 'shared_with_me' ? 'profile.sharing.usersSharing' : 'profile.sharing.sharedWithUsers')}</div>
             <div className="mi-filter-options mi-filter-options-horizontal mi-sharing-filter-options">
               <FilterOptions id="shared_user" options={usersOptions} selected={selectedUser} onSelect={onUserSelect} />
             </div>
@@ -68,7 +69,7 @@ export function ProfileMediaSharing(rawProps) {
         ) : null}
         {hasGroups ? (
           <div className="mi-filter mi-filter-full-width">
-            <div className="mi-filter-title">{translateString(props.mode === 'shared_with_me' ? 'GROUPS SHARING' : 'SHARED WITH GROUPS')}</div>
+            <div className="mi-filter-title">{i18n.t(props.mode === 'shared_with_me' ? 'profile.sharing.groupsSharing' : 'profile.sharing.sharedWithGroups')}</div>
             <div className="mi-filter-options mi-filter-options-horizontal mi-sharing-filter-options">
               <FilterOptions id="shared_group" options={groupsOptions} selected={selectedGroup} onSelect={onGroupSelect} />
             </div>
@@ -76,7 +77,7 @@ export function ProfileMediaSharing(rawProps) {
         ) : null}
         {!hasUsers && !hasGroups ? (
           <div className="mi-filter mi-filter-full-width">
-            <div className="mi-filter-title">{translateString('NOT SHARED WITH ANYONE')}</div>
+            <div className="mi-filter-title">{i18n.t('profile.sharing.notShared')}</div>
           </div>
         ) : null}
       </div>

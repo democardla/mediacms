@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
+import i18n from '../../../i18n';
 import { usePopup, useUser } from '../../../utils/hooks/';
 import { PageStore } from '../../../utils/stores/';
 import { csrfToken, rememberMessage } from '../../../utils/helpers/';
@@ -20,7 +21,7 @@ function ManageItemName(props) {
     return props.name;
   }
 
-  return <i className="non-available">N/A</i>;
+  return <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>;
 }
 
 function ManageItemUsername(props) {
@@ -36,7 +37,7 @@ function ManageItemUsername(props) {
     return props.username;
   }
 
-  return <i className="non-available">N/A</i>;
+  return <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>;
 }
 
 function ManageUsersItemActions(props) {
@@ -79,11 +80,11 @@ function ManageUsersItemActions(props) {
           return res.json();
         }
         return res.json().then((data) => {
-          throw new Error(data.detail || 'Failed to change password.');
+          throw new Error(data.detail || i18n.t('admin.actions.passwordChangeFailed'));
         });
       })
       .then(() => {
-        rememberMessage({ type: 'success', text: 'Password changed successfully.' });
+        rememberMessage({ type: 'success', text: i18n.t('admin.actions.passwordChanged') });
         window.location.reload();
       })
       .catch((err) => {
@@ -106,11 +107,11 @@ function ManageUsersItemActions(props) {
           return res.json();
         }
         return res.json().then((data) => {
-          throw new Error(data.detail || 'Failed to approve user.');
+          throw new Error(data.detail || i18n.t('admin.actions.userApproveFailed'));
         });
       })
       .then(() => {
-        rememberMessage({ type: 'success', text: 'User approved successfully.' });
+        rememberMessage({ type: 'success', text: i18n.t('admin.actions.userApproved') });
         window.location.reload();
       })
       .catch((err) => {
@@ -167,19 +168,19 @@ function ManageUsersItemActions(props) {
   return (
     <div ref={props.containerRef} className="actions">
       <PasswordPopupTrigger contentRef={passwordPopupRef}>
-        <button>Change password</button>
+        <button>{i18n.t('admin.actions.changePassword')}</button>
       </PasswordPopupTrigger>
       {userCan.usersNeedsToBeApproved && !props.is_approved && (
         <>
           <span className="seperator">|</span>
           <ApprovePopupTrigger contentRef={approvePopupRef}>
-            <button>Approve</button>
+            <button>{i18n.t('admin.actions.approve')}</button>
           </ApprovePopupTrigger>
         </>
       )}
       <span className="seperator">|</span>
       <DeletePopupTrigger contentRef={deletePopupRef}>
-        <button title={'Delete "' + props.name + '"'}>Delete</button>
+        <button title={`${i18n.t('admin.actions.delete')} “${props.name}”`}>{i18n.t('admin.actions.delete')}</button>
       </DeletePopupTrigger>
 
       <PasswordPopupContent
@@ -193,13 +194,15 @@ function ManageUsersItemActions(props) {
         <PopupMain>
           <form onSubmit={handlePasswordChangeSubmit}>
             <div className="popup-message">
-              <span className="popup-message-title">Change Password for {props.name}</span>
+              <span className="popup-message-title">
+                {i18n.t('admin.actions.changePasswordTitle', { name: props.name })}
+              </span>
               <span className="popup-message-main">
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="New Password"
+                  placeholder={i18n.t('admin.actions.newPassword')}
                   required
                   style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
                 />
@@ -212,10 +215,10 @@ function ManageUsersItemActions(props) {
                 className="button-link cancel-profile-removal"
                 onClick={() => passwordPopupRef.current.tryToHide()}
               >
-                CANCEL
+                {i18n.t('admin.actions.cancel')}
               </button>
               <button type="submit" className="button-link proceed-profile-removal">
-                SUBMIT
+                {i18n.t('admin.actions.submit')}
               </button>
             </span>
           </form>
@@ -232,18 +235,18 @@ function ManageUsersItemActions(props) {
       >
         <PopupMain>
           <div className="popup-message">
-            <span className="popup-message-title">Approve User</span>
+            <span className="popup-message-title">{i18n.t('admin.actions.approveUserTitle')}</span>
             <span className="popup-message-main">
-              {'Are you sure you want to approve "' + props.name + '"?'}
+              {i18n.t('admin.actions.approveUserConfirm', { name: props.name })}
             </span>
           </div>
           <hr />
           <span className="popup-message-bottom">
             <button className="button-link cancel-profile-removal" onClick={() => approvePopupRef.current.tryToHide()}>
-              CANCEL
+              {i18n.t('admin.actions.cancel')}
             </button>
             <button className="button-link proceed-profile-removal" onClick={handleApproveUser}>
-              PROCEED
+              {i18n.t('admin.actions.proceed')}
             </button>
           </span>
         </PopupMain>
@@ -256,16 +259,18 @@ function ManageUsersItemActions(props) {
       >
         <PopupMain>
           <div className="popup-message">
-            <span className="popup-message-title">Member removal</span>
-            <span className="popup-message-main">{'You\'re willing to remove member "' + props.name + '"'}?</span>
+            <span className="popup-message-title">{i18n.t('admin.actions.userRemovalTitle')}</span>
+            <span className="popup-message-main">
+              {i18n.t('admin.actions.userRemovalConfirm', { name: props.name })}
+            </span>
           </div>
           <hr />
           <span className="popup-message-bottom">
             <button className="button-link cancel-profile-removal" onClick={onCancelDelete}>
-              CANCEL
+              {i18n.t('admin.actions.cancel')}
             </button>
             <button className="button-link proceed-profile-removal" onClick={onProceedDelete}>
-              PROCEED
+              {i18n.t('admin.actions.proceed')}
             </button>
           </span>
         </PopupMain>
@@ -326,9 +331,11 @@ export function ManageUsersItem(rawProps) {
       {props.has_roles ? (
         <div className="mi-role">
           {void 0 === props.roles ? (
-            <i className="non-available">N/A</i>
+            <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>
           ) : props.roles.length ? (
-            props.roles.join('\n')
+            props.roles
+              .map((role) => i18n.t(role === 'Editor' ? 'admin.filters.editor' : 'admin.filters.manager'))
+              .join('\n')
           ) : (
             '-'
           )}
@@ -337,7 +344,7 @@ export function ManageUsersItem(rawProps) {
       {props.has_verified ? (
         <div className="mi-verified">
           {void 0 === props.is_verified ? (
-            <i className="non-available">N/A</i>
+            <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>
           ) : props.is_verified ? (
             <MaterialIcon type="check_circle" />
           ) : (
@@ -348,7 +355,7 @@ export function ManageUsersItem(rawProps) {
       {props.has_trusted ? (
         <div className="mi-trusted">
           {void 0 === props.is_trusted ? (
-            <i className="non-available">N/A</i>
+            <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>
           ) : props.is_trusted ? (
             <MaterialIcon type="check_circle" />
           ) : (
@@ -359,7 +366,7 @@ export function ManageUsersItem(rawProps) {
       {props.has_approved ? (
         <div className="mi-approved">
           {void 0 === props.is_approved || props.is_approved === null ? (
-            <i className="non-available">N/A</i>
+            <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>
           ) : props.is_approved ? (
             <MaterialIcon type="check_circle" />
           ) : (
@@ -369,7 +376,7 @@ export function ManageUsersItem(rawProps) {
       ) : null}
       <div className="mi-featured">
         {void 0 === props.is_featured ? (
-          <i className="non-available">N/A</i>
+          <i className="non-available">{i18n.t('admin.table.notAvailable')}</i>
         ) : props.is_featured ? (
           <MaterialIcon type="check_circle" />
         ) : (

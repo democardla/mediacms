@@ -1,4 +1,5 @@
 import React from 'react';
+import i18n from '../i18n';
 import { apiUrlConfig } from '../utils/contexts/';
 import { PageActions } from '../utils/actions/';
 import { SearchFieldStore } from '../utils/stores/';
@@ -25,6 +26,7 @@ export class ManageUsersPage extends Page {
     this.searchArgs = searchArgs();
 
     this.state = {
+      pageTitle: i18n.t('admin.pages.manageUsers', { defaultValue: props.title }),
       resultsCount: null,
       currentPage: 1,
       requestUrl: genReqUrl(apiUrlConfig.manage.users, this.searchArgs, '', 1),
@@ -125,9 +127,9 @@ export class ManageUsersPage extends Page {
       },
       function () {
         if (multipleItems) {
-          PageActions.addNotification('The users deleted successfully.', 'usersRemovalSucceed');
+          PageActions.addNotification(i18n.t('admin.notices.usersDeleted'), 'usersRemovalSucceed');
         } else {
-          PageActions.addNotification('The user deleted successfully.', 'userRemovalSucceed');
+          PageActions.addNotification(i18n.t('admin.notices.userDeleted'), 'userRemovalSucceed');
         }
       }
     );
@@ -135,9 +137,9 @@ export class ManageUsersPage extends Page {
 
   onItemsRemovalFail(multipleItems) {
     if (multipleItems) {
-      PageActions.addNotification('The users removal failed. Please try again.', 'usersRemovalFailed');
+      PageActions.addNotification(i18n.t('admin.notices.usersDeleteFailed'), 'usersRemovalFailed');
     } else {
-      PageActions.addNotification('The user removal failed. Please try again.', 'userRemovalFailed');
+      PageActions.addNotification(i18n.t('admin.notices.userDeleteFailed'), 'userRemovalFailed');
     }
   }
 
@@ -145,7 +147,7 @@ export class ManageUsersPage extends Page {
     return [
       <MediaListWrapper
         key="2"
-        title={this.props.title + (null === this.state.resultsCount ? '' : ' (' + this.state.resultsCount + ')')}
+        title={this.state.pageTitle + (null === this.state.resultsCount ? '' : ' (' + this.state.resultsCount + ')')}
       >
         <FiltersToggleButton onClick={this.onToggleFiltersClick} />
         <ManageUsersFilters hidden={this.state.hiddenFilters} onFiltersUpdate={this.onFiltersUpdate} />

@@ -1,8 +1,10 @@
 import React from 'react';
-import { apiUrlConfig, LinksConsumer, memberConfig } from '../utils/contexts';
+import i18n from '../i18n';
+import { activeIntlLocale } from '../i18n';
+import { apiUrlConfig, linksConfig, memberConfig } from '../utils/contexts';
 import { PageStore, ProfilePageStore } from '../utils/stores';
 import { ProfilePageActions, PageActions } from '../utils/actions';
-import { inEmbeddedApp, inSelectMediaEmbedMode, isDeepLinkSelection, submitDeepLinkSelection, translateString } from '../utils/helpers/';
+import { inEmbeddedApp, inSelectMediaEmbedMode, isDeepLinkSelection, submitDeepLinkSelection } from '../utils/helpers/';
 import { MediaListWrapper } from '../components/MediaListWrapper';
 import ProfilePagesHeader from '../components/profile-page/ProfilePagesHeader';
 import ProfilePagesContent from '../components/profile-page/ProfilePagesContent';
@@ -28,7 +30,7 @@ class ProfileMediaPage extends Page {
             channelMediaCount: -1,
             author: ProfilePageStore.get('author-data'),
             uploadsPreviewItemsCount: 0,
-            title: this.props.title,
+            title: i18n.t('profile.uploads'),
             query: ProfilePageStore.get('author-query'),
             requestUrl: null,
             selectedMedia: new Set(), // For select media embed mode only
@@ -65,7 +67,15 @@ class ProfileMediaPage extends Page {
     }
 
     componentDidMount() {
-        ProfilePageActions.load_author_data();
+        if (ProfilePageStore.get('author-data')) {
+            this.authorDataLoad();
+        } else {
+            ProfilePageActions.load_author_data();
+        }
+    }
+
+    componentWillUnmount() {
+        ProfilePageStore.removeListener('load-author-data', this.authorDataLoad);
     }
 
     authorDataLoad() {
@@ -106,15 +116,13 @@ class ProfileMediaPage extends Page {
             },
             () => {
                 if (this.state.query) {
-                    let title = '';
-
-                    if (!count) {
-                        title = translateString('No results for') + ' "' + this.state.query + '"';
-                    } else if (1 === count) {
-                        title = translateString('1 result for') + ' "' + this.state.query + '"';
-                    } else {
-                        title = count + ' ' + translateString('results for') + ' "' + this.state.query + '"';
-                    }
+                    const title = count
+                        ? i18n.t('profile.searchResults', {
+                            count,
+                            formattedCount: new Intl.NumberFormat(activeIntlLocale()).format(count),
+                            query: this.state.query,
+                        })
+                        : i18n.t('profile.noSearchResults', { query: this.state.query });
 
                     this.setState({
                         title: title,
@@ -146,7 +154,7 @@ class ProfileMediaPage extends Page {
         let title = this.state.title;
 
         if ('' === newQuery) {
-            title = this.props.title;
+            title = i18n.t('profile.uploads');
         }
 
         this.setState({
@@ -454,8 +462,9 @@ class ProfileMediaPage extends Page {
                     hideChannelBanner={inEmbeddedApp()}
                 />
             ) : null,
-            this.state.author ? (
+            this.state.author && this.state.requestUrl ? (
                 <ProfilePagesContent key="ProfilePagesContent">
+                    <div className={'profile-home-layout' + (isSelectMediaMode || inEmbeddedApp() ? ' single-column' : '')}>
                     <MediaListWrapper
                         title={inEmbeddedApp() ? undefined : this.state.title}
                         className="items-list-ver"
@@ -466,7 +475,7 @@ class ProfileMediaPage extends Page {
                         onBulkAction={this.props.bulkActions.handleBulkAction}
                         onSelectAll={this.props.bulkActions.handleSelectAll}
                         onDeselectAll={this.props.bulkActions.handleDeselectAll}
-                        showAddMediaButton={!isSelectMediaMode && isMediaAuthor}
+                        showAddMediaButton={false}
                         hasContributorCourses={this.props.bulkActions.hasContributorCourses}
                     >
                         <ProfileMediaFilters
@@ -506,6 +515,33 @@ class ProfileMediaPage extends Page {
                             onResponseDataLoaded={this.onResponseDataLoaded}
                         />
                     </MediaListWrapper>
+                    {!isSelectMediaMode && !inEmbeddedApp() ? (
+                        <aside className="profile-home-aside" aria-label={i18n.t('profile.sidebar.title')}>
+                            <section>
+                                <h2>{i18n.t('profile.sidebar.title')}</h2>
+                                <p className="profile-home-username">@{authorData.username}</p>
+                                <p>{authorData.description || i18n.t('profile.sidebar.noDescription')}</p>
+                                <a href={linksConfig.profile.about}>{i18n.t('profile.sidebar.fullAbout')}</a>
+                            </section>
+                            <section>
+                                <h2>{i18n.t('profile.sidebar.currentList')}</h2>
+                                <p>{this.state.channelMediaCount >= 0
+                                    ? i18n.t('profile.sidebar.currentListCount', {
+                                        count: this.state.channelMediaCount,
+                                        formattedCount: new Intl.NumberFormat(activeIntlLocale()).format(this.state.channelMediaCount),
+                                    })
+                                    : i18n.t('profile.sidebar.loading')}</p>
+                            </section>
+                            {isMediaAuthor ? (
+                                <section className="profile-home-actions">
+                                    <h2>{i18n.t('profile.sidebar.manage')}</h2>
+                                    <a href={authorData.edit_url}>{i18n.t('profile.editProfile')}</a>
+                                    <a href={linksConfig.user.addMedia}>{i18n.t('profile.uploadMedia')}</a>
+                                </section>
+                            ) : null}
+                        </aside>
+                    ) : null}
+                    </div>
                 </ProfilePagesContent>
             ) : null,
             this.state.author && isMediaAuthor && !isSelectMediaMode ? (

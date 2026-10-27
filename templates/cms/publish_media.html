@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% load static %}
+{% load custom_filters %}
 
-{% block headtitle %}Publish media - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{{ "Publish media"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block headermeta %}{% endblock headermeta %}
 
@@ -66,7 +67,7 @@
 {% block innercontent %}
     <div class="user-action-form-wrap">
         {% include "cms/media_nav.html" with active_tab="publish" %}
-        <div style="max-width: 900px; margin: 0 auto; padding: 20px; border-radius: 8px; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);">
+        <div class="user-action-form-inner" style="max-width: 900px; margin: 0 auto; padding: 20px;">
             {% crispy form %}
         </div>
     </div>

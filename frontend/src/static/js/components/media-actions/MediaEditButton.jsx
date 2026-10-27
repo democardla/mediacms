@@ -1,11 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useUser } from '../../utils/hooks/';
 import { MediaPageStore } from '../../utils/stores/';
 import { CircleIconButton, MaterialIcon } from '../_shared/';
-import { inEmbeddedApp, translateString } from '../../utils/helpers/';
+import { inEmbeddedApp } from '../../utils/helpers/';
 
 export function MediaEditButton() {
   const { userCan } = useUser();
+  const { t } = useTranslation('media');
 
   if (!userCan.editMedia) {
     return null;
@@ -22,12 +24,12 @@ export function MediaEditButton() {
   }
 
   return (
-    <div className="edit" data-action-tooltip={translateString('Edit media')}>
+    <div className="edit" data-action-tooltip={t('editMedia')}>
       <a href={link} rel="nofollow">
         <CircleIconButton type="span">
           <MaterialIcon type="edit" />
         </CircleIconButton>
-        <span>{translateString('EDIT')}</span>
+        <span>{t('edit')}</span>
       </a>
     </div>
   );

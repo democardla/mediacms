@@ -1,4 +1,5 @@
 import React from 'react';
+import i18n from '../i18n';
 import { apiUrlConfig } from '../utils/contexts/';
 import { PageActions } from '../utils/actions/';
 import { MediaListWrapper } from '../components/MediaListWrapper';
@@ -15,6 +16,7 @@ export class ManageCommentsPage extends Page {
     super(props, 'manage-comments');
 
     this.state = {
+      pageTitle: i18n.t('admin.pages.manageComments', { defaultValue: props.title }),
       resultsCount: null,
       requestUrl: apiUrlConfig.manage.comments,
       currentPage: 1,
@@ -63,9 +65,9 @@ export class ManageCommentsPage extends Page {
       },
       function () {
         if (multipleItems) {
-          PageActions.addNotification('The comments deleted successfully.', 'commentsRemovalSucceed');
+          PageActions.addNotification(i18n.t('admin.notices.commentsDeleted'), 'commentsRemovalSucceed');
         } else {
-          PageActions.addNotification('The comment deleted successfully.', 'commentRemovalSucceed');
+          PageActions.addNotification(i18n.t('admin.notices.commentDeleted'), 'commentRemovalSucceed');
         }
       }
     );
@@ -73,16 +75,16 @@ export class ManageCommentsPage extends Page {
 
   onItemsRemovalFail(multipleItems) {
     if (multipleItems) {
-      PageActions.addNotification('The comments removal failed. Please try again.', 'commentsRemovalFailed');
+      PageActions.addNotification(i18n.t('admin.notices.commentsDeleteFailed'), 'commentsRemovalFailed');
     } else {
-      PageActions.addNotification('The comment removal failed. Please try again.', 'commentRemovalFailed');
+      PageActions.addNotification(i18n.t('admin.notices.commentDeleteFailed'), 'commentRemovalFailed');
     }
   }
 
   pageContent() {
     return (
       <MediaListWrapper
-        title={this.props.title + (null === this.state.resultsCount ? '' : ' (' + this.state.resultsCount + ')')}
+        title={this.state.pageTitle + (null === this.state.resultsCount ? '' : ' (' + this.state.resultsCount + ')')}
         className="search-results-wrap items-list-hor"
       >
         <ManageItemList

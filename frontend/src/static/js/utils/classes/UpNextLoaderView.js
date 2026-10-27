@@ -1,5 +1,5 @@
 import { addClassname, removeClassname } from '../helpers/';
-import { translateString } from '../../utils/helpers/';
+import i18n from '../../i18n';
 
 export function UpNextLoaderView(nextItemData) {
   var timerTimeout;
@@ -40,7 +40,7 @@ export function UpNextLoaderView(nextItemData) {
   domElems.nextMediaTitle.setAttribute('class', 'next-media-title');
   domElems.nextMediaAuthor.setAttribute('class', 'next-media-author');
 
-  domElems.upNextLabel.innerHTML = translateString('Up Next');
+  domElems.upNextLabel.textContent = i18n.t('media:upNext');
   domElems.nextMediaTitle.innerHTML = nextItemData.title;
   domElems.nextMediaAuthor.innerHTML = nextItemData.author_name;
 
@@ -49,7 +49,7 @@ export function UpNextLoaderView(nextItemData) {
     nextItemData.url +
     '"><svg class="radial-timer"><circle r="30" cx="32" cy="32"></circle><circle r="25" cx="28" cy="28"></circle></svg><span></span><i class="material-icons">skip_next</i></a>';
 
-  domElems.cancelNextButton.innerHTML = 'CANCEL';
+  domElems.cancelNextButton.textContent = i18n.t('media:more.cancel');
 
   domElems.cancelNextButton.addEventListener('click', hideView);
 

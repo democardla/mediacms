@@ -1,5 +1,6 @@
 // components/controls/CustomChaptersOverlay.js
 import videojs from 'video.js';
+import { playerUiText } from '../../localization';
 import './CustomChaptersOverlay.css';
 
 // Get the Component base class from Video.js
@@ -160,7 +161,7 @@ class CustomChaptersOverlay extends Component {
         const chapterClose = document.createElement('div');
         chapterClose.className = 'chapter-close';
         const closeBtn = document.createElement('button');
-        closeBtn.setAttribute('aria-label', 'Close chapters');
+        closeBtn.setAttribute('aria-label', playerUiText('closeChapters'));
         closeBtn.innerHTML = `
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12.7096 12L20.8596 20.15L20.1496 20.86L11.9996 12.71L3.84965 20.86L3.13965 20.15L11.2896 12L3.14965 3.85001L3.85965 3.14001L11.9996 11.29L20.1496 3.14001L20.8596 3.85001L12.7096 12Z" fill="currentColor"/>

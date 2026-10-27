@@ -1,0 +1,26 @@
+{
+  "ui": {
+    "play": "Play", "pause": "Pause", "fullscreen": "Fullscreen", "exitFullscreen": "Exit fullscreen",
+    "pictureInPicture": "Picture-in-picture", "nextVideo": "Next Video", "autoplayOn": "Autoplay is on",
+    "autoplayOff": "Autoplay is off", "settings": "Settings", "closeSettings": "Close settings",
+    "upNext": "Up next", "cancel": "Cancel", "cancelAutoplay": "Cancel autoplay",
+    "copyVideoUrl": "Copy video URL", "copyVideoUrlAtTime": "Copy video URL at current time",
+    "copyEmbedCode": "Copy embed code", "closeChapters": "Close chapters",
+    "playbackSpeed": "Playback speed", "quality": "Quality", "captions": "Captions",
+    "audioTracks": "Audio tracks", "normal": "Normal", "off": "Off", "auto": "Auto"
+  },
+  "videoJs": {
+    "Play": "Play", "Play Video": "Play Video", "Pause": "Pause", "Replay": "Replay", "Current Time": "Current Time",
+    "Duration": "Duration", "Remaining Time": "Remaining Time", "Stream Type": "Stream Type",
+    "LIVE": "LIVE", "Loaded": "Loaded", "Progress": "Progress", "Progress Bar": "Progress Bar",
+    "Playback Rate": "Playback Rate", "Playback speed": "Playback speed", "Audio Player": "Audio Player",
+    "Video Player": "Video Player", "Fullscreen": "Fullscreen", "Exit Fullscreen": "Exit Fullscreen",
+    "Picture-in-Picture": "Picture-in-Picture", "Exit Picture-in-Picture": "Exit Picture-in-Picture",
+    "Mute": "Mute", "Unmute": "Unmute", "Volume Control": "Volume Control", "Volume Level": "Volume Level",
+    "Captions": "Captions", "Subtitles": "Subtitles", "Chapters": "Chapters", "Audio tracks": "Audio tracks",
+    "No compatible source was found for this media.": "No compatible source was found for this media.",
+    "The media could not be loaded, either because the server or network failed or because the format is not supported.": "The media could not be loaded, either because the server or network failed or because the format is not supported.",
+    "The media is encrypted and we do not have the keys to decrypt it.": "The media is encrypted and we do not have the keys to decrypt it.",
+    "The video is loading.": "The video is loading."
+  }
+}

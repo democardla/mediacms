@@ -3,7 +3,7 @@
 
 {% block topimports %}
 {% if media_type == "video" or media_type == "audio" %}
-<link href="{{FRONTEND_HOST}}/static/video_js/video-js.js?v={{VERSION}}" rel="preload" as="script">
+<link href="{{FRONTEND_HOST}}/static/video_js/video-js.js?v={{VERSION}}&locale_bundle=zh-hans-3" rel="preload" as="script">
 {% endif %}
 {% endblock topimports %}
 

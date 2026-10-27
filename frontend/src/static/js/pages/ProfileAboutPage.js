@@ -1,4 +1,5 @@
 import React from 'react';
+import i18n from '../i18n';
 import UrlParse from 'url-parse';
 import { apiUrlConfig, memberConfig, siteConfig } from '../utils/contexts/';
 import { formatInnerLink, csrfToken, postRequest, inEmbeddedApp } from '../utils/helpers/';
@@ -52,7 +53,7 @@ class ChannelContactForm extends React.PureComponent {
           function () {
             // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
             PageActions.addNotification(
-              'Your message was successfully submitted to ' + this.props.author.name,
+              i18n.t('profile.about.messageSent', { name: this.props.author.name }),
               'messageSubmitSucceed'
             );
           }.bind(this),
@@ -73,7 +74,7 @@ class ChannelContactForm extends React.PureComponent {
         setTimeout(
           function () {
             // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
-            PageActions.addNotification('Your message failed to submit. Please try again', 'messageSubmitFailed');
+            PageActions.addNotification(i18n.t('profile.about.messageFailed'), 'messageSubmitFailed');
           }.bind(this),
           100
         );
@@ -119,11 +120,11 @@ class ChannelContactForm extends React.PureComponent {
     return (
       <div className="media-list-row profile-contact">
         <div className="media-list-header">
-          <h2>Contact</h2>
+          <h2>{i18n.t('profile.about.contact')}</h2>
         </div>
         <form method="post" className={'user-contact-form' + (this.state.isSending ? ' pending-response' : '')}>
           <span>
-            <label>Subject</label>
+            <label>{i18n.t('profile.about.subject')}</label>
             <input
               ref={this.msgSubject}
               type="text"
@@ -133,7 +134,7 @@ class ChannelContactForm extends React.PureComponent {
             />
           </span>
           <span>
-            <label>Message</label>
+            <label>{i18n.t('profile.about.message')}</label>
             <textarea
               ref={this.msgBody}
               required={true}
@@ -143,7 +144,7 @@ class ChannelContactForm extends React.PureComponent {
               value={this.state.body}
             ></textarea>
           </span>
-          <button onClick={this.onSubmit}>SUBMIT</button>
+          <button onClick={this.onSubmit}>{i18n.t('profile.about.submit')}</button>
         </form>
       </div>
     );
@@ -206,7 +207,7 @@ export class ProfileAboutPage extends ProfileMediaPageBase {
         }
         details.push(
           <li key={'location'}>
-            <span>Location:</span>
+            <span>{i18n.t('profile.about.location')}</span>
             <span>{locations}</span>
           </li>
         );
@@ -218,7 +219,7 @@ export class ProfileAboutPage extends ProfileMediaPageBase {
         // TODO: Remove it, doesn't really need. Remains for backward compatibility.
         details.push(
           <li key={'location'}>
-            <span>Location:</span>
+            <span>{i18n.t('profile.about.location')}</span>
             <span>{this.state.author.location}</span>
           </li>
         );
@@ -235,7 +236,7 @@ export class ProfileAboutPage extends ProfileMediaPageBase {
         if ('' !== lnk) {
           details.push(
             <li key={'website'}>
-              <span>Website:</span>
+              <span>{i18n.t('profile.about.website')}</span>
               <span>{lnk}</span>
             </li>
           );
@@ -259,7 +260,7 @@ export class ProfileAboutPage extends ProfileMediaPageBase {
           }
           details.push(
             <li key={'social_media'}>
-              <span>Social media:</span>
+              <span>{i18n.t('profile.about.socialMedia')}</span>
               <span className="author-social-media">{socialMedia}</span>
             </li>
           );
@@ -284,7 +285,7 @@ export class ProfileAboutPage extends ProfileMediaPageBase {
             )}
 
             {!details.length ? null : (
-              <MediaListRow title={'Details'}>
+              <MediaListRow title={i18n.t('profile.about.details')}>
                 <ul className="profile-details">{details}</ul>
               </MediaListRow>
             )}
@@ -298,5 +299,5 @@ export class ProfileAboutPage extends ProfileMediaPageBase {
 }
 
 ProfileAboutPage.defaultProps = {
-  title: 'Biography',
+  title: i18n.t('profile.about.biography'),
 };

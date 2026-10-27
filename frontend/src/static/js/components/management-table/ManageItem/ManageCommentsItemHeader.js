@@ -1,4 +1,5 @@
 import React from 'react';
+import i18n from '../../../i18n';
 import { useManagementTableHeader } from '../../../utils/hooks/';
 import { MaterialIcon } from '../../_shared/material-icon/MaterialIcon';
 
@@ -10,13 +11,13 @@ export function ManageCommentsItemHeader(props) {
       <div className="mi-checkbox">
         <input type="checkbox" checked={isSelected} onChange={checkAll} />
       </div>
-      <div className="mi-author">Author</div>
+      <div className="mi-author">{i18n.t('admin.table.author')}</div>
       <div
         id="text"
         onClick={sortByColumn}
         className={'mi-comment mi-col-sort' + ('text' === sort ? ('asc' === order ? ' asc' : ' desc') : '')}
       >
-        Comment
+        {i18n.t('admin.table.comment')}
         <div className="mi-col-sort-icons">
           <span>
             <MaterialIcon type="arrow_drop_up" />
@@ -31,7 +32,7 @@ export function ManageCommentsItemHeader(props) {
         onClick={sortByColumn}
         className={'mi-added mi-col-sort' + ('add_date' === sort ? ('asc' === order ? ' asc' : ' desc') : '')}
       >
-        Date added
+        {i18n.t('admin.table.dateAdded')}
         <div className="mi-col-sort-icons">
           <span>
             <MaterialIcon type="arrow_drop_up" />

@@ -59,6 +59,7 @@ static_collected/**
 # Documentation and development files
 **/.github
 **/CHANGELOG.md
+plans/
 
 # Test files and directories
 **/tests

@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+{% load custom_filters %}
 
-{% block headtitle %}Contact us - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{{ "Contact us"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block headermeta %}
 
-<meta property="og:title" content="Contact us - {{PORTAL_NAME}}">
+<meta property="og:title" content="{{ "Contact us"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}">
 <meta property="og:type" content="website">
 <meta property="og:description" content="">
 
@@ -26,7 +27,7 @@
     {
         "@type": "ListItem",
         "position": 2,
-        "name": "Contact us",
+        "name": "{{ "Contact us"|custom_translate:request.LANGUAGE_CODE }}",
         "item": {
             "@type": "ContactPage",
             "@id": "{{FRONTEND_HOST}}/contact"
@@ -42,13 +43,13 @@
 <div class="user-action-form-wrap">
     <div class="user-action-form-inner">
         {% if success_msg %}
-            <h1>{{success_msg}}<h1>
+            <h1>{{success_msg}}</h1>
         {% else %}
-            <h1>Contact us</h1>
+            <h1>{{ "Contact us"|custom_translate:request.LANGUAGE_CODE }}</h1>
             <form enctype="multipart/form-data" action="" method="post" class="post-form">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button class="primaryAction" type="submit">Submit</button>
+                <button class="primaryAction" type="submit">{{ "Submit"|custom_translate:request.LANGUAGE_CODE }}</button>
             </form>
         {% endif %}
     </div>

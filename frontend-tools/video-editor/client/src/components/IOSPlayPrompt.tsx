@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/IOSPlayPrompt.css';
+import { editorText } from '../../../../shared/editorLocalization';
 
 interface MobilePlayPromptProps {
     videoRef: React.RefObject<HTMLVideoElement>;
@@ -66,7 +67,7 @@ const MobilePlayPrompt: React.FC<MobilePlayPromptProps> = ({ videoRef, onPlay })
         </div> */}
 
                 <button className="mobile-play-button" onClick={handlePlayClick}>
-                    Click to start editing...
+                    {editorText('video.tapToEdit')}
                 </button>
             </div>
         </div>

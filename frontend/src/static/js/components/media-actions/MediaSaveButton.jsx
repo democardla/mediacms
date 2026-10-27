@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
+import i18n from '../../i18n';
 import { usePopup } from '../../utils/hooks/';
 import { CircleIconButton, MaterialIcon, NavigationContentApp, PopupMain } from '../_shared/';
 import { PlaylistsSelection } from '../playlists-selection/PlaylistsSelection';
-import { translateString } from '../../utils/helpers/';
 
 function mediaSavePopupPages(onTriggerPopupClose) {
   return {
@@ -34,13 +34,13 @@ export function MediaSaveButton(props) {
   }
 
   return (
-    <div className="save" data-action-tooltip={translateString('Save')}>
+    <div className="save" data-action-tooltip={i18n.t('media:actions.save')}>
       <PopupTrigger contentRef={popupContentRef}>
         <button>
           <CircleIconButton type="span">
             <MaterialIcon type="playlist_add" />
           </CircleIconButton>
-          <span>{translateString("SAVE")}</span>
+          <span>{i18n.t('media:actions.save')}</span>
         </button>
       </PopupTrigger>
 

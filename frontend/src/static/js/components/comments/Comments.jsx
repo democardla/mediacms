@@ -1,29 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { format } from 'timeago.js';
+import { useTranslation } from 'react-i18next';
 import { usePopup } from '../../utils/hooks/';
 import { PageStore, MediaPageStore } from '../../utils/stores/';
 import { PageActions, MediaPageActions } from '../../utils/actions/';
 import { linksConfig, memberConfig, siteConfig } from '../../utils/contexts/';
 import { PopupMain, UserThumbnail } from '../_shared';
-import { replaceString } from '../../utils/helpers/';
-
-import { translateString } from '../../utils/helpers/';
+import i18n, { activeIntlLocale } from '../../i18n';
+import formatRelativeDate from '../../utils/helpers/formatRelativeDate';
 
 import './Comments.scss';
 import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 import { MentionTextarea } from './MentionTextarea';
 
-const commentsText = {
-  single: translateString('comment'),
-  uppercaseSingle: translateString('COMMENT'),
-  ucfirstSingle: translateString('Comment'),
-  ucfirstPlural: translateString('Comments'),
-  submitCommentText: translateString('SUBMIT'),
-  disabledCommentsMsg: translateString('Comments are disabled'),
-};
-
 function CommentForm(rawProps) {
   const props = applyDefaultProps(rawProps, CommentForm.defaultPropValues);
+  const { t } = useTranslation('media');
   const textareaRef = useRef(null);
 
   const [value, setValue] = useState('');
@@ -146,7 +137,7 @@ function CommentForm(rawProps) {
                 inputRef={textareaRef}
                 className="form-textarea"
                 rows="1"
-                placeholder={'Add a ' + commentsText.single + '...'}
+                placeholder={t('comments.placeholder')}
                 value={value}
                 users={userList}
                 onChange={onChangeWithMention}
@@ -158,7 +149,7 @@ function CommentForm(rawProps) {
                 ref={textareaRef}
                 className="form-textarea"
                 rows="1"
-                placeholder={'Add a ' + commentsText.single + '...'}
+                placeholder={t('comments.placeholder')}
                 value={value}
                 onChange={onChange}
                 onFocus={onFocus}
@@ -168,7 +159,7 @@ function CommentForm(rawProps) {
           </div>
           <div className="form-buttons">
             <button className={'' === value.trim() ? 'disabled' : ''} onClick={submitComment}>
-              {commentsText.submitCommentText}
+              {t('comments.submit')}
             </button>
           </div>
         </div>
@@ -183,13 +174,13 @@ function CommentForm(rawProps) {
             href={loginUrl}
             rel="noffolow"
             className="form-textarea-wrap"
-            title={translateString('Add a ') + commentsText.single + '...'}
+            title={t('comments.placeholder')}
           >
-            <span className="form-textarea">{translateString('Add a ') + commentsText.single + '...'}</span>
+            <span className="form-textarea">{t('comments.placeholder')}</span>
           </a>
           <div className="form-buttons">
             <a href={loginUrl} rel="noffolow" className="disabled">
-              {commentsText.submitCommentText}
+              {t('comments.submit')}
             </a>
           </div>
         </div>
@@ -206,6 +197,7 @@ const ENABLED_COMMENTS_READ_MORE = false;
 
 function CommentActions(props) {
   const [popupContentRef, PopupContent, PopupTrigger] = usePopup();
+  const { t } = useTranslation('media');
 
   function cancelCommentRemoval() {
     popupContentRef.current.toggle();
@@ -226,23 +218,23 @@ function CommentActions(props) {
         <div className="comment-action remove-comment">
           <PopupTrigger contentRef={popupContentRef}>
             <button>
-              {translateString('DELETE')} {commentsText.uppercaseSingle}
+              {t('comments.delete')}
             </button>
           </PopupTrigger>
 
           <PopupContent contentRef={popupContentRef}>
             <PopupMain>
               <div className="popup-message">
-                <span className="popup-message-title">{commentsText.ucfirstSingle} removal</span>
-                <span className="popup-message-main">You're willing to remove {commentsText.single} permanently?</span>
+                <span className="popup-message-title">{t('comments.deleteTitle')}</span>
+                <span className="popup-message-main">{t('comments.deleteConfirm')}</span>
               </div>
               <hr />
               <span className="popup-message-bottom">
                 <button className="button-link cancel-comment-removal" onClick={cancelCommentRemoval}>
-                  CANCEL
+                  {t('comments.cancel')}
                 </button>
                 <button className="button-link proceed-comment-removal" onClick={proceedCommentRemoval}>
-                  PROCEED
+                  {t('comments.proceed')}
                 </button>
               </span>
             </PopupMain>
@@ -301,7 +293,7 @@ function Comment(rawProps) {
                 {props.author_name}
               </a>
             </div>
-            <div className="comment-date">{replaceString(format(new Date(props.publish_date)))}</div>
+            <div className="comment-date">{formatRelativeDate(new Date(props.publish_date))}</div>
           </div>
           <div ref={commentTextRef} className={'comment-text' + (viewMoreContent ? ' show-all' : '')}>
             <div
@@ -376,27 +368,29 @@ function displayCommentsRelatedAlert(comments) {
 }
 
 const CommentsListHeader = ({ commentsLength, ordering, onToggleOrdering }) => {
+  const { t } = useTranslation('media');
   return (
     <>
       {!memberConfig.can.readComment || MediaPageStore.get('media-data').enable_comments ? null : (
-        <span className="disabled-comments-msg">{commentsText.disabledCommentsMsg}</span>
+        <span className="disabled-comments-msg">{t('comments.disabled')}</span>
       )}
 
       {memberConfig.can.readComment &&
       (MediaPageStore.get('media-data').enable_comments || memberConfig.can.editMedia) ? (
         <h2>
           {commentsLength
-            ? 1 < commentsLength
-              ? commentsLength + ' ' + commentsText.ucfirstPlural
-              : commentsLength + ' ' + commentsText.ucfirstSingle
+            ? t('comments.count', {
+                count: commentsLength,
+                formattedCount: new Intl.NumberFormat(activeIntlLocale()).format(commentsLength),
+              })
             : MediaPageStore.get('media-data').enable_comments
-            ? translateString('No') + ' ' + commentsText.single + ' ' + translateString('yet')
+            ? t('comments.empty')
             : ''}
           {commentsLength > 0 && (
             <button className="comments-order-toggle" onClick={onToggleOrdering}>
               <span className="material-icons">swap_vert</span>
               <span className="comments-order-label">
-                {ordering === 'newest' ? translateString('Newest first') : translateString('Oldest first')}
+                {ordering === 'newest' ? t('comments.newestFirst') : t('comments.oldestFirst')}
               </span>
             </button>
           )}
@@ -467,13 +461,13 @@ export default function CommentsList(props) {
   function onCommentSubmit(commentId) {
     onCommentsLoad();
     // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
-    setTimeout(() => PageActions.addNotification(commentsText.ucfirstSingle + ' added', 'commentSubmit'), 100);
+    setTimeout(() => PageActions.addNotification(i18n.t('media:comments.added'), 'commentSubmit'), 100);
   }
 
   function onCommentSubmitFail() {
     // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
     setTimeout(
-      () => PageActions.addNotification(commentsText.ucfirstSingle + ' submission failed', 'commentSubmitFail'),
+      () => PageActions.addNotification(i18n.t('media:comments.addFailed'), 'commentSubmitFail'),
       100,
     );
   }
@@ -481,13 +475,13 @@ export default function CommentsList(props) {
   function onCommentDelete(commentId) {
     onCommentsLoad();
     // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
-    setTimeout(() => PageActions.addNotification(commentsText.ucfirstSingle + ' removed', 'commentDelete'), 100);
+    setTimeout(() => PageActions.addNotification(i18n.t('media:comments.removed'), 'commentDelete'), 100);
   }
 
   function onCommentDeleteFail(commentId) {
     // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
     setTimeout(
-      () => PageActions.addNotification(commentsText.ucfirstSingle + ' removal failed', 'commentDeleteFail'),
+      () => PageActions.addNotification(i18n.t('media:comments.removeFailed'), 'commentDeleteFail'),
       100,
     );
   }
