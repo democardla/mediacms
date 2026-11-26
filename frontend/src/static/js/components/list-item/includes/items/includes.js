@@ -1,7 +1,7 @@
 import React from 'react';
-import { format } from 'timeago.js';
 import { formatViewsNumber, imageExtension } from '../../../../utils/helpers/';
 import i18n from '../../../../i18n';
+import formatRelativeDate from '../../../../utils/helpers/formatRelativeDate';
 // import { VideoPlayerByPageLink } from '../../../video-player/VideoPlayerByPageLink';
 
 export function ItemDescription(props) {
@@ -45,7 +45,9 @@ export function ItemTitleLink(props) {
 }
 
 export function UserItemMemberSince(props) {
-    return <time key="member-since">Member for {format(new Date(props.date)).replace(' ago', '')}</time>;
+    const date = new Date(props.date);
+    if (Number.isNaN(date.getTime())) return null;
+    return <time key="member-since" dateTime={date.toISOString()}>{i18n.t('members.joinedAgo', { time: formatRelativeDate(date) })}</time>;
 }
 
 export function TaxonomyItemMediaCount(props) {

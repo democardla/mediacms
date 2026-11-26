@@ -3,6 +3,7 @@ import { MediaPageStore } from '../../utils/stores/';
 import { AutoPlay } from './AutoPlay';
 import { RelatedMedia } from './RelatedMedia';
 import PlaylistView from './PlaylistView';
+import VideoSidebarTabs from './VideoSidebarTabs';
 
 export default class ViewerSidebar extends React.PureComponent {
   constructor(props) {
@@ -47,12 +48,14 @@ export default class ViewerSidebar extends React.PureComponent {
   render() {
     return (
       <div className="viewer-sidebar">
-        {this.state.isPlaylistPage ? (
+        {this.state.mediaType === 'video' ? (
+          <VideoSidebarTabs playlistData={this.state.playlistData} activeItem={this.state.activeItem} />
+        ) : this.state.isPlaylistPage ? (
           <PlaylistView activeItem={this.state.activeItem} playlistData={this.props.playlistData} />
-        ) : 'video' === this.state.mediaType || 'audio' === this.state.mediaType ? (
+        ) : 'audio' === this.state.mediaType ? (
           <AutoPlay />
         ) : null}
-        <RelatedMedia hideFirst={!this.state.isPlaylistPage} />
+        {this.state.mediaType === 'video' ? null : <RelatedMedia hideFirst={!this.state.isPlaylistPage} />}
       </div>
     );
   }

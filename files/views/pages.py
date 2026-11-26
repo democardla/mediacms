@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
+from django.urls import reverse
 from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
 
@@ -116,6 +117,8 @@ def add_subtitle(request):
                 try:
                     subtitle.convert_to_srt()
                     messages.add_message(request, messages.INFO, "Caption was added!")
+                    if request.GET.get("workflow") == "upload":
+                        return HttpResponseRedirect(f"{reverse('upload_media')}?m={media.friendly_token}&step=edit&tool=subtitles")
                     return HttpResponseRedirect(subtitle.media.get_absolute_url())
                 except Exception as e:  # noqa
                     subtitle.delete()
@@ -127,6 +130,8 @@ def add_subtitle(request):
             if whisper_form.is_valid():
                 whisper_form.save()
                 messages.add_message(request, messages.INFO, "Request for transcription was sent")
+                if request.GET.get("workflow") == "upload":
+                    return HttpResponseRedirect(f"{reverse('upload_media')}?m={media.friendly_token}&step=edit&tool=subtitles")
                 return HttpResponseRedirect(media.get_absolute_url())
 
     # GET request or form invalid
@@ -137,6 +142,8 @@ def add_subtitle(request):
         whisper_form = WhisperSubtitlesForm(request.user, instance=media, prefix="whisper_form")
 
     subtitles = media.subtitles.all()
+    if request.GET.get("workflow") == "upload":
+        return render_upload_workflow(request, media, "edit", subtitle_form=form, whisper_form=whisper_form, tool="subtitles")
     context = {"media_object": media, "form": form, "subtitles": subtitles, "whisper_form": whisper_form}
     return render(request, "cms/add_subtitle.html", context)
 
@@ -432,9 +439,14 @@ def publish_media(request):
         if form.is_valid():
             media = form.save()
             messages.add_message(request, messages.INFO, translate_string(request.LANGUAGE_CODE, "Media was edited"))
+            if request.GET.get("workflow") == "upload":
+                return HttpResponseRedirect(f"{reverse('upload_media')}?m={media.friendly_token}&step=publish")
             return HttpResponseRedirect(media.get_absolute_url())
     else:
         form = MediaPublishForm(request.user, instance=media, request=request)
+
+    if request.GET.get("workflow") == "upload":
+        return render_upload_workflow(request, media, "publish", publish_form=form)
 
     return render(
         request,
@@ -758,13 +770,62 @@ def upload_media(request):
 
     from allauth.account.forms import LoginForm
 
-    form = LoginForm()
-    context = {}
-    context["form"] = form
-    context["can_add"] = user_allowed_to_upload(request)
-    can_upload_exp = settings.CANNOT_ADD_MEDIA_MESSAGE
-    context["can_upload_exp"] = can_upload_exp
+    media = None
+    friendly_token = request.GET.get("m", "").strip()
+    if friendly_token:
+        media = Media.objects.filter(friendly_token=friendly_token).first()
+        if not media or not (request.user.has_contributor_access_to_media(media) or is_mediacms_editor(request.user)):
+            return HttpResponseRedirect(reverse("upload_media"))
 
+    return render_upload_workflow(request, media, request.GET.get("step", "upload"), login_form=LoginForm())
+
+
+def render_upload_workflow(request, media=None, step="upload", login_form=None, subtitle_form=None, whisper_form=None, publish_form=None, tool=None):
+    """Render an upload step with the existing media editors and their forms."""
+
+    steps = {"upload", "basic", "edit", "trim", "subtitles", "chapters", "publish"}
+    if step not in steps or (media is None and step != "upload"):
+        step = "upload"
+    if step in {"trim", "subtitles", "chapters"}:
+        tool = step
+        step = "edit"
+    if tool not in {"trim", "subtitles", "chapters"}:
+        tool = request.GET.get("tool", "trim")
+    if tool not in {"trim", "subtitles", "chapters"}:
+        tool = "trim"
+
+    context = {
+        "form": login_form,
+        "can_add": bool(media) or user_allowed_to_upload(request),
+        "can_upload_exp": settings.CANNOT_ADD_MEDIA_MESSAGE,
+        "media_object": media,
+        "upload_step": step,
+        "upload_tool": tool,
+    }
+    if media:
+        context["subtitle_form"] = subtitle_form or SubtitleForm(media_item=media, prefix="form")
+        context["subtitle_form"].helper.form_action = (
+            f"{reverse('add_subtitle')}?m={media.friendly_token}&workflow=upload"
+        )
+        context["whisper_form"] = whisper_form or (
+            WhisperSubtitlesForm(request.user, instance=media, prefix="whisper_form")
+            if can_transcribe_video(request.user) else None
+        )
+        if context["whisper_form"]:
+            context["whisper_form"].helper.form_action = (
+                f"{reverse('add_subtitle')}?m={media.friendly_token}&workflow=upload"
+            )
+        context["subtitles"] = media.subtitles.all()
+        context["can_publish"] = request.user.has_owner_access_to_media(media) or is_mediacms_editor(request.user)
+        if context["can_publish"]:
+            context["publish_form"] = publish_form or MediaPublishForm(request.user, instance=media, request=request)
+            context["publish_form"].helper.form_action = (
+                f"{reverse('publish_media')}?m={media.friendly_token}&workflow=upload"
+            )
+        context["media_file_path"] = media.trim_video_url
+        context["chapter_media_file_path"] = media.trim_video_url or helpers.url_from_path(media.media_file.path)
+        context["chapters"] = helpers.json_for_script(media.chapter_data)
+        context["can_trim"] = settings.ALLOW_VIDEO_TRIMMER and bool(media.trim_video_url)
     return render(request, "cms/add-media.html", context)
 
 

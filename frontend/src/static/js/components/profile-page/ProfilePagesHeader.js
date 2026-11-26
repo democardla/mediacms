@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { Tabs } from 'antd';
 import i18n from '../../i18n';
 import { usePopup } from '../../utils/hooks/';
 import { linksConfig, memberConfig, siteConfig } from '../../utils/contexts/';
@@ -231,146 +232,12 @@ class ProfileSearchBar extends React.PureComponent {
 
 ProfileSearchBar.defaultProps = {};
 
-function InlineTab(props) {
-    function onClick(event) {
-        if (!props.onTabChange || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        event.preventDefault();
-        props.onTabChange(props.id, props.link);
-    }
-
-    return (
-        <li className={props.isActive ? 'active' : null}>
-            <a href={props.link} title={props.label} onClick={onClick} aria-current={props.isActive ? 'page' : undefined}>
-                {props.label}
-            </a>
-        </li>
-    );
-}
-
 class NavMenuInlineTabs extends React.PureComponent {
-    constructor(props) {
-        super(props);
-        this.itemsListWrap = React.createRef();
-
-        this.state = {
-            displayNext: false,
-            displayPrev: false,
-        };
-
-        this.nextSlide = this.nextSlide.bind(this);
-        this.prevSlide = this.prevSlide.bind(this);
-
-        this.updateSlider = this.updateSlider.bind(this);
-        this.updateSliderButtonsView = this.updateSliderButtonsView.bind(this);
-
-        this.onToggleSearchField = this.onToggleSearchField.bind(this);
-
-        PageStore.on('window_resize', this.updateSlider);
-
-        this.sliderRecalTimeout = null;
-
-        PageStore.on(
-            'changed_page_sidebar_visibility',
-            function () {
-                clearTimeout(this.sliderRecalTimeout);
-
-                // NOTE: 200ms is transition duration, set in CSS.
-                this.sliderRecalTimeout = setTimeout(
-                    function () {
-                        this.updateSliderButtonsView();
-
-                        this.sliderRecalTimeout = setTimeout(
-                            function () {
-                                this.sliderRecalTimeout = null;
-
-                                this.updateSlider();
-                            }.bind(this),
-                            50
-                        );
-                    }.bind(this),
-                    150
-                );
-            }.bind(this)
-        );
-
-        this.previousBtn = (
-            <span className="previous-slide">
-                <CircleIconButton buttonShadow={false} onClick={this.prevSlide}>
-                    <i className="material-icons">keyboard_arrow_left</i>
-                </CircleIconButton>
-            </span>
-        );
-        this.nextBtn = (
-            <span className="next-slide">
-                <CircleIconButton buttonShadow={false} onClick={this.nextSlide}>
-                    <i className="material-icons">keyboard_arrow_right</i>
-                </CircleIconButton>
-            </span>
-        );
-
-        this.userIsAuthor =
-            !memberConfig.is.anonymous &&
-            ProfilePageStore.get('author-data').username === memberConfig.username;
-    }
-
-    componentDidMount() {
-        this.updateSlider();
-        if (this.itemsListWrap.current) {
-            this.itemsListWrap.current.addEventListener('scroll', this.updateSliderButtonsView.bind(this));
-        }
-    }
-
-    componentWillUnmount() {
-        if (this.itemsListWrap.current) {
-            this.itemsListWrap.current.removeEventListener('scroll', this.updateSliderButtonsView.bind(this));
-        }
-    }
-
-    nextSlide() {
-        if (!this.itemsListWrap.current) return;
-        const scrollAmount = this.itemsListWrap.current.offsetWidth * 0.7; // Scroll 70% of visible width
-        this.itemsListWrap.current.scrollLeft += scrollAmount;
-        setTimeout(() => this.updateSliderButtonsView(), 50);
-    }
-
-    prevSlide() {
-        if (!this.itemsListWrap.current) return;
-        const scrollAmount = this.itemsListWrap.current.offsetWidth * 0.7; // Scroll 70% of visible width
-        this.itemsListWrap.current.scrollLeft -= scrollAmount;
-        setTimeout(() => this.updateSliderButtonsView(), 50);
-    }
-
-    updateSlider(afterItemsUpdate) {
-        this.updateSliderButtonsView();
-    }
-
-    updateSliderButtonsView() {
-        if (!this.itemsListWrap.current) return;
-
-        const container = this.itemsListWrap.current;
-        const scrollLeft = container.scrollLeft;
-        const scrollWidth = container.scrollWidth;
-        const clientWidth = container.clientWidth;
-
-        // Show prev arrow if we can scroll left
-        const canScrollLeft = scrollLeft > 1;
-
-        // Show next arrow if we can scroll right
-        const canScrollRight = scrollLeft < scrollWidth - clientWidth - 1;
-
-        this.setState({
-            displayPrev: canScrollLeft,
-            displayNext: canScrollRight,
-        });
-    }
-
-    onToggleSearchField() {
-        setTimeout(() => this.updateSlider(), 100);
-    }
-
     render() {
         const isSelectMediaMode = inSelectMediaEmbedMode();
         const shareMediaDisabled = isShareMediaDisabled();
+        const userIsAuthor = !memberConfig.is.anonymous &&
+            ProfilePageStore.get('author-data').username === memberConfig.username;
 
         // Append action=select_media to links when in select mode
         const mediaLink = isSelectMediaMode
@@ -388,85 +255,76 @@ class NavMenuInlineTabs extends React.PureComponent {
             ? `${sharedWithMeBase}${sharedWithMeBase.includes('?') ? '&' : '?'}action=select_media`
             : sharedWithMeBase;
 
+        const visibleTabs = [
+            { key: 'media', label: i18n.t('profile.nav.home'), href: mediaLink },
+            userIsAuthor
+                ? { key: 'shared_by_me', label: i18n.t('profile.nav.sharedByMe'), href: sharedByMeLink }
+                : null,
+            userIsAuthor
+                ? { key: 'shared_with_me', label: i18n.t('profile.nav.sharedWithMe'), href: sharedWithMeLink }
+                : null,
+            !isSelectMediaMode && memberConfig.can.saveMedia
+                ? { key: 'playlists', label: i18n.t('profile.nav.playlists'), href: linksConfig.profile.playlists }
+                : null,
+            PageStore.get('config-options').pages.profile.includeHistory && userIsAuthor
+                ? { key: 'history', label: PageStore.get('config-enabled').pages.history.title, href: linksConfig.user.history }
+                : null,
+            PageStore.get('config-options').pages.profile.includeLikedMedia && userIsAuthor
+                ? { key: 'liked', label: PageStore.get('config-enabled').pages.liked.title, href: linksConfig.user.liked }
+                : null,
+        ].filter(Boolean);
+
+        const tabItems = visibleTabs.map((tab) => ({
+            key: tab.key,
+            label: (
+                <a
+                    href={tab.href}
+                    title={tab.label}
+                    aria-current={this.props.type === tab.key ? 'page' : undefined}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        if (!this.props.onTabChange || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                        event.preventDefault();
+                        this.props.onTabChange(tab.key, tab.href);
+                    }}
+                >
+                    {tab.label}
+                </a>
+            ),
+        }));
+
         return (
             <nav className="profile-nav items-list-outer list-inline list-slider">
                 <div className="profile-nav-inner items-list-outer">
-                    {this.state.displayPrev ? this.previousBtn : null}
+                    <Tabs
+                        className="profile-ant-tabs"
+                        type="line"
+                        activeKey={this.props.type}
+                        items={tabItems}
+                        onChange={(key) => {
+                            const tab = visibleTabs.find((item) => item.key === key);
+                            if (!tab) return;
+                            if (this.props.onTabChange && ['media', 'about', 'shared_by_me', 'shared_with_me', 'playlists'].includes(key)) {
+                                this.props.onTabChange(key, tab.href);
+                            } else {
+                                window.location.assign(tab.href);
+                            }
+                        }}
+                    />
 
-                    <ul className="items-list-wrap" ref={this.itemsListWrap}>
-                        <InlineTab
-                            id="media"
-                            isActive={'media' === this.props.type}
-                            label={i18n.t('profile.nav.home')}
-                            link={mediaLink}
-                            onTabChange={this.props.onTabChange}
-                        />
-                        {!isSelectMediaMode && !inEmbeddedApp() ? (
-                            <InlineTab
-                                id="about"
-                                isActive={'about' === this.props.type}
-                                label={i18n.t('profile.nav.about')}
-                                link={linksConfig.profile.about}
-                                onTabChange={this.props.onTabChange}
-                            />
-                        ) : null}
-                        {this.userIsAuthor ? (
-                            <InlineTab
-                                id="shared_by_me"
-                                isActive={'shared_by_me' === this.props.type}
-                                label={i18n.t('profile.nav.sharedByMe')}
-                                link={sharedByMeLink}
-                                onTabChange={this.props.onTabChange}
-                            />
-                        ) : null}
-                        {this.userIsAuthor ? (
-                            <InlineTab
-                                id="shared_with_me"
-                                isActive={'shared_with_me' === this.props.type}
-                                label={i18n.t('profile.nav.sharedWithMe')}
-                                link={sharedWithMeLink}
-                                onTabChange={this.props.onTabChange}
-                            />
-                        ) : null}
-
-                        {!isSelectMediaMode && memberConfig.can.saveMedia ? (
-                            <InlineTab
-                                id="playlists"
-                                isActive={'playlists' === this.props.type}
-                                label={i18n.t('profile.nav.playlists')}
-                                link={linksConfig.profile.playlists}
-                                onTabChange={this.props.onTabChange}
-                            />
-                        ) : null}
-                        {PageStore.get('config-options').pages.profile.includeHistory && this.userIsAuthor ? (
-                            <InlineTab
-                                id="history"
-                                isActive={'history' === this.props.type}
-                                label={PageStore.get('config-enabled').pages.history.title}
-                                link={linksConfig.user.history}
-                            />
-                        ) : null}
-                        {PageStore.get('config-options').pages.profile.includeLikedMedia && this.userIsAuthor ? (
-                            <InlineTab
-                                id="liked"
-                                isActive={'liked' === this.props.type}
-                                label={PageStore.get('config-enabled').pages.liked.title}
-                                link={linksConfig.user.liked}
-                            />
-                        ) : null}
+                    <div className="profile-nav-actions">
 
                         {!['about', 'playlists'].includes(this.props.type) ? (
-                            <li className="media-search">
+                            <span className="media-search">
                                 <ProfileSearchBar
                                     onQueryChange={this.props.onQueryChange}
-                                    toggleSearchField={this.onToggleSearchField}
                                     type={this.props.type}
                                 />
-                            </li>
+                            </span>
                         ) : null}
                         {this.props.onToggleFiltersClick &&
                         ['media', 'shared_by_me', 'shared_with_me'].includes(this.props.type) ? (
-                            <li className="media-filters-toggle">
+                            <span className="media-filters-toggle">
                                 <span
                                     style={{
                                         display: 'flex',
@@ -495,11 +353,11 @@ class NavMenuInlineTabs extends React.PureComponent {
                                         ></span>
                                     ) : null}
                                 </span>
-                            </li>
+                            </span>
                         ) : null}
                         {this.props.onToggleSharingClick &&
                         ['media', 'shared_by_me', 'shared_with_me'].includes(this.props.type) ? (
-                            <li className="media-sharing-toggle">
+                            <span className="media-sharing-toggle">
                                 <span
                                     style={{
                                         display: 'flex',
@@ -528,11 +386,11 @@ class NavMenuInlineTabs extends React.PureComponent {
                                         ></span>
                                     ) : null}
                                 </span>
-                            </li>
+                            </span>
                         ) : null}
                         {this.props.onToggleTagsClick &&
                         ['media', 'shared_by_me', 'shared_with_me'].includes(this.props.type) ? (
-                            <li className="media-tags-toggle">
+                            <span className="media-tags-toggle">
                                 <span
                                     style={{
                                         display: 'flex',
@@ -561,11 +419,11 @@ class NavMenuInlineTabs extends React.PureComponent {
                                         ></span>
                                     ) : null}
                                 </span>
-                            </li>
+                            </span>
                         ) : null}
                         {this.props.onToggleSortingClick &&
                         ['media', 'shared_by_me', 'shared_with_me'].includes(this.props.type) ? (
-                            <li className="media-sorting-toggle">
+                            <span className="media-sorting-toggle">
                                 <span
                                     style={{
                                         display: 'flex',
@@ -594,11 +452,9 @@ class NavMenuInlineTabs extends React.PureComponent {
                                         ></span>
                                     ) : null}
                                 </span>
-                            </li>
+                            </span>
                         ) : null}
-                    </ul>
-
-                    {this.state.displayNext ? this.nextBtn : null}
+                    </div>
                 </div>
             </nav>
         );
@@ -652,7 +508,6 @@ export default function ProfilePagesHeader(rawProps) {
     const [popupContentRef, PopupContent, PopupTrigger] = usePopup();
 
     const profilePageHeaderRef = useRef(null);
-    const profileNavRef = useRef(null);
 
     const userIsAdmin = !memberConfig.is.anonymous && memberConfig.is.admin;
     const userIsAuthor =
@@ -810,7 +665,6 @@ export default function ProfilePagesHeader(rawProps) {
                 ) : null}
 
                 <NavMenuInlineTabs
-                    ref={profileNavRef}
                     type={props.type}
                     onTabChange={props.onTabChange}
                     onQueryChange={props.onQueryChange}

@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load static %}
 {% load custom_filters %}
+{% load crispy_forms_tags %}
 
 {% block headtitle %}{{ "Upload media"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
@@ -16,60 +17,124 @@
 {% endblock externallinks %}
 
 {% block topimports %}
-<link href="{% static "css/add-media.css" %}" rel="preload" as="style">
-<link href="{% static "css/add-media.css" %}" rel="stylesheet">
+<link href="{% static "css/add-media.css" %}?v={{ VERSION }}&upload_bundle=4" rel="preload" as="style">
+<link href="{% static "css/add-media.css" %}?v={{ VERSION }}&upload_bundle=4" rel="stylesheet">
+{% if media_object and upload_step == 'edit' and upload_tool == 'trim' and can_trim %}
+<link href="{% static 'video_editor/video-editor.css' %}?v={{ VERSION }}&locale_bundle=1" rel="stylesheet">
+<script src="{% static 'video_editor/video-editor.js' %}?v={{ VERSION }}&locale_bundle=1"></script>
+<script>
+window.MEDIA_DATA = {
+    videoUrl: "{{ media_file_path|escapejs }}",
+    posterUrl: "{{ media_object.poster_url|escapejs }}",
+    mediaId: "{{ media_object.friendly_token|escapejs }}",
+    redirectURL: "{% url 'upload_media' %}?m={{ media_object.friendly_token|escapejs }}&step=edit&tool=subtitles",
+    redirectUserMediaURL: "{{ media_object.user.get_absolute_url|escapejs }}"
+};
+</script>
+{% elif media_object and upload_step == 'edit' and upload_tool == 'chapters' %}
+<link href="{% static 'chapters_editor/chapters-editor.css' %}?v={{ VERSION }}&locale_bundle=1" rel="stylesheet">
+<script src="{% static 'chapters_editor/chapters-editor.js' %}?v={{ VERSION }}&locale_bundle=1"></script>
+<script>
+window.MEDIA_DATA = {
+    videoUrl: "{{ chapter_media_file_path|escapejs }}",
+    posterUrl: "{{ media_object.poster_url|escapejs }}",
+    mediaId: "{{ media_object.friendly_token|escapejs }}",
+    redirectURL: "{% url 'upload_media' %}?m={{ media_object.friendly_token|escapejs }}&step=publish",
+    redirectUserMediaURL: "{{ media_object.user.get_absolute_url|escapejs }}",
+    chapters: {{ chapters }}
+};
+</script>
+{% endif %}
 <style>
     .media-upload-flow {
         width: calc(100% - 32px);
         max-width: 1120px;
         margin: 0 auto 48px;
     }
-    .media-upload-flow h1 { font-size: 22px; font-weight: 500; }
+    .media-upload-flow h1 { font-size: 22px; font-weight: 600; }
+    .media-upload-flow .media-uploader-wrap { padding: 0; }
+    .media-upload-flow .media-uploader { padding: 0; background: transparent; }
     .media-upload-flow .media-uploader-top-wrap { padding-bottom: 8px; }
+    .media-upload-flow .media-upload-items-list { display: none; }
+    .add-media-upload-button .ant-upload-list { max-width: 420px; }
     .media-source-editor {
-        border-top: 1px solid var(--border-color, #ddd);
-        margin-top: 24px;
-        padding-top: 24px;
+        margin-top: 20px;
+        padding: 28px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        background: #fff;
     }
-    .media-source-editor h2 { font-size: 18px; font-weight: 500; margin: 0 0 20px; }
+    .media-source-editor h2 { font-size: 20px; font-weight: 600; margin: 0 0 6px; }
+    .media-source-editor > p { margin: 0 0 24px; color: #667085; font-size: 13px; line-height: 1.6; }
     .media-source-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px 24px;
+        gap: 22px 20px;
     }
-    .media-source-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+    .media-source-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
     .media-source-field-wide { grid-column: 1 / -1; }
-    .media-source-field label { font-size: 14px; font-weight: 500; }
+    .media-source-field label { font-size: 14px; font-weight: 500; color: #1f1f1f; }
     .media-source-field input:not([type="checkbox"]),
     .media-source-field textarea {
         box-sizing: border-box;
         width: 100%;
-        min-height: 42px;
-        border: 1px solid #c8c8c8;
-        border-radius: 2px;
-        background: var(--sidebar-bg-color, #fff);
+        min-height: 38px;
+        border: 1px solid #d9d9d9;
+        border-radius: 6px;
+        background: #fff;
         color: inherit;
-        padding: 9px 11px;
-        font: inherit;
+        padding: 8px 11px;
+        font-size: 14px;
+        line-height: 1.5;
     }
-    .media-source-field textarea { min-height: 112px; resize: vertical; }
-    .media-source-field small { color: #777; font-size: 12px; }
-    .media-source-checkbox { display: flex; align-items: center; gap: 9px; }
-    .media-source-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+    .media-source-field input:hover,
+    .media-source-field textarea:hover { border-color: #4096ff; }
+    .media-source-field input:focus,
+    .media-source-field textarea:focus { border-color: #1677ff; outline: none; box-shadow: 0 0 0 2px rgba(5, 145, 255, .12); }
+    .media-source-field textarea { min-height: 104px; resize: vertical; }
+    .media-source-field small { color: #8c8c8c; font-size: 12px; line-height: 1.5; }
+    .media-source-field input[type="file"] { padding: 6px; }
+    .media-source-field input[type="file"]::file-selector-button {
+        margin-right: 12px; padding: 4px 12px; border: 1px solid #d9d9d9;
+        border-radius: 6px; background: #fff; color: #1f1f1f; cursor: pointer;
+    }
+    .media-source-checkbox { display: flex; align-items: center; gap: 9px; color: #1f1f1f; font-size: 14px; }
+    .media-source-checkbox input { accent-color: #1677ff; }
+    .media-source-actions {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+        margin-top: 24px; padding-top: 20px; border-top: 1px solid #f0f0f0;
+    }
     .media-source-actions button {
-        min-height: 40px; border: 1px solid #0a9fd8; border-radius: 2px; padding: 0 18px;
-        background: #0a9fd8; color: #fff; font: inherit; cursor: pointer;
+        min-height: 36px; border: 1px solid #1677ff; border-radius: 6px; padding: 0 16px;
+        background: #1677ff; color: #fff; font-size: 14px; cursor: pointer;
     }
-    .media-source-actions button.secondary { background: transparent; color: inherit; border-color: #aaa; }
-    .media-source-actions button:disabled { opacity: .5; cursor: not-allowed; }
-    #upload-flow-status { flex-basis: 100%; margin: 0; color: #555; }
-    @media (max-width: 640px) { .media-source-grid { grid-template-columns: 1fr; } }
+    .media-source-actions button.secondary { background: #fff; color: #1f1f1f; border-color: #d9d9d9; }
+    .media-source-actions button:disabled { background: #f5f5f5; color: #bfbfbf; border-color: #d9d9d9; cursor: not-allowed; }
+    #upload-flow-status { flex-basis: 100%; margin: 2px 0 0; color: #667085; font-size: 13px; }
+    .upload-workflow-steps { margin: 0 0 28px; }
+    .upload-step-actions { margin-top: 16px; padding-top: 0; border-top: 0; }
+    .upload-workflow-panel { padding: 28px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fff; }
+    .upload-workflow-panel h2 { margin: 0 0 16px; font-size: 20px; font-weight: 600; }
+    .upload-workflow-panel .user-action-form-inner { max-width: none; padding: 0; }
+    .upload-workflow-panel .post-form { max-width: 100%; }
+    .upload-edit-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
+    .upload-edit-tools a { padding: 8px 18px; border: 1px solid #d9d9d9; border-radius: 6px; color: inherit; text-decoration: none; }
+    .upload-edit-tools a[aria-current="page"] { border-color: #1677ff; background: #e6f4ff; color: #0958d9; }
+    .upload-edit-next { display: inline-block; margin-top: 20px; padding: 9px 18px; border-radius: 6px; background: #1677ff; color: #fff; text-decoration: none; }
+    .upload-edit-next:hover { color: #fff; background: #4096ff; }
+    @media (max-width: 640px) {
+        .media-upload-flow { width: calc(100% - 24px); }
+        .media-source-editor { padding: 20px; }
+        .media-source-grid { grid-template-columns: 1fr; }
+    }
 
     /* LMS Embed Mode specific styling */
     body.lms-embed-mode {
         overflow-y: hidden;
     }
     .is-lms-embed .media-source-editor { display: none; }
+    .is-lms-embed .upload-workflow-steps,
+    .is-lms-embed .upload-step-actions { display: none; }
     .media-uploader-wrap.is-lms-embed {
         max-width: 680px;
         padding: 10px 15px;
@@ -88,25 +153,6 @@
     .is-lms-embed .media-uploader-bottom-wrap {
         margin-top: 10px;
     }
-    .is-lms-embed .media-drag-drop-inner {
-        padding: 20px 10px;
-        min-height: 140px;
-        border-width: 2px;
-    }
-    .is-lms-embed .media-drag-drop-content-inner span {
-        font-size: 13px;
-        margin-bottom: 6px;
-        line-height: 1.2;
-    }
-    .is-lms-embed .media-drag-drop-content-inner i.material-icons {
-        font-size: 32px;
-        margin-bottom: 4px;
-    }
-    .is-lms-embed .qq-upload-button-selector {
-        padding: 6px 16px;
-        font-size: 13px;
-        margin-top: 5px;
-    }
     .is-lms-embed .media-upload-items-list {
         margin-top: 10px;
     }
@@ -120,7 +166,9 @@
 
     {% if can_add %}
 
-        <div class="media-upload-flow" id="media-upload-flow">
+        <div class="media-upload-flow" id="media-upload-flow" data-step="{{ upload_step }}" data-media-token="{{ media_object.friendly_token|default:'' }}">
+        <div id="upload-workflow-steps" class="upload-workflow-steps"></div>
+        {% if upload_step == 'upload' %}
         <div class="media-uploader-wrap" id="media-uploader-wrap">
             <div class="media-uploader-top-wrap">
                 <div class="media-uploader-top-left-wrap">
@@ -132,24 +180,8 @@
             <script type="text/template" id="qq-template">
                 <div class="media-uploader-bottom-wrap qq-uploader-selector">
                     <div class="media-uploader-bottom-left-wrap">
-                        <div class="media-drag-drop-wrap">
-                            <div class="media-drag-drop-inner" qq-drop-area-text="{{ 'Drop files here'|custom_translate:LANGUAGE_CODE }}">
-                                <div class="media-drag-drop-content">
-                                    <div class="media-drag-drop-content-inner">
-                                        <span><i class="material-icons">cloud_upload</i></span>
-                                        <span>{{ "Drag and drop files" | custom_translate:LANGUAGE_CODE}}</span>
-                                        <span>{{ "or" | custom_translate:LANGUAGE_CODE}}</span>
-                                        <span class="browse-files-btn-wrap">
-                                            <span class="qq-upload-button-selector">{{ "Browse your files" | custom_translate:LANGUAGE_CODE}}</span>
-                                        </span>
-
-                                        <div class="qq-upload-drop-area-selector media-dropzone" qq-hide-dropzone>
-                                            <span class="qq-upload-drop-area-text-selector"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div id="antd-media-upload"></div>
+                        <span class="qq-upload-button-selector" aria-hidden="true"></span>
                     </div>
                     <div class="media-uploader-bottom-right-wrap">
                         <ul class="media-upload-items-list qq-upload-list-selector">
@@ -212,32 +244,39 @@
             </script>
             <div class="media-uploader"></div>
         </div>
+        <div class="media-source-actions upload-step-actions">
+            <button type="button" id="start-media-upload" aria-describedby="upload-flow-status" disabled>{{ "Start upload"|custom_translate:request.LANGUAGE_CODE }}</button>
+            <p id="upload-flow-status" role="status" aria-live="polite">{{ "Select a video file to start uploading."|custom_translate:request.LANGUAGE_CODE }}</p>
+        </div>
+        {% endif %}
 
-        <form class="media-source-editor" id="media-source-form" enctype="multipart/form-data">
+        {% if upload_step == 'upload' or upload_step == 'basic' and media_object %}
+        <form class="media-source-editor" id="media-source-form" enctype="multipart/form-data" data-edit-url="{% if media_object %}{{ media_object.edit_url }}&ajax=1{% endif %}">
             {% csrf_token %}
+            <input type="hidden" name="friendly_token" value="{{ media_object.friendly_token }}">
             <h2>{{ "Basic information"|custom_translate:request.LANGUAGE_CODE }}</h2>
-            <p>{{ "Choose one video at a time. Its information is saved with the upload; after it finishes, you can continue with another video."|custom_translate:request.LANGUAGE_CODE }}</p>
+            <p>{{ "Add the video details, then save to continue editing."|custom_translate:request.LANGUAGE_CODE }}</p>
             <div class="media-source-grid">
                 <div class="media-source-field media-source-field-wide">
                     <label for="upload-title">{{ "Title"|custom_translate:request.LANGUAGE_CODE }}</label>
-                    <input id="upload-title" name="title" type="text" maxlength="100" autocomplete="off">
+                    <input id="upload-title" name="title" type="text" maxlength="100" autocomplete="off" value="{{ media_object.title }}">
                 </div>
                 <div class="media-source-field media-source-field-wide">
                     <label for="upload-tags">{{ "Tags (optional)"|custom_translate:request.LANGUAGE_CODE }}</label>
-                    <input id="upload-tags" name="new_tags" type="text" autocomplete="off">
+                    <input id="upload-tags" name="new_tags" type="text" autocomplete="off" value="{% for tag in media_object.tags.all %}{{ tag.title }}{% if not forloop.last %}, {% endif %}{% endfor %}">
                     <small>{{ "Separate multiple tags with commas."|custom_translate:request.LANGUAGE_CODE }}</small>
                 </div>
                 <div class="media-source-field">
                     <label for="upload-date">{{ "Date produced"|custom_translate:request.LANGUAGE_CODE }}</label>
-                    <input id="upload-date" name="add_date" type="datetime-local" step="1">
+                    <input id="upload-date" name="add_date" type="datetime-local" step="1" value="{{ media_object.add_date|date:'Y-m-d\TH:i:s' }}">
                 </div>
                 <div class="media-source-field">
                     <label for="upload-thumbnail-time">{{ "Thumbnail Time (seconds, optional)"|custom_translate:request.LANGUAGE_CODE }}</label>
-                    <input id="upload-thumbnail-time" name="thumbnail_time" type="number" min="0" step="0.1">
+                    <input id="upload-thumbnail-time" name="thumbnail_time" type="number" min="0" step="0.1" value="{{ media_object.thumbnail_time|default_if_none:'' }}">
                 </div>
                 <div class="media-source-field media-source-field-wide">
                     <label for="upload-description">{{ "Description"|custom_translate:request.LANGUAGE_CODE }}</label>
-                    <textarea id="upload-description" name="description" rows="4"></textarea>
+                    <textarea id="upload-description" name="description" rows="4">{{ media_object.description }}</textarea>
                 </div>
                 <div class="media-source-field media-source-field-wide">
                     <label for="upload-poster">{{ "Poster Image"|custom_translate:request.LANGUAGE_CODE }}</label>
@@ -245,17 +284,58 @@
                     <small>{{ "Maximum file size: 5MB"|custom_translate:request.LANGUAGE_CODE }}</small>
                 </div>
                 <label class="media-source-checkbox media-source-field-wide" for="upload-enable-comments">
-                    <input id="upload-enable-comments" name="enable_comments" type="checkbox" checked>
+                    <input id="upload-enable-comments" name="enable_comments" type="checkbox" {% if media_object.enable_comments %}checked{% endif %}>
                     <span>{{ "Enable comments"|custom_translate:request.LANGUAGE_CODE }}</span>
                 </label>
             </div>
             <div class="media-source-actions">
-                <button type="button" id="start-media-upload" aria-describedby="upload-flow-status" disabled>{{ "Start upload"|custom_translate:request.LANGUAGE_CODE }}</button>
-                <button type="button" id="add-another-video" class="secondary" hidden>{{ "Add another video"|custom_translate:request.LANGUAGE_CODE }}</button>
-                <button type="submit" id="save-media-source" class="secondary" disabled>{{ "Save media information"|custom_translate:request.LANGUAGE_CODE }}</button>
-                <p id="upload-flow-status" role="status" aria-live="polite">{{ "Select a video file to start uploading."|custom_translate:request.LANGUAGE_CODE }}</p>
+                <button type="submit" id="save-media-source" {% if not media_object %}disabled{% endif %}>{{ "Save media information"|custom_translate:request.LANGUAGE_CODE }}</button>
+                <p id="media-source-status" role="status" aria-live="polite"></p>
             </div>
         </form>
+        {% elif upload_step == 'edit' and media_object %}
+        <nav class="upload-edit-tools" aria-label="{{ 'Edit video'|custom_translate:request.LANGUAGE_CODE }}">
+            <a href="{% url 'upload_media' %}?m={{ media_object.friendly_token }}&step=edit&tool=trim" {% if upload_tool == 'trim' %}aria-current="page"{% endif %}>{{ "Trim"|custom_translate:request.LANGUAGE_CODE }}</a>
+            <a href="{% url 'upload_media' %}?m={{ media_object.friendly_token }}&step=edit&tool=subtitles" {% if upload_tool == 'subtitles' %}aria-current="page"{% endif %}>{{ "Captions"|custom_translate:request.LANGUAGE_CODE }}</a>
+            <a href="{% url 'upload_media' %}?m={{ media_object.friendly_token }}&step=edit&tool=chapters" {% if upload_tool == 'chapters' %}aria-current="page"{% endif %}>{{ "Chapters"|custom_translate:request.LANGUAGE_CODE }}</a>
+        </nav>
+        {% if upload_tool == 'trim' %}
+        <section class="upload-workflow-panel">
+            <h2>{{ "Trim"|custom_translate:request.LANGUAGE_CODE }}</h2>
+            {% if can_trim %}<div id="video-editor-trim-root"></div>
+            {% else %}<p>{{ "Media processing has not finished yet. You can continue with captions, chapters, or publish settings and return later."|custom_translate:request.LANGUAGE_CODE }}</p>{% endif %}
+        </section>
+        {% elif upload_tool == 'subtitles' %}
+        <section class="upload-workflow-panel">
+            <h2>{{ "Captions"|custom_translate:request.LANGUAGE_CODE }}</h2>
+            {% if whisper_form %}
+            <div class="user-action-form-inner">
+                <h3>{{ "Request Automatic Transcription and Translation"|custom_translate:request.LANGUAGE_CODE }}</h3>
+                {% crispy whisper_form %}
+            </div>
+            {% endif %}
+            <div class="user-action-form-inner">
+                {% crispy subtitle_form %}
+            </div>
+            {% if subtitles %}
+            <h3>{{ "Edit existing Captions"|custom_translate:request.LANGUAGE_CODE }}</h3>
+            <ul>{% for subtitle in subtitles %}<li><a href="{{ subtitle.url }}">{{ subtitle.language.title }}</a></li>{% endfor %}</ul>
+            {% endif %}
+        </section>
+        {% elif upload_tool == 'chapters' %}
+        <section class="upload-workflow-panel">
+            <h2>{{ "Chapters"|custom_translate:request.LANGUAGE_CODE }}</h2>
+            <div id="chapters-editor-root"></div>
+        </section>
+        {% endif %}
+        <a class="upload-edit-next" href="{% url 'upload_media' %}?m={{ media_object.friendly_token }}&step=publish">{{ "Publish"|custom_translate:request.LANGUAGE_CODE }}</a>
+        {% elif upload_step == 'publish' and media_object %}
+        <section class="upload-workflow-panel">
+            <h2>{{ "Publish"|custom_translate:request.LANGUAGE_CODE }}</h2>
+            {% if can_publish %}{% crispy publish_form %}
+            {% else %}<p>{{ "Only the owner can publish this video."|custom_translate:request.LANGUAGE_CODE }}</p>{% endif %}
+        </section>
+        {% endif %}
         </div>
 
     {% else %}
@@ -272,7 +352,8 @@
 {% endblock innercontent %}
 
 {% block bottomimports %}
-<script src="{% static "js/add-media.js" %}?v={{ VERSION }}"></script>
+<script src="{% static "js/add-media.js" %}?v={{ VERSION }}&upload_bundle=7"></script>
+{% if upload_step == 'upload' %}
 <script>
     document.addEventListener("DOMContentLoaded", function(event) {
 
@@ -313,19 +394,17 @@
             return cookieVal;
         }
 
-        var productionDate = document.getElementById('upload-date');
-        function setCurrentProductionDate() {
-            if (productionDate && !productionDate.value) {
-                var localNow = new Date();
-                localNow.setMinutes(localNow.getMinutes() - localNow.getTimezoneOffset());
-                productionDate.value = localNow.toISOString().slice(0, 19);
-            }
+        function updateUploadState(id, name, status, percent) {
+            window.dispatchEvent(new CustomEvent('media-upload-state', {
+                detail: { id: id, name: name, status: status, percent: percent,
+                    file: default_concurrent_chunked_uploader.getFile(id) }
+            }));
         }
-        setCurrentProductionDate();
 
         var default_concurrent_chunked_uploader = new qq.FineUploader({
             debug: true,
             autoUpload: isLmsEmbedMode,
+            multiple: false,
             element: document.querySelector('.media-uploader'),
             request: {
                 endpoint: '{% url 'uploader:upload' %}',
@@ -381,160 +460,94 @@
             },
             callbacks: {
                 onSubmitted: function(id, name) {
+                    updateUploadState(id, name);
                     if (!isLmsEmbedMode) {
                         document.getElementById('start-media-upload').disabled = false;
-                        document.getElementById('upload-flow-status').textContent = '{{ "Video selected. Fill in the details, then start the upload."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                        document.getElementById('upload-flow-status').textContent = '{{ "Video selected. Start the upload to continue."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
                     }
                 },
                 onUpload: function(id, name) {
-                    var metadataForm = document.getElementById('media-source-form');
+                    updateUploadState(id, name, 'uploading', 0);
                     if (!isLmsEmbedMode) {
-                        var params = {
-                            has_media_metadata: '1',
-                            title: metadataForm.elements.title.value,
-                            new_tags: metadataForm.elements.new_tags.value,
-                            add_date: metadataForm.elements.add_date.value,
-                            description: metadataForm.elements.description.value,
-                            enable_comments: metadataForm.elements.enable_comments.checked ? '1' : '',
-                            thumbnail_time: metadataForm.elements.thumbnail_time.value
-                        };
-                        default_concurrent_chunked_uploader.setParams(params, id);
                         document.getElementById('upload-flow-status').textContent = '{{ "Uploading video…"|custom_translate:request.LANGUAGE_CODE|escapejs }}';
                     }
                     document.getElementById('start-media-upload').disabled = true;
                 },
                 onError: function(id, name, errorReason, xhrOrXdr) {
+                    updateUploadState(id, name, 'error');
                     console.warn(qq.format("Error on file number {} - {}.  Reason: {}", id, name, errorReason));
                     var queuedFiles = default_concurrent_chunked_uploader.getUploads({status: qq.status.SUBMITTED});
                     var failedItem = typeof id === 'number' && document.querySelector('.qq-file-id-' + id);
                     document.getElementById('start-media-upload').disabled = queuedFiles.length === 0;
                     document.getElementById('upload-flow-status').textContent = queuedFiles.length
-                        ? '{{ "Video selected. Fill in the details, then start the upload."|custom_translate:request.LANGUAGE_CODE|escapejs }}'
+                        ? '{{ "Video selected. Start the upload to continue."|custom_translate:request.LANGUAGE_CODE|escapejs }}'
                         : failedItem
                             ? '{{ "Upload failed. Use Retry on the selected file, or cancel it and choose another."|custom_translate:request.LANGUAGE_CODE|escapejs }}'
                             : errorReason || '{{ "Select a video file to start uploading."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
                 },
                 onCancel: function(id, name) {
+                    updateUploadState(id, name, 'removed');
                     if (!isLmsEmbedMode) {
                         document.getElementById('start-media-upload').disabled = true;
                         document.getElementById('upload-flow-status').textContent = '{{ "Upload cancelled. Choose another video file."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
                     }
                 },
-                onComplete: function( id, name, response, request ) {
-
-                    if ( response.success ) {
-
+                onProgress: function(id, name, uploaded, total) {
+                    updateUploadState(id, name, 'uploading', total ? Math.round(uploaded / total * 100) : 0);
+                },
+                onComplete: function(id, name, response) {
+                    updateUploadState(id, name, response.success ? 'done' : 'error', response.success ? 100 : undefined);
+                    if (!response.success) return;
+                    if (isLmsEmbedMode && window.parent !== window && response.media_url) {
+                        var mediaUrl = response.media_url;
+                        var mediaId = response.friendly_token || '';
+                        if (!mediaId && mediaUrl.indexOf('m=') > -1) {
+                            mediaId = mediaUrl.split('m=')[1].split('&')[0];
+                        }
+                        window.parent.postMessage({
+                            type: 'videoSelected',
+                            embedUrl: window.location.origin + '/embed?m=' + mediaId,
+                            videoId: mediaId
+                        }, '*');
+                        return;
+                    }
+                    if (response.friendly_token) {
                         var metadataForm = document.getElementById('media-source-form');
-                        var saveMetadataButton = document.getElementById('save-media-source');
-                        var statusMessage = document.getElementById('upload-flow-status');
-                        var addAnotherButton = document.getElementById('add-another-video');
-                        if (metadataForm && response.edit_url) {
-                            if (!metadataForm.elements.title.value && response.title) {
-                                metadataForm.elements.title.value = response.title;
-                            }
-                            metadataForm.dataset.editUrl = response.edit_url + '&ajax=1';
-                            saveMetadataButton.disabled = true;
-                            addAnotherButton.hidden = isLmsEmbedMode;
-                            if (!isLmsEmbedMode) {
-                                statusMessage.textContent = '{{ "Upload complete. Saving media information…"|custom_translate:request.LANGUAGE_CODE|escapejs }}';
-                                fetch(metadataForm.dataset.editUrl, {
-                                    method: 'POST',
-                                    body: new FormData(metadataForm),
-                                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                                    credentials: 'same-origin'
-                                }).then(function(response) {
-                                    return response.json().then(function(data) { return { ok: response.ok, data: data }; });
-                                }).then(function(result) {
-                                    if (!result.ok || !result.data.success) throw new Error('save');
-                                    statusMessage.textContent = '{{ "Upload complete. The information was saved with this video."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
-                                }).catch(function() {
-                                    statusMessage.textContent = '{{ "Upload finished, but media information could not be saved. Use Save media information to retry."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
-                                }).finally(function() {
-                                    saveMetadataButton.disabled = false;
-                                });
-                            }
+                        metadataForm.dataset.editUrl = '{% url 'edit_media' %}?m=' + encodeURIComponent(response.friendly_token) + '&ajax=1';
+                        metadataForm.elements.friendly_token.value = response.friendly_token;
+                        if (!metadataForm.elements.title.value.trim()) {
+                            metadataForm.elements.title.value = name.replace(/\.[^.]+$/, '');
                         }
-
-                        if ( response.media_url ) {
-                            if ( 1 === this._currentItemLimit ) {
-                                if (isLmsEmbedMode && window.parent !== window) {
-                                    var mediaUrl = response.media_url;
-                                    var mediaId = '';
-                                    if (mediaUrl.indexOf('m=') > -1) {
-                                        mediaId = mediaUrl.split('m=')[1].split('&')[0];
-                                    } else {
-                                        var parts = mediaUrl.split('/').filter(Boolean);
-                                        mediaId = parts[parts.length - 1];
-                                    }
-                                    var baseUrl = window.location.origin;
-                                    var embedUrl = baseUrl + '/embed?m=' + mediaId;
-
-                                    var sendPostMsg = function() {
-                                        window.parent.postMessage({
-                                            type: 'videoSelected',
-                                            embedUrl: embedUrl,
-                                            videoId: mediaId
-                                        }, '*');
-                                    };
-
-                                    sendPostMsg();
-                                    return;
-                                }
-                                // Keep the user on this page so upload and source details remain one workflow.
-                            }
-                        }
-
-                        var listEl = document.querySelector( '.qq-file-id-' + id );
-                        var viewFileEl = listEl && listEl.querySelector( '.view-uploaded-media-link' );
-
-                        if ( listEl ) {
-                            var fileUrl = response.media_url;
-                            listEl.style.cursor = 'pointer';
-                            listEl.addEventListener( 'click', function(ev) {
-                                ev.preventDefault();
-                                ev.stopPropagation();
-                                window.location.href = fileUrl;
-                            });
-                        }
-
-                        if ( viewFileEl ) {
-                            viewFileEl.setAttribute( 'href', response.media_url );
-                            viewFileEl.setAttribute( 'class', 'view-uploaded-media-link' );
-                        }
+                        document.getElementById('save-media-source').disabled = false;
+                        document.getElementById('upload-flow-status').textContent = '{{ "Upload complete. Save the video information to continue."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                        window.history.replaceState(null, '', '{% url 'upload_media' %}?m=' + encodeURIComponent(response.friendly_token) + '&step=basic');
                     }
                 },
             },
         });
 
         var uploader = default_concurrent_chunked_uploader;
+        window.mediaUploader = uploader;
+        window.dispatchEvent(new Event('media-uploader-ready'));
         var startButton = document.getElementById('start-media-upload');
-        var metadataForm = document.getElementById('media-source-form');
-        var statusMessage = document.getElementById('upload-flow-status');
-        var saveMetadataButton = document.getElementById('save-media-source');
-        var addAnotherButton = document.getElementById('add-another-video');
-
         startButton.addEventListener('click', function() {
             uploader.uploadStoredFiles();
         });
-
-        addAnotherButton.addEventListener('click', function() {
-            metadataForm.reset();
-            setCurrentProductionDate();
-            delete metadataForm.dataset.editUrl;
-            uploader.setItemLimit(uploader.getUploads().length + 1);
-            saveMetadataButton.disabled = true;
-            addAnotherButton.hidden = true;
-            startButton.disabled = true;
-            statusMessage.textContent = '{{ "Select a video file to start uploading."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
-        });
-
+    });
+</script>
+{% endif %}
+{% if upload_step == 'upload' or upload_step == 'basic' and media_object %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var metadataForm = document.getElementById('media-source-form');
+        var saveMetadataButton = document.getElementById('save-media-source');
+        var statusMessage = document.getElementById('media-source-status');
         metadataForm.addEventListener('submit', function(event) {
             event.preventDefault();
-            var editUrl = metadataForm.dataset.editUrl;
-            if (!editUrl) return;
+            if (!metadataForm.dataset.editUrl) return;
             saveMetadataButton.disabled = true;
             statusMessage.textContent = '{{ "Saving information…"|custom_translate:request.LANGUAGE_CODE|escapejs }}';
-            fetch(editUrl, {
+            fetch(metadataForm.dataset.editUrl, {
                 method: 'POST',
                 body: new FormData(metadataForm),
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
@@ -543,13 +556,13 @@
                 return response.json().then(function(data) { return { ok: response.ok, data: data }; });
             }).then(function(result) {
                 if (!result.ok || !result.data.success) throw new Error('save');
-                statusMessage.textContent = '{{ "Media information saved."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
+                window.location.assign('{% url 'upload_media' %}?m=' + encodeURIComponent(metadataForm.elements.friendly_token.value) + '&step=edit');
             }).catch(function() {
                 statusMessage.textContent = '{{ "Could not save the media information. Please try again."|custom_translate:request.LANGUAGE_CODE|escapejs }}';
-            }).finally(function() {
                 saveMetadataButton.disabled = false;
             });
         });
     });
 </script>
+{% endif %}
 {% endblock bottomimports %}

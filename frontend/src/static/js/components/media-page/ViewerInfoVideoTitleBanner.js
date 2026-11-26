@@ -14,6 +14,7 @@ import {
     MediaMoreOptionsIcon,
 } from '../media-actions/';
 import ViewerInfoTitleBanner from './ViewerInfoTitleBanner';
+import formatLocalizedDate from '../../utils/helpers/formatLocalizedDate';
 
 export default class ViewerInfoVideoTitleBanner extends ViewerInfoTitleBanner {
     render() {
@@ -67,6 +68,12 @@ export default class ViewerInfoVideoTitleBanner extends ViewerInfoTitleBanner {
                                 </>
                             ) : null}
                         </div>
+                    </div>
+                ) : null}
+
+                {mediaData.media_type === 'video' && PageStore.get('config-media-item').displayPublishDate && mediaData.add_date ? (
+                    <div className="video-published-date">
+                        {i18n.t('media:publishedOn', { date: formatLocalizedDate(mediaData.add_date) })}
                     </div>
                 ) : null}
 

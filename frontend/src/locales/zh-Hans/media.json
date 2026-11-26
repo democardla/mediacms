@@ -142,6 +142,13 @@
     "removeFailed": "评论删除失败",
     "submit": "发表评论"
   },
+  "videoTabs": {
+    "label": "创作者说明与成就",
+    "info": "创作者说明",
+    "creator": "创作者",
+    "legacy": "成就",
+    "legacyEmpty": "这个视频暂时还没有成就。"
+  },
   "edit": "编辑",
   "editMedia": "编辑媒体",
   "embed": {
@@ -189,6 +196,44 @@
     "video": "视频"
   },
   "publishedOn": "发布于 {{date}}",
+  "members": {
+    "title": "成员",
+    "joinedAgo": "{{time}}加入",
+    "noResults": "没有找到与“{{query}}”匹配的成员",
+    "searchResults": "与“{{query}}”匹配的成员",
+    "searchMediaInstead": "改为搜索投稿"
+  },
+  "playlist": {
+    "playAll": "播放全部",
+    "createdAgo": "创建于{{time}}",
+    "createdOn": "创建于{{date}}",
+    "mediaCount_other": "{{formattedCount}} 个媒体文件",
+    "edit": "编辑",
+    "editTitle": "编辑播放列表",
+    "title": "标题",
+    "titlePlaceholder": "输入播放列表标题…",
+    "description": "简介",
+    "descriptionPlaceholder": "输入播放列表简介…",
+    "cancel": "取消",
+    "update": "更新",
+    "create": "创建",
+    "delete": "删除播放列表",
+    "removeTitle": "删除播放列表",
+    "removeConfirm": "确定要永久删除这个播放列表吗？",
+    "remove": "删除",
+    "removeItem": "从播放列表移除",
+    "removeItemTitle": "移出播放列表",
+    "removeItemConfirm": "确定要从播放列表移除这个媒体文件吗？",
+    "removeItemAction": "移除",
+    "itemRemoved": "已从播放列表移除媒体文件。",
+    "itemRemoveFailed": "无法从播放列表移除媒体文件。",
+    "updated": "播放列表已更新。",
+    "updateFailed": "无法更新播放列表。",
+    "removed": "播放列表已删除，即将跳转…",
+    "removeFailed": "无法删除播放列表。",
+    "created": "播放列表已创建。",
+    "createFailed": "无法创建播放列表。"
+  },
   "profile": {
     "addBanner": "添加横幅",
     "editBanner": "编辑横幅",
@@ -299,6 +344,21 @@
     "tags": "标签"
   },
   "upNext": "接下来",
+  "upload": {
+    "selectFile": "选择视频",
+    "dropFiles": "点击或拖拽视频到此区域上传",
+    "hint": "每次只能选择一个视频。上传完成后，在这一步填写基本信息。",
+    "steps": {
+      "details": "上传与基本信息",
+      "edit": "剪辑、字幕与章节",
+      "upload": "视频上传",
+      "basic": "基本信息",
+      "trim": "剪辑",
+      "subtitles": "字幕",
+      "chapters": "章节",
+      "publish": "发布设置"
+    }
+  },
   "viewMedia": "查看媒体",
   "views_other": "{{formattedCount}} 次观看"
 }

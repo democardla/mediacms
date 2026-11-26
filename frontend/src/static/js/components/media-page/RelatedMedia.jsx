@@ -6,7 +6,7 @@ import { applyDefaultProps } from '../../utils/helpers/applyDefaultProps';
 export function RelatedMedia(rawProps) {
   const props = applyDefaultProps(rawProps, RelatedMedia.defaultPropValues);
   const [items, setItems] = useState(updateMediaItems());
-  const [mediaType, setMediaType] = useState(null);
+  const [mediaType, setMediaType] = useState(MediaPageStore.get('media-type'));
 
   function onMediaDataLoad() {
     setMediaType(MediaPageStore.get('media-type'));

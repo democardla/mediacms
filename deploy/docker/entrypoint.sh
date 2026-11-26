@@ -28,10 +28,13 @@ else
     usermod -a -G $GROUP www-data
 fi
 
-# We should do this only for folders that have a different owner, since it is an expensive operation
-# Also ignoring .git folder to fix this issue https://github.com/mediacms-io/mediacms/issues/934
-# Exclude package-lock.json files that may not exist or be removed during frontend setup
-find /home/mediacms.io/mediacms ! \( -path "*.git*" -o -name "package-lock.json" \) -exec chown www-data:$TARGET_GID {} + 2>/dev/null || true
+# The bind mount includes large dependency trees that the application only reads.
+# Prune them before walking files, and change ownership only where necessary.
+# Keep Git metadata and package lockfiles untouched as well.
+find /home/mediacms.io/mediacms \
+    \( -type d \( -name .git -o -name node_modules -o -name .venv \) -prune \) -o \
+    \( ! -name package-lock.json ! -user www-data -exec chown www-data:$TARGET_GID {} + \) \
+    2>/dev/null || true
 
 chmod +x /home/mediacms.io/mediacms/deploy/docker/start.sh /home/mediacms.io/mediacms/deploy/docker/prestart.sh
 

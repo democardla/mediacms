@@ -124,8 +124,8 @@
 {% endblock headermeta %}
 
 {% block topimports %}
-<link href="{% static "css/media.css" %}?v={{ VERSION }}&ui_bundle=3" rel="preload" as="style">
-<link href="{% static "css/media.css" %}?v={{ VERSION }}&ui_bundle=3" rel="stylesheet">
+<link href="{% static "css/media.css" %}?v={{ VERSION }}&ui_bundle=7" rel="preload" as="style">
+<link href="{% static "css/media.css" %}?v={{ VERSION }}&ui_bundle=7" rel="stylesheet">
 {% if media_object.media_type == "video" or media_object.media_type == "audio" %}
 <link href="{{FRONTEND_HOST}}/static/video_js/video-js.js?v={{VERSION}}&locale_bundle=zh-hans-3" rel="preload" as="script">
 {% endif %}
@@ -146,5 +146,5 @@
 {% endblock content %}
 
 {% block bottomimports %}
-    <script src="{% static "js/media.js" %}?v={{ VERSION }}&locale_bundle=zh-hans-3"></script>
+    <script src="{% static "js/media.js" %}?v={{ VERSION }}&locale_bundle=zh-hans-8"></script>
 {% endblock bottomimports %}

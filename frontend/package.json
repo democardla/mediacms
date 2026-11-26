@@ -54,6 +54,7 @@
         "webpack-dev-server": "^5.2.2"
     },
     "dependencies": {
+        "antd": "^6.6.8",
         "axios": "^1.20.0",
         "events": "^3.3.0",
         "i18next": "^26.5.11",

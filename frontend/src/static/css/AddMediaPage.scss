@@ -75,54 +75,37 @@ dialog {
   position: relative;
   width: 100%;
   max-width: 1324px;
-  padding: 8px 8px;
-  margin: 0 auto 1em auto;
+  padding: 8px;
+  margin: 0 auto 1em;
 }
 
 .pre-upload-msg {
   display: block;
   margin: 16px 0;
   font-size: 14px;
-  font-weight: 400;
   text-align: center;
 }
 
 .media-uploader {
   position: relative;
   display: block;
-  padding: 0.75rem;
   width: 100%;
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    right: 0;
-    width: 100%;
-    height: 5px;
-    left: 0;
-    opacity: 1;
-    pointer-events: none;
-    box-shadow: inset 0px 4px 8px -3px rgba(17, 17, 17, 0.06);
-  }
+  padding: 0.75rem;
 }
 
 .media-uploader-top-wrap {
-  position: relative;
   padding: 0 0 1.5em;
   h1 {
     display: block;
     font-size: 16px;
     font-weight: 500;
-    line-height: 1.25em;
+    line-height: 1.25;
     margin: 0;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
   }
 }
 
 .media-uploader-bottom-wrap {
-  position: relative;
-  display: inline-block;
+  display: block;
   width: 100%;
 }
 
@@ -132,39 +115,29 @@ dialog {
   width: 50%;
 }
 
-.media-uploader-bottom-left-wrap,
+.media-uploader-bottom-left-wrap {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+}
+
+.media-uploader-bottom-left-wrap .qq-upload-button-selector {
+  display: none;
+}
+
 .media-uploader-bottom-right-wrap {
-  position: relative;
-  display: inline-block;
-  vertical-align: top;
+  display: block;
   width: 100%;
 }
 
-.media-uploader-bottom-left-wrap {
-  min-height: 225px;
-  height: 0;
-  padding-top: math.div(3, 4) * 100%;
-  @media screen and (min-width: 480px) {
-    padding-top: math.div(5, 8) * 100%;
-  }
-  @media screen and (min-width: 768px) {
-    padding-top: math.div(9, 16) * 100%;
-  }
-  @media screen and (min-width: 1024px) {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 40%;
-    height: 100%;
-    padding: 0;
-  }
+.media-upload-items-list {
+  min-height: 0;
+  max-height: none;
+  margin: 16px 0 0;
 }
 
-.media-uploader-bottom-right-wrap {
-  float: right;
-  @media screen and (min-width: 1024px) {
-    width: 60%;
-  }
+.media-upload-items-list:empty {
+  display: none;
 }
 
 dialog {
@@ -273,14 +246,11 @@ dialog {
 .media-upload-items-list {
   position: relative;
   display: block;
-  margin: 0 0.75rem 0.75rem 0.75rem;
+  margin: 16px 0 0;
   padding: 0;
   overflow: auto;
   max-height: 80vh;
   list-style: none;
-  @media screen and (min-width: 1024px) {
-    min-height: 320px;
-  }
   li {
     position: relative;
     float: left;

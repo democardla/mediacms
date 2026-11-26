@@ -1,6 +1,8 @@
 import React from 'react';
 import EventEmitter from 'events';
-import { publishedOnDate, exportStore, getRequest, postRequest, deleteRequest, csrfToken } from '../helpers';
+import { exportStore, getRequest, postRequest, deleteRequest, csrfToken } from '../helpers';
+import i18n from '../../i18n';
+import formatLocalizedDate from '../helpers/formatLocalizedDate';
 
 import { config as mediacmsConfig } from '../settings/config.js';
 
@@ -135,10 +137,9 @@ class PlaylistPageStore extends EventEmitter {
         if (!PlaylistPageStoreData[this.id].data || !PlaylistPageStoreData[this.id].data.add_date) {
           return null;
         }
-        this.data.publishDateLabel =
-          this.data.publishDateLabel ||
-          'Created on ' + publishedOnDate(new Date(PlaylistPageStoreData[this.id].data.add_date), 3);
-        return this.data.publishDateLabel;
+        return i18n.t('playlist.createdOn', {
+          date: formatLocalizedDate(PlaylistPageStoreData[this.id].data.add_date),
+        });
     }
     return null;
   }

@@ -143,6 +143,13 @@
     "removeFailed": "Could not delete comment",
     "submit": "Post comment"
   },
+  "videoTabs": {
+    "label": "Video information and legacy",
+    "info": "Info",
+    "creator": "Creator",
+    "legacy": "Legacy",
+    "legacyEmpty": "No achievements have been added to this video yet."
+  },
   "edit": "Edit",
   "editMedia": "Edit media",
   "embed": {
@@ -190,6 +197,45 @@
     "video": "Video"
   },
   "publishedOn": "Published on {{date}}",
+  "members": {
+    "title": "Members",
+    "joinedAgo": "Joined {{time}}",
+    "noResults": "No members match “{{query}}”",
+    "searchResults": "Members matching “{{query}}”",
+    "searchMediaInstead": "Search posts instead"
+  },
+  "playlist": {
+    "playAll": "Play all",
+    "createdAgo": "Created {{time}}",
+    "createdOn": "Created on {{date}}",
+    "mediaCount_one": "{{formattedCount}} media item",
+    "mediaCount_other": "{{formattedCount}} media items",
+    "edit": "Edit",
+    "editTitle": "Edit playlist",
+    "title": "Title",
+    "titlePlaceholder": "Enter playlist title…",
+    "description": "Description",
+    "descriptionPlaceholder": "Enter playlist description…",
+    "cancel": "Cancel",
+    "update": "Update",
+    "create": "Create",
+    "delete": "Delete playlist",
+    "removeTitle": "Remove playlist",
+    "removeConfirm": "Permanently remove this playlist?",
+    "remove": "Remove",
+    "removeItem": "Remove from playlist",
+    "removeItemTitle": "Remove from playlist",
+    "removeItemConfirm": "Remove this item from the playlist?",
+    "removeItemAction": "Remove",
+    "itemRemoved": "Item removed from playlist.",
+    "itemRemoveFailed": "Could not remove the item from the playlist.",
+    "updated": "Playlist updated.",
+    "updateFailed": "Could not update the playlist.",
+    "removed": "Playlist removed. Redirecting…",
+    "removeFailed": "Could not remove the playlist.",
+    "created": "Playlist created.",
+    "createFailed": "Could not create the playlist."
+  },
   "profile": {
     "addBanner": "Add banner",
     "editBanner": "Edit banner",
@@ -302,6 +348,21 @@
     "tags": "Tags"
   },
   "upNext": "Up next",
+  "upload": {
+    "selectFile": "Select video",
+    "dropFiles": "Click or drag a video to this area to upload",
+    "hint": "Select one video at a time. After uploading, fill in its basic information in this step.",
+    "steps": {
+      "details": "Upload and details",
+      "edit": "Edit, captions and chapters",
+      "upload": "Video upload",
+      "basic": "Basic information",
+      "trim": "Trim",
+      "subtitles": "Captions",
+      "chapters": "Chapters",
+      "publish": "Publish settings"
+    }
+  },
   "viewMedia": "View media",
   "views_one": "{{formattedCount}} view",
   "views_other": "{{formattedCount}} views"

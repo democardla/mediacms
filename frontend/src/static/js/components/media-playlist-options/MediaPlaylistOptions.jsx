@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import i18n from '../../i18n';
 import { putRequest, csrfToken } from '../../utils/helpers/';
 import { usePopup } from '../../utils/hooks/';
 import { PageStore } from '../../utils/stores/';
@@ -9,7 +10,7 @@ function mediaPlaylistPopupPages(proceedRemoval, cancelRemoval) {
   const settingOptionsList = {
     deleteMedia: {
       itemType: 'open-subpage',
-      text: 'Remove from playlist',
+      text: i18n.t('playlist.removeItem'),
       icon: 'delete',
       buttonAttr: {
         className: 'change-page',
@@ -27,16 +28,16 @@ function mediaPlaylistPopupPages(proceedRemoval, cancelRemoval) {
     proceedMediaPlaylistRemoval: (
       <PopupMain>
         <div className="popup-message">
-          <span className="popup-message-title">Media playlist removal</span>
-          <span className="popup-message-main">You're willing to remove media from playlist permanently?</span>
+          <span className="popup-message-title">{i18n.t('playlist.removeItemTitle')}</span>
+          <span className="popup-message-main">{i18n.t('playlist.removeItemConfirm')}</span>
         </div>
         <hr />
         <span className="popup-message-bottom">
           <button className="button-link cancel-playlist-removal" onClick={cancelRemoval}>
-            CANCEL
+            {i18n.t('playlist.cancel')}
           </button>
           <button className="button-link proceed-playlist-removal" onClick={proceedRemoval}>
-            PROCEED
+            {i18n.t('playlist.removeItemAction')}
           </button>
         </span>
       </PopupMain>
@@ -59,7 +60,7 @@ export function MediaPlaylistOptions(props) {
     const props_playlist_id = props.playlist_id;
     setTimeout(function () {
       // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
-      PageActions.addNotification('Media removed from playlist', 'mediaPlaylistRemove');
+      PageActions.addNotification(i18n.t('playlist.itemRemoved'), 'mediaPlaylistRemove');
       PlaylistPageActions.removedMediaFromPlaylist(props_media_id, props_playlist_id);
     }, 100);
   }
@@ -68,7 +69,7 @@ export function MediaPlaylistOptions(props) {
     popupContentRef.current.tryToHide();
     setTimeout(function () {
       // FIXME: Without delay creates conflict [ Uncaught Error: Dispatch.dispatch(...): Cannot dispatch in the middle of a dispatch. ].
-      PageActions.addNotification('Media removal from playlist failed', 'mediaPlaylistRemoveFail');
+      PageActions.addNotification(i18n.t('playlist.itemRemoveFailed'), 'mediaPlaylistRemoveFail');
     }, 100);
   }
 

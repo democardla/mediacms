@@ -49,7 +49,7 @@ function MediaAuthorBanner(props) {
                         <span>{props.name}</span>
                     </a>
                 </span>
-                {PageStore.get('config-media-item').displayPublishDate && props.published ? (
+                {props.showPublished !== false && PageStore.get('config-media-item').displayPublishDate && props.published ? (
                     <span className="author-banner-date">
                         {t('publishedOn', { date: formatLocalizedDate(props.published) })}
                     </span>
@@ -146,14 +146,15 @@ export default function ViewerInfoContent(props) {
 
     return (
         <div className="media-info-content">
-            {void 0 === PageStore.get('config-media-item').displayAuthor ||
+            {props.showAuthor !== false && (void 0 === PageStore.get('config-media-item').displayAuthor ||
             null === PageStore.get('config-media-item').displayAuthor ||
-            !!PageStore.get('config-media-item').displayAuthor ? (
+            !!PageStore.get('config-media-item').displayAuthor) ? (
                 <MediaAuthorBanner
                     link={authorLink}
                     thumb={authorThumb}
                     name={props.author.name}
                     published={props.published}
+                    showPublished={props.showPublished}
                 />
             ) : null}
 
@@ -193,7 +194,7 @@ export default function ViewerInfoContent(props) {
                 </div>
             </div>
 
-            <CommentsList />
+            {props.showComments === false ? null : <CommentsList />}
         </div>
     );
 }

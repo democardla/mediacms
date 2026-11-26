@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
+{% load custom_filters %}
 
-{% block headtitle %}Members - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{{ "Members"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block headermeta %}
 
-<meta property="og:title" content="Members - {{PORTAL_NAME}}">
+<meta property="og:title" content="{{ "Members"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}">
 <meta property="og:type" content="website">
 <meta property="og:description" content="">
 
@@ -27,7 +28,7 @@
     {
 		"@type": "ListItem",
 		"position": 2,
-        "name": "Members",
+        "name": "{{ "Members"|custom_translate:request.LANGUAGE_CODE }}",
         "item": {
             "@type": "WebPage",
             "@id": "{{FRONTEND_HOST}}/members"
@@ -41,5 +42,5 @@
 {% block content %}<div id="page-members"></div>{% endblock %}
 
 {% block bottomimports %}
-    <script src="{% static "js/members.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "js/members.js" %}?v={{ VERSION }}&locale_bundle=1"></script>
 {% endblock bottomimports %}

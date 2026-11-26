@@ -1,6 +1,62 @@
 .page-sidebar {
   background-color: var(--sidebar-bg-color);
 
+  .sidebar-menu-section {
+    padding: 12px 0;
+
+    + .sidebar-menu-section {
+      border-top: 1px solid var(--sidebar-nav-border-color);
+    }
+  }
+
+  .sidebar-ant-menu.ant-menu {
+    border-inline-end: 0;
+    background: transparent;
+    color: var(--sidebar-nav-item-text-color);
+
+    .ant-menu-item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 56px;
+      line-height: 56px;
+      margin: 0;
+      padding-inline: 24px !important;
+      border-radius: 0;
+
+      &:hover {
+        background: var(--nav-menu-item-hover-bg-color);
+        color: var(--sidebar-nav-item-text-color);
+      }
+
+      &.ant-menu-item-selected {
+        background: var(--nav-menu-active-item-bg-color);
+        color: var(--sidebar-nav-item-text-color);
+        font-weight: 500;
+      }
+
+      .ant-menu-item-icon {
+        min-width: 24px;
+        margin-inline-end: 24px;
+        color: var(--sidebar-nav-item-icon-color);
+
+        .material-icons {
+          font-size: 24px;
+        }
+      }
+
+      .ant-menu-title-content {
+        min-width: 0;
+
+        a {
+          display: block;
+          color: inherit;
+          text-decoration: none;
+        }
+      }
+    }
+  }
+
   .nav-menu + .nav-menu {
     border-top-color: var(--sidebar-nav-border-color);
   }

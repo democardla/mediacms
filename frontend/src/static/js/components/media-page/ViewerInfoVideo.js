@@ -1,12 +1,12 @@
 import React from 'react';
 import { MediaPageStore } from '../../utils/stores/';
-import ViewerInfoContent from './ViewerInfoContent';
+import CommentsList from '../comments/Comments';
 import ViewerInfoVideoTitleBanner from './ViewerInfoVideoTitleBanner';
 import ViewerInfo from './ViewerInfo';
 
 export default class ViewerInfoVideo extends ViewerInfo {
   render() {
-    let views, categories, title, author, published, description;
+    let views, categories, title;
     let allowDownload = false;
 
     if (this.state.videoLoaded) {
@@ -22,14 +22,6 @@ export default class ViewerInfoVideo extends ViewerInfo {
       categories = MediaPageStore.get('media-data').categories_info;
       title = MediaPageStore.get('media-data').title;
 
-      author = {
-        name: MediaPageStore.get('media-data').author_name,
-        url: MediaPageStore.get('media-data').author_profile,
-        thumb: MediaPageStore.get('media-author-thumbnail-url'),
-      };
-
-      published = MediaPageStore.get('media-data').add_date;
-      description = MediaPageStore.get('media-data').description;
     }
 
     return !this.state.videoLoaded ? null : (
@@ -41,7 +33,7 @@ export default class ViewerInfoVideo extends ViewerInfo {
             categories={categories}
             allowDownload={allowDownload}
           />
-          <ViewerInfoContent author={author} published={published} description={description} />
+          <CommentsList />
         </div>
       </div>
     );

@@ -12,6 +12,25 @@
 
 修改 `frontend-tools/video-js/` 播放器中的用户可见文案时，也要补齐 `frontend-tools/video-js/src/locales/en.json` 与 `zh-Hans.json`，并从 `src/localization.js` 读取。播放器是独立构建包，React 的 i18next CLI 不会检查这些词条；改动后需重建 `static/video_js/` 资源。若只重建资源而项目版本号未变，还要递增播放器脚本 URL 中的 `locale_bundle` 参数，避免浏览器继续使用同版本号下的旧缓存。
 
+## 修改界面后页面仍显示旧版本时
+
+先对照浏览器实际页面、响应中的静态资源 URL、仓库 `static/` 产物及容器内文件，确认旧内容来自哪一层。`/upload` 页曾出现源码和容器文件已更新，但浏览器仍看到旧上传区的情况：生产环境的 Django 模板缓存保留了旧模板，且页面脚本沿用未变化的版本 URL。
+
+改动 Django 模板后，应在确认生效的 Compose 配置与服务状态后重新加载 Gunicorn worker 或重启 `web`，清除生产模板缓存，再重新打开目标页面。本机 Compose 的 `web` 容器曾通过向 Gunicorn 主进程发送 `HUP` 完成平滑重新加载。改动前端资源后，按对应包的构建脚本更新 `static/`；项目版本号未变化时，递增目标页面资源 URL 的专用修订参数，并让预加载与实际加载使用同一 URL。最后在浏览器核对目标元素、实际加载的资源 URL 和交互状态；只看到源码变化或构建成功，不算页面已生效。
+
+## Docker Compose 服务与数据位置
+
+当前本机的 `docker-compose.yaml`（该文件由 `.gitignore` 忽略）定义了六个服务。处理 Docker 部署、故障排查或数据迁移时，先检查工作区实际生效的 Compose 配置；不同部署文件可能使用不同的服务、镜像和挂载路径。
+
+- `web` 提供 MediaCMS 网页服务，映射主机 80 端口，容器内由 Nginx/Gunicorn 提供请求服务。
+- `db` 运行 PostgreSQL，数据库文件放在 `postgres_data` 命名卷中。
+- `redis` 为 Celery 后台任务提供队列及相关缓存服务。
+- `celery_worker` 消费队列并执行后台任务，包括媒体处理与转码等工作。
+- `celery_beat` 调度周期性 Celery 任务，实际任务由 worker 执行。
+- `migrations` 运行 `deploy/docker/prestart.sh`，执行 Django 数据库迁移及部署初始化；它通常完成后退出。它不同于站点内用于从其他平台导入内容的“迁移”功能。
+
+在当前配置中，项目根目录 bind mount 到容器的 `/home/mediacms.io/mediacms`，而 `cms/settings.py` 将 `MEDIA_ROOT` 设为 `BASE_DIR/media_files/`。因此媒体文件位于 Compose 项目目录下的 `media_files/`；当前 Mac 上解析为 `/Users/democardla/mediacms/media_files/`，服务器上的实际主机路径取决于服务器上的项目目录。视频源文件、转码文件和 HLS 文件都在该媒体目录树内；数据库数据则单独保存在 `postgres_data` 卷中。搬迁站点时要同时核对并迁移媒体目录与数据库，不能只复制视频目录。
+
 ## 本地化修改后页面仍显示旧文案时
 
 按以下顺序排查，并以浏览器实际渲染结果作为完成标准：

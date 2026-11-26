@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
+{% load custom_filters %}
 
-{% block headtitle %}Playlist - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{{ "Playlists"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block topimports %}
 <link href="{% static "css/playlist.css" %}" rel="preload" as="style">
@@ -13,5 +14,5 @@
 {% endblock %}
 
 {% block bottomimports %}
-    <script src="{% static "js/playlist.js" %}?v={{ VERSION }}"></script>
+    <script src="{% static "js/playlist.js" %}?v={{ VERSION }}&locale_bundle=2"></script>
 {% endblock bottomimports %}

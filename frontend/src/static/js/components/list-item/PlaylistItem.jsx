@@ -1,5 +1,6 @@
 import React from 'react';
-import { format } from 'timeago.js';
+import i18n from '../../i18n';
+import formatRelativeDate from '../../utils/helpers/formatRelativeDate';
 import { useItem } from '../../utils/hooks/';
 import { PlaylistItemMetaDate } from './includes/items/';
 import { Item } from './Item';
@@ -12,13 +13,11 @@ export function PlaylistItem(rawProps) {
   const { titleComponent, thumbnailUrl, UnderThumbWrapper } = useItem({ ...props, type });
 
   function metaComponents() {
-    const publishDate = format(new Date(props.publish_date));
-    const publishDateTime =
-      'string' === typeof props.publish_date
-        ? Date.parse(props.publish_date)
-        : Date.parse(new Date(props.publish_date));
+    const date = new Date(props.publish_date);
+    if (Number.isNaN(date.getTime())) return null;
+    const publishDate = formatRelativeDate(date);
 
-    return <PlaylistItemMetaDate dateTime={publishDateTime} text={'Created ' + publishDate} />;
+    return <PlaylistItemMetaDate dateTime={date.toISOString()} text={i18n.t('playlist.createdAgo', { time: publishDate })} />;
   }
 
   return (
@@ -45,7 +44,7 @@ export function PlaylistItem(rawProps) {
             <div>
               <div>
                 <i className="material-icons">play_arrow</i>
-                <span>PLAY ALL</span>
+                <span>{i18n.t('playlist.playAll')}</span>
               </div>
             </div>
           </div>

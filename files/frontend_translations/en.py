@@ -168,6 +168,7 @@ translation_strings = {
     "Processing...": "",
     "Public": "",
     "Publish": "",
+    "Upload complete. Save the video information to continue.": "",
     "PUBLISH STATE": "",
     "Publish State": "",
     "Published": "",

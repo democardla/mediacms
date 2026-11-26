@@ -1,10 +1,34 @@
 import React, { useContext } from 'react';
-import urlParse from 'url-parse';
+import { Menu } from 'antd';
 import { useUser } from '../../../utils/hooks/';
 import { PageStore } from '../../../utils/stores/';
 import { LinksContext, SidebarContext } from '../../../utils/contexts/';
-import { NavigationMenuList } from '../../_shared';
+import { MaterialIcon } from '../../_shared';
 import { translateString } from '../../../utils/helpers/';
+
+function SidebarMenu({ items }) {
+  if (!items.length) return null;
+
+  const menuItems = items.map((item, index) => ({
+    key: `${item.link}-${index}`,
+    className: item.className,
+    icon: item.icon ? <MaterialIcon type={item.icon} /> : null,
+    label: <a href={item.link} title={item.text}>{item.text}</a>,
+  }));
+  const selected = items.findIndex((item) => item.active);
+
+  return (
+    <nav className="sidebar-menu-section">
+      <Menu
+        className="sidebar-ant-menu"
+        mode="inline"
+        inlineIndent={0}
+        selectedKeys={selected >= 0 ? [menuItems[selected].key] : []}
+        items={menuItems}
+      />
+    </nav>
+  );
+}
 
 export function SidebarNavigationMenu() {
   const { userCan, isAnonymous, pages: userPages } = useUser();
@@ -12,24 +36,25 @@ export function SidebarNavigationMenu() {
   const links = useContext(LinksContext);
   const sidebar = useContext(SidebarContext);
 
-  const currentUrl = urlParse(window.location.href);
-  const currentHostPath = (currentUrl.host + currentUrl.pathname).replace(/\/+$/, '');
+  const currentUrl = new URL(window.location.href);
 
   function formatItems(items) {
     return items.map((item) => {
-      const url = urlParse(item.link);
-      const active = currentHostPath === url.host + url.pathname;
+      let active = false;
+      try {
+        const url = new URL(item.link || '#', currentUrl);
+        active = currentUrl.origin === url.origin &&
+          currentUrl.pathname.replace(/\/+$/, '') === url.pathname.replace(/\/+$/, '');
+      } catch (error) {
+        // A custom sidebar link may be a non-URL value. Keep it usable as a link.
+      }
 
       return {
         active,
-        itemType: 'link',
         link: item.link || '#',
         icon: item.icon || null,
-        iconPos: 'left',
         text: item.text || item.link || '#',
-        itemAttr: {
-          className: item.className || '',
-        },
+        className: item.className || '',
       };
     });
   }
@@ -126,7 +151,7 @@ export function SidebarNavigationMenu() {
       });
     });
 
-    return items.length ? <NavigationMenuList key="main-first" items={formatItems(items)} /> : null;
+    return items.length ? <SidebarMenu key="main-first" items={formatItems(items)} /> : null;
   }
 
   function MainMenuSecondSection() {
@@ -161,7 +186,7 @@ export function SidebarNavigationMenu() {
       }
     }
 
-    return items.length ? <NavigationMenuList key="main-second" items={formatItems(items)} /> : null;
+    return items.length ? <SidebarMenu key="main-second" items={formatItems(items)} /> : null;
   }
 
   function UserMenuSection() {
@@ -189,7 +214,7 @@ export function SidebarNavigationMenu() {
       });
     }
 
-    return items.length ? <NavigationMenuList key="user" items={formatItems(items)} /> : null;
+    return items.length ? <SidebarMenu key="user" items={formatItems(items)} /> : null;
   }
 
   function CustomMenuSection() {
@@ -223,7 +248,7 @@ export function SidebarNavigationMenu() {
       className: 'nav-item-language',
     });
 
-    return items.length ? <NavigationMenuList key="custom" items={formatItems(items)} /> : null;
+    return items.length ? <SidebarMenu key="custom" items={formatItems(items)} /> : null;
   }
 
   function AdminMenuSection() {
@@ -256,7 +281,7 @@ export function SidebarNavigationMenu() {
       });
     }
 
-    return items.length ? <NavigationMenuList key="admin" items={formatItems(items)} /> : null;
+    return items.length ? <SidebarMenu key="admin" items={formatItems(items)} /> : null;
   }
 
   return [MainMenuFirstSection(), MainMenuSecondSection(), UserMenuSection(), CustomMenuSection(), AdminMenuSection()];

@@ -1,16 +1,37 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createPortal, flushSync } from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ConfigProvider, theme as antTheme } from 'antd';
+import enUS from 'antd/locale/en_US';
+import zhCN from 'antd/locale/zh_CN';
+import { ThemeContext, ThemeProvider } from './contexts/ThemeContext';
 import { LayoutProvider } from './contexts/LayoutContext';
 import { UserProvider } from './contexts/UserContext';
 import { inEmbeddedApp } from './helpers';
 import '../i18n';
+import i18n from '../i18n';
+
+function AntDesignProvider({ children }) {
+    const { currentThemeMode } = useContext(ThemeContext);
+    return (
+        <ConfigProvider
+            locale={i18n.language === 'zh-Hans' ? zhCN : enUS}
+            theme={{
+                algorithm: currentThemeMode === 'dark' ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+                token: { borderRadius: 0 },
+            }}
+        >
+            {children}
+        </ConfigProvider>
+    );
+}
 
 const AppProviders = ({ children }) => (
     <LayoutProvider>
         <ThemeProvider>
-            <UserProvider>{children}</UserProvider>
+            <AntDesignProvider>
+                <UserProvider>{children}</UserProvider>
+            </AntDesignProvider>
         </ThemeProvider>
     </LayoutProvider>
 );
@@ -73,9 +94,11 @@ export function renderPage(idSelector, PageComponent) {
             appHeader,
             <LayoutProvider>
                 <ThemeProvider>
-                    <UserProvider>
-                        <PageHeader />
-                    </UserProvider>
+                    <AntDesignProvider>
+                        <UserProvider>
+                            <PageHeader />
+                        </UserProvider>
+                    </AntDesignProvider>
                 </ThemeProvider>
             </LayoutProvider>
         );

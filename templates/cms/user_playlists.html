@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
+{% load custom_filters %}
 
-{% block headtitle %}{% if user.name %}{{user.name}} - {% endif %}Playlists - {{PORTAL_NAME}}{% endblock headtitle %}
+{% block headtitle %}{% if user.name %}{{user.name}} - {% endif %}{{ "Playlists"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}{% endblock headtitle %}
 
 {% block headermeta %}
 
-<meta property="og:title" content="{% if user.name %}{{user.name}} - {% endif %}Playlists - {{PORTAL_NAME}}">
+<meta property="og:title" content="{% if user.name %}{{user.name}} - {% endif %}{{ "Playlists"|custom_translate:request.LANGUAGE_CODE }} - {{PORTAL_NAME}}">
 <meta property="og:type" content="website">
 <meta property="og:description" content="">
 
@@ -27,5 +28,5 @@ No such user
 {% endblock %}
 
 {% block bottomimports %}
-    <script src="{% static "js/profile-tabs.js" %}?v={{ VERSION }}&profile_bundle=5"></script>
+    <script src="{% static "js/profile-tabs.js" %}?v={{ VERSION }}&profile_bundle=8"></script>
 {% endblock bottomimports %}

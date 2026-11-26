@@ -1228,3 +1228,100 @@ $-max-width: $-hor-spaces + ( 2 * $item-width ) - 1;
     padding: 22px 16px 36px !important;
   }
 }
+
+.profile-page-header .profile-nav {
+  .profile-ant-tabs {
+    flex: 1;
+    min-width: 0;
+    height: $_authorPage-navHeight;
+
+    .ant-tabs-nav {
+      height: $_authorPage-navHeight;
+      margin: 0;
+
+      &:before { border-bottom: 0; }
+    }
+
+    .ant-tabs-tab {
+      margin: 0 !important;
+      padding: 0 !important;
+      color: var(--profile-page-nav-link-text-color);
+
+      &:hover { color: var(--profile-page-nav-link-hover-text-color); }
+
+      &.ant-tabs-tab-active a {
+        color: var(--profile-page-nav-link-active-text-color);
+      }
+
+      a {
+        display: block;
+        padding: 0 14px;
+        line-height: $_authorPage-navHeight;
+        color: inherit;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      height: 3px;
+      background: var(--profile-page-nav-link-active-after-bg-color);
+    }
+
+    .ant-tabs-content-holder { display: none; }
+  }
+
+  .profile-nav-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    > span {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .circle-icon-button {
+      width: 38px;
+      height: 38px;
+      margin: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .media-search form {
+      display: flex;
+      align-items: center;
+    }
+
+    .media-search input[type='text'] {
+      width: 178px;
+      max-width: 178px;
+      border-width: 0 0 2px;
+      border-color: var(--profile-page-nav-link-text-color);
+      background: transparent;
+      color: var(--profile-page-nav-link-text-color);
+    }
+  }
+}
+
+@media (max-width: 580px) {
+  .profile-page-header .profile-nav {
+    .profile-ant-tabs .ant-tabs-tab a { padding: 0 10px; font-size: 13px; }
+    .profile-nav-inner { padding: 0 4px; }
+    .profile-ant-tabs { min-width: 55%; }
+    .profile-nav-actions {
+      max-width: 45%;
+      overflow-x: auto;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar { display: none; }
+    }
+    .profile-nav-actions .circle-icon-button { width: 32px; height: 38px; }
+    .profile-nav-actions .media-search input[type='text'] { width: 120px; }
+  }
+}
